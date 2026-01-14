@@ -1,0 +1,49 @@
+<section id="pack" class="packages">
+  <div class="container">
+    <div class="gallary-header text-center">
+      <h2>special packages</h2>
+      <p>Duis aute irure dolor in velit esse cillum dolore eu fugiat nulla.</p>
+    </div>
+    
+    <div class="packages-content">
+      <div class="row">
+        <div class="col-md-4 col-sm-6 mb-4" *ngFor="let pkg of packages">
+          <div class="single-package-item card h-100">
+            <img [src]="pkg.image" class="card-img-top" [alt]="pkg.title">
+            <div class="card-body">
+              <h5 class="card-title">{{pkg.title}} <span class="float-right">${{pkg.price}}</span></h5>
+              
+              <div class="packages-para mb-3">
+                <p class="mb-1">
+                  <i class="fa fa-angle-right"></i> {{pkg.duration}}
+                </p>
+                <p class="mb-1">
+                  <i class="fa fa-angle-right"></i> {{pkg.accommodation}}
+                </p>
+                <p class="mb-1">
+                  <i class="fa fa-angle-right"></i> Transportation included
+                </p>
+                <p class="mb-1">
+                  <i class="fa fa-angle-right"></i> Food facilities
+                </p>
+              </div>
+              
+              <div class="packages-review mb-3">
+                <p class="mb-0">
+                  <i class="fa fa-star text-warning" *ngFor="let star of getStars(pkg.rating)"></i>
+                  <span class="ml-2">{{pkg.reviews}} reviews</span>
+                </p>
+              </div>
+              
+              <div class="about-btn">
+                <button class="about-view packages-btn w-100" (click)="bookPackage(pkg.id)">
+                  book now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

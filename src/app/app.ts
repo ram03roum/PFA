@@ -1,12 +1,30 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from './component/header/header.component';
+import { Footer } from './component/footer/footer';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [
+    RouterOutlet,
+    HeaderComponent,
+    Footer
+  ],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
-export class App {
-  protected readonly title = signal('pfa');
+export class AppComponent {
+  title = 'voyages-luxe-app';
+  showBackToTop = false;
+
+  ngOnInit() {
+    window.addEventListener('scroll', () => {
+      this.showBackToTop = window.pageYOffset > 300;
+    });
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }

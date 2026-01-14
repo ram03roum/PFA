@@ -1,1 +1,121 @@
 /* You can add global styles to this file, and also import other style files */
+/* Import des polices Google */
+
+@import url('https://fonts.googleapis.com/css?family=Rufina:400,700');
+@import url('https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Variables globales */
+:root {
+  --primary-color: #ff4a52;
+  --secondary-color: #1ec6b6;
+  --dark-color: #040e27;
+  --light-color: #f8f9fa;
+  --gray-color: #666;
+}
+
+/* Reset et styles de base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  overflow-x: hidden;
+}
+
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+/* Styles communs pour les boutons */
+.about-view {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.about-view:hover {
+  background: var(--secondary-color);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Styles pour les titres */
+h2 {
+  font-family: 'Rufina', serif;
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--dark-color);
+}
+
+h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+/* Section header */
+.gallary-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.gallary-header p {
+  color: var(--gray-color);
+  font-size: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
