@@ -6,6 +6,7 @@ import { TravelBoxComponent } from '../../component/travel-box/travel-box'; // N
 import { Services } from '../../component/services/services';
 import { SpecialOffer } from '../../component/special-offer/special-offer';
 import { Testimonials } from '../../component/testimonials/testimonials';
+import { HeaderComponent } from "../../component/header/header.component";
 
 @Component({
   selector: 'app-home',
@@ -17,17 +18,10 @@ import { Testimonials } from '../../component/testimonials/testimonials';
     TravelBoxComponent,
     Services,
     SpecialOffer,
-    Testimonials
-  ],
-  template: `
-    <app-hero></app-hero>
-    <div class="container position-relative" style="margin-top: -50px; z-index: 5;">
-      <app-travel-box></app-travel-box>
-    </div>
-    <app-services></app-services>
-    <app-special-offer></app-special-offer>
-    <app-packages></app-packages>
-    <app-testimonials></app-testimonials>
-  `
+    Testimonials,
+    HeaderComponent
+],
+  templateUrl: './home.html',
+  styleUrls: [`./home.css`]
 })
 export class Home {} // On exporte la classe ici, proprement.

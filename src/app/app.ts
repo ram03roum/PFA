@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './component/header/header.component';
 import { Footer } from './component/footer/footer';
+import { Home } from "./pages/home/home";
+import { About } from "./pages/about/about";
+import { HeroComponent } from "./component/hero/hero";
 
 @Component({
   selector: 'app-root',
@@ -9,8 +12,11 @@ import { Footer } from './component/footer/footer';
   imports: [
     RouterOutlet,
     HeaderComponent,
-    Footer
-  ],
+    Footer,
+    Home,
+    About,
+    HeroComponent
+],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })
