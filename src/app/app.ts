@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './component/header/header.component';
 import { Footer } from './component/footer/footer';
-import { Home } from "./pages/home/home";
+import { HomeComponent } from "./pages/home/home";
 import { About } from "./pages/about/about";
 import { HeroComponent } from "./component/hero/hero";
-
+import { DestinationsComponent } from './pages/destinations-page/destinations-page';
+import { DestinationDetail } from './pages/destination-detail/destination-detail';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -13,7 +14,9 @@ import { HeroComponent } from "./component/hero/hero";
     RouterOutlet,
     HeaderComponent,
     Footer,
-    Home,
+    DestinationDetail,
+    HomeComponent,
+    DestinationsComponent,
     About,
     HeroComponent
 ],

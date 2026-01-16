@@ -1,27 +1,21 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { PackagesComponent } from '../../component/packages/packages';
-import { HeroComponent } from '../../component/hero/hero';
-import { TravelBoxComponent } from '../../component/travel-box/travel-box'; // Ne pas oublier !
-import { Services } from '../../component/services/services';
-import { SpecialOffer } from '../../component/special-offer/special-offer';
-import { Testimonials } from '../../component/testimonials/testimonials';
-import { HeaderComponent } from "../../component/header/header.component";
-
+import { HeaderComponent } from '../../component/header/header.component';
+import { Footer } from '../../component/footer/footer';
+import { DestinationsComponent } from '../destinations-page/destinations-page';
 @Component({
   selector: 'app-home',
-  standalone: true,
-  imports: [
-    CommonModule,
-    PackagesComponent,
-    HeroComponent,
-    TravelBoxComponent,
-    Services,
-    SpecialOffer,
-    Testimonials,
-    HeaderComponent
-],
   templateUrl: './home.html',
-  styleUrls: [`./home.css`]
+  styleUrls: ['./home.css'],
+  standalone: true,
+  imports: [CommonModule, HeaderComponent, Footer, DestinationsComponent]
 })
-export class Home {} // On exporte la classe ici, proprement.
+export class HomeComponent {
+
+  constructor(private router: Router) {}
+
+  exploreNow() {
+    this.router.navigate(['/destinations']);
+  }
+}

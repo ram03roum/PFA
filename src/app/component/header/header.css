@@ -28,6 +28,7 @@
   text-transform: uppercase;
   font-weight: 500;
   padding: 10px 15px;
+  
   cursor: pointer;
   transition: color 0.3s ease;
 }

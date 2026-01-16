@@ -1,16 +1,16 @@
 import { Routes } from '@angular/router';
 // Importer les pages
-import { Home } from './pages/home/home';
+import { HomeComponent } from './pages/home/home';
 import { ContactComponent} from './pages/contact/contact';
 import { About } from './pages/about/about';
 import { PackageDetail } from './pages/package-detail/package-detail';
 import { BlogPage } from './pages/blog-page/blog-page';
 import { PackagePage } from './pages/package-page/package-page';
-import { Destinations } from './pages/destinations/destinations';
+import { DestinationsComponent } from './pages/destinations-page/destinations-page';
 import { DestinationDetail } from './pages/destination-detail/destination-detail';
 export const routes: Routes = [
-  { path: '', component: Home },
-  { path: 'destinations', component: Destinations },
+  { path: '', component: HomeComponent },
+  { path: 'destinations', component: DestinationsComponent },
   { path: 'destinations/:id', component: DestinationDetail },
   { path: 'packages', component: PackagePage },
   { path: 'packages/:id', component: PackageDetail },

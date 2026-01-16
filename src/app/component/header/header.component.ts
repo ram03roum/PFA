@@ -19,6 +19,7 @@ export class HeaderComponent implements OnInit {
 
   toggleMenu(): void {
     this.isMenuCollapsed = !this.isMenuCollapsed;
+    
   }
 
   scrollToSection(sectionId: string): void {
