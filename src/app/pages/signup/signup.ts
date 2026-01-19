@@ -30,27 +30,24 @@ export class SignupComponent {
 
   onSubmit() {
     this.validateEmail();
-
     if (this.emailError) {
       return;
     }
-
 
     // Vérifier si les mots de passe correspondent
     if (this.password !== this.confirmPassword) {
       this.passwordMismatch = true;
       return;
+    } else {
+      this.passwordMismatch = false;
     }
-    this.passwordMismatch = false;
 
     // Logique d'inscription
     console.log('Nom:', this.name);
     console.log('Email:', this.email);
     console.log('Password:', this.password);
 
-
-
-    // Après l'inscription réussie, rediriger vers login
-    // this.router.navigate(['/login']);
+    //Après l'inscription réussie, rediriger vers login
+    this.router.navigate(['/home']);
   }
 }
