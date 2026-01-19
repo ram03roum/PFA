@@ -20,10 +20,13 @@
                             <label for="password" class="form-label">Mot de passe</label>
                             <input type="password" class="form-control" id="password" placeholder="Mot de passe"
                                 [(ngModel)]="password" name="password" required>
+                            <div *ngIf="passwordError" class="text-danger mt-1 small">
+                                {{ passwordError }}
+                            </div>
                         </div>
 
                         <div class="d-grid">
-                            <button routerLink="/home" type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" class="btn btn-primary btn-lg">
                                 Se connecter
                             </button>
                         </div>

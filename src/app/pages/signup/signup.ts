@@ -19,6 +19,7 @@ export class SignupComponent {
   confirmPassword: string = '';
   passwordMismatch: boolean = false;
   emailError: string = '';
+  passwordEmpty: string = '';
 
 
   constructor(private router: Router, private validationService: ValidationService
