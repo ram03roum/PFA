@@ -1,7 +1,10 @@
+from urllib import request
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import json
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 CORS(app) # Permet à Angular de parler à Flask
@@ -28,6 +31,16 @@ class Destination(db.Model):
     distance = db.Column(db.Float)
     wifi = db.Column(db.Boolean)
     description = db.Column(db.Text)
+# Créer la table dans la base de données au lancement
+with app.app_context():
+    db.create_all()
+# Définition de la table "users"
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(255))
 # Créer la table dans la base de données au lancement
 with app.app_context():
     db.create_all()
@@ -130,6 +143,51 @@ def get_destination_detail(dest_id):
     except Exception as e:
         print(f"Erreur SQL : {e}")
         return jsonify({"error": str(e)}), 500
+
+
+# Route 4 : Vérifier le registerment d'un utilisateur
+@app.route('/api/register', methods=['POST'])
+def register():
+    data = request.get_json() # Récupérer les données JSON envoyées par Angular
+
+    # 1. vérifier email
+    if User.query.filter_by(email=data['email']).first(): # email déjà utilisé
+        return jsonify({"message": "Email déjà utilisé"}), 400
+
+    # 2. hasher le mot de passe 
+    hashed_pw = generate_password_hash(data['password'])
+
+    # 3. créer utilisateur
+    user = User(
+        email=data['email'],
+        password=hashed_pw,
+        name=data.get('name')
+    )
+
+    db.session.add(user)
+    db.session.commit()
+
+    return jsonify({"message": "Inscription réussie"}), 201
+
+# Route 5 : Vérifier le login d'un utilisateur
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    user = User.query.filter_by(email=data['email']).first()
+
+    if user and check_password_hash(user.password, data['password']): #compare sans jamais voir le vrai mot de passe
+        return jsonify({
+            "message": "Connexion réussie",
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "name": user.name
+            }
+        }), 200
+
+    return jsonify({"message": "Email ou mot de passe incorrect"}), 401
+
     
 
 if __name__ == '__main__':
