@@ -20,7 +20,14 @@ class Destination(db.Model):
     country = db.Column(db.String(255))
     image = db.Column(db.Text)
     price = db.Column(db.Float)
-
+# Nouveaux champs pour les détails
+    continent = db.Column(db.String(255))
+    category = db.Column(db.String(255))
+    season = db.Column(db.String(255))
+    rating = db.Column(db.Float)
+    distance = db.Column(db.Float)
+    wifi = db.Column(db.Boolean)
+    description = db.Column(db.Text)
 # Créer la table dans la base de données au lancement
 with app.app_context():
     db.create_all()
@@ -42,7 +49,15 @@ def import_data():
                     name=item['name'],
                     country=item['country'],
                     image=item.get('image') or item.get('photoURL'),
-                    price=float(item.get('price') or item.get('avgCostUSD') or 0)
+                    price=float(item.get('price') or item.get('avgCostUSD') or 0),
+                    # On ajoute la récupération des nouvelles données ici
+                    continent=item.get('continent'),
+                    category=item.get('category'),
+                    season=item.get('season'),
+                    rating=item.get('rating'),
+                    distance=item.get('distance'),
+                    wifi=item.get('wifi'),
+                    description=item.get('description')
                 )
                 db.session.add(new_dest)
 
@@ -60,8 +75,62 @@ def get_destinations():
         'name': d.name,
         'country': d.country,
         'image': d.image,
-        'price': d.price
+        'price': d.price,
+        # 'category': d.category,
+        # 'season': d.season,
+        # 'rating': d.rating,
+        # 'distance': d.distance,
+        # 'wifi': d.wifi,
+        # 'description': d.description
     } for d in results])
+
+# @app.route('/destinations/<int:dest_id>', methods=['GET'])
+# def get_destination_detail(dest_id):
+#     dest = Destination.query.get(dest_id)
+#     return jsonify({
+#         'id': dest.id,
+#         'name': dest.name,
+#         'country': dest.country,
+#         'image': dest.image,
+#         'price': dest.price,
+#         'continent': dest.continent,
+#         'category': dest.category,
+#         'season': dest.season,
+#         'rating': dest.rating,
+#         'distance': dest.distance,
+#         'wifi': dest.wifi,
+#         'description': dest.description
+#     })
+
+# ROUTE 3 : Détails d'une destination
+@app.route('/destinations/<int:dest_id>', methods=['GET'])
+def get_destination_detail(dest_id):
+    try:
+        # On récupère la destination
+        dest = Destination.query.get_or_404(dest_id)
+
+        if not dest:
+            return jsonify({"error": "Pas trouvé"}), 404
+
+        # On renvoie TOUS les champs
+        return jsonify([{
+        'id': dest.id,
+        'name': dest.name,
+        'country': dest.country,
+        'image': dest.image,
+        'price': dest.price,
+        'category': dest.category,
+        'season': dest.season,
+        'rating': dest.rating,
+        'distance': dest.distance,
+        'wifi': dest.wifi,
+        'description': dest.description
+    }
+        ])
+    except Exception as e:
+        print(f"Erreur SQL : {e}")
+        return jsonify({"error": str(e)}), 500
+    
 
 if __name__ == '__main__':
     app.run(debug=True)

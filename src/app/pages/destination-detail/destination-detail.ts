@@ -1,46 +1,57 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { ChangeDetectorRef } from '@angular/core';
+import { DataService } from '../../services/data.service';
 @Component({
   selector: 'app-destination-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './destination-detail.html',
 })
 export class DestinationDetail implements OnInit {
 
-  destination: any;
-
-  // Fake data (plus tard → service / API)
-  destinations = [
-    {
-      id: 1,
-      name: 'Paris',
-      description: 'La ville de l’amour, idéale pour une escapade romantique.',
-      price: 899,
-      image: 'assets/images/paris.jpg'
-    },
-    {
-      id: 2,
-      name: 'Tokyo',
-      description: 'Culture, technologie et gastronomie unique.',
-      price: 1299,
-      image: 'assets/images/tokyo.jpg'
-    },
-    {
-      id: 3,
-      name: 'Bali',
-      description: 'Nature exotique et plages paradisiaques.',
-      price: 1099,
-      image: 'assets/images/bali.jpg'
-    }
-  ];
-
-  constructor(private route: ActivatedRoute) {}
+ loading: boolean = true; // Pour afficher un état de chargement
+  destination: any = null;
+  constructor(private route: ActivatedRoute,
+    private http: HttpClient ,// Injectez le service HttpClient
+    private cdr: ChangeDetectorRef, // Injecte le détecteur de changement
+    private dataService: DataService
+  ) {}
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.destination = this.destinations.find(d => d.id === id);
+    // Écoute les changements d'ID dans l'URL
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.loadDetail(id);
+      }
+    });
+  }
+
+  loadDetail(id: string): void {
+    this.loading = true;
+     this.destination = null;// Réinitialise la destination avant de charger une nouvelle
+    this.dataService.getDestinationById(id).subscribe({
+      next: (data) => {
+        // Comme ton Flask renvoie Array(1), on prend le premier élément
+        this.destination = Array.isArray(data) ? data[0] : data;
+        console.log("Données traitées pour affichage :", this.destination);
+        this.loading = false;
+        this.cdr.detectChanges();
+        // setTimeout(() => {
+        //   this.loading = false;
+        //   this.cdr.detectChanges();
+        // }, 0);
+        console.log("Données reçues via DataService :", this.destination);
+      },
+      error: (err) => {
+        console.error("Erreur via DataService :", err);
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 }

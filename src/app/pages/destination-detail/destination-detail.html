@@ -1,44 +1,51 @@
-<div class="min-h-screen bg-gray-50 py-20">
-  <div class="container mx-auto px-6">
+<div class="min-h-screen bg-gray-50 py-12">
+  <div class="container mx-auto px-4">
 
-    <div *ngIf="destination; else notFound" class="grid grid-cols-1 md:grid-cols-2 gap-10">
+    @if (loading) {
+      <div class="spinner text-center py-20">
+        <p class="text-xl text-gray-500">Chargement des détails...</p>
+      </div>
+    } @else if (destination) {
+      
+      <div class="bg-white rounded-3xl shadow-xl overflow-hidden max-w-5xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2">
+          
+          <div class="relative h-[400px] md:h-full">
+            <img [src]="destination.image" [alt]="destination.name" class="w-full h-full object-cover">
+          </div>
 
-      <!-- IMAGE -->
-      <img
-        [src]="destination.image"
-        [alt]="destination.name"
-        class="rounded-2xl shadow-xl w-full h-[400px] object-cover"
-      />
+          <div class="p-8 md:p-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ destination.name }}</h1>
+            <p class="text-purple-600 font-semibold mb-4">{{ destination.country }} — {{ destination.continent }}</p>
+            
+            <p class="text-gray-600 mb-8 leading-relaxed">
+              {{ destination.description }}
+            </p>
 
-      <!-- CONTENT -->
-      <div>
-        <h1 class="text-4xl font-bold mb-4 text-gray-800">
-          {{ destination.name }}
-        </h1>
+            <div class="grid grid-cols-2 gap-4 mb-8">
+               <div class="p-3 bg-gray-50 rounded-lg">
+                 <span class="block text-xs text-gray-400">Wi-Fi</span>
+                 <span class="font-bold">{{ destination.wifi ? '✅ Oui' : '❌ Non' }}</span>
+               </div>
+               <div class="p-3 bg-gray-50 rounded-lg">
+                 <span class="block text-xs text-gray-400">Prix</span>
+                 <span class="font-bold text-purple-700">{{ destination.price }} $</span>
+               </div>
+            </div>
 
-        <p class="text-gray-600 text-lg mb-6">
-          {{ destination.description }}
-        </p>
-
-        <p class="text-2xl font-bold text-purple-600 mb-6">
-          À partir de {{ destination.price }}€
-        </p>
-
-        <button
-          class="bg-gradient-to-r from-purple-600 to-purple-800 text-white px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition"
-        >
-          Réserver maintenant
-        </button>
+            <button class="w-full bg-purple-600 text-white font-bold py-4 rounded-xl hover:bg-purple-700 transition">
+              Réserver maintenant
+            </button>
+          </div>
+        </div>
       </div>
 
-    </div>
-
-    <!-- NOT FOUND -->
-    <ng-template #notFound>
-      <p class="text-center text-xl text-red-500">
-        Destination introuvable
-      </p>
-    </ng-template>
+    } @else {
+      <div class="text-center py-20">
+        <h2 class="text-2xl font-bold text-red-500">Destination introuvable</h2>
+        <a routerLink="/destinations" class="text-purple-600 underline mt-4 inline-block">Retour à la liste</a>
+      </div>
+    }
 
   </div>
 </div>

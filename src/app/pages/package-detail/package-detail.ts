@@ -17,6 +17,7 @@ export class PackageDetail implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+  
     private packageService: PackageService
   ) {}
 
