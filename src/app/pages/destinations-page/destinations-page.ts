@@ -1,42 +1,77 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { DataService } from '../../services/data.service';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-
+import { RouterLink } from '@angular/router'; // 1. Importe ceci
+import { ChangeDetectorRef } from '@angular/core'; // 2. Importez ChangeDetectorRef
 @Component({
   selector: 'app-destinations-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './destinations-page.html',
+  styleUrls: ['./destinations-page.css'],
 })
-export class DestinationsComponent {
+export class DestinationsPageComponent implements OnInit {
+  destinations: any[] = [];
+  chargement: boolean = true;
 
-  destinations = [
-    {
-      id: 1,
-      name: 'Paris',
-      description: 'La ville de l’amour et de la lumière.',
-      price: 899,
-      image: 'assets/images/paris.jpg'
-    },
-    {
-      id: 2,
-      name: 'Tokyo',
-      description: 'Un mélange unique de tradition et de modernité.',
-      price: 1299,
-      image: 'assets/images/tokyo.jpg'
-    },
-    {
-      id: 3,
-      name: 'Bali',
-      description: 'Plages paradisiaques et nature exotique.',
-      price: 1099,
-      image: 'assets/images/bali.jpg'
-    }
-  ];
+   // 🔹 Pagination
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
 
-  constructor(private router: Router) {}
+  constructor(private dataService: DataService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
-  goToDetail(id: number) {
-    this.router.navigate(['/destinations', id]);
+  ngOnInit(): void {
+  this.chargerDestinations();
+}
+// 🔹 Charger les destinations
+  chargerDestinations(): void {
+    this.chargement = true;
+
+    this.dataService.getDestinations().subscribe({
+      next: (data) => {
+        console.log('Données reçues :', data);
+        this.destinations = data;
+
+        // reset pagination
+        this.currentPage = 1;
+
+        setTimeout(() => {
+          this.chargement = false;
+          this.cdr.detectChanges();
+        }, 0);
+      },
+      error: (err) => {
+        console.error('Erreur chargement destinations :', err);
+        this.chargement = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
+
+  // ==========================
+  // 🔹 PAGINATION
+  // ==========================
+
+  get paginatedDestinations(): any[] {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+
+  return this.destinations.slice(startIndex, endIndex);
+}
+
+// Pour optimiser le rendu avec *ngFor
+  trackDestination = (_: number, item: any) => item;
+
+  get totalPages(): number {
+    return Math.ceil(this.destinations.length / this.itemsPerPage);
+  }
+
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
 }

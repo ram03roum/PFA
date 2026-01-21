@@ -1,46 +1,70 @@
-<div class="min-h-screen bg-gray-50">
+<h1 class="page-title">
+  Découvrez nos {{ destinations.length }} destinations
+</h1>
 
-  <!-- Destinations Grid -->
-  <section class="py-20">
-    <div class="container mx-auto px-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+@if (chargement) {
 
-        <!-- Destination Card -->
-        <div
-          *ngFor="let destination of destinations"
-          class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition cursor-pointer"
-          (click)="goToDetail(destination.id)"
-        >
-          <img
-            [src]="destination.image"
-            [alt]="destination.name"
-            class="w-full h-64 object-cover"
-          >
+  <div class="spinner">
+    <p>Chargement en cours...</p>
+  </div>
 
-          <div class="p-6">
-            <h3 class="text-2xl font-bold mb-2">
-              {{ destination.name }}
-            </h3>
+} @else {
 
-            <p class="text-gray-600 mb-4">
-              {{ destination.description }}
-            </p>
+  <!-- 🌍 Grille des destinations -->
+  <div class="destinations-grid">
 
-            <div class="flex items-center justify-between">
-              <span class="text-purple-600 font-bold">
-                À partir de {{ destination.price }}€
-              </span>
+    @for (d of paginatedDestinations; track d.id) {
 
-              <button
-                class="bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700 transition"
-              >
-                Découvrir
-              </button>
-            </div>
-          </div>
+      <div class="card">
+        <img
+          [src]="d.image"
+          [alt]="d.name"
+          class="destination-image"
+        />
+
+        <div class="card-content">
+          <h3>{{ d.name }}</h3>
+          <p class="country">{{ d.country }}</p>
+          <p class="price">Prix : {{ d.price }} $</p>
+
+          <a
+            [routerLink]="['/destinations', d.id]"
+            class="btn-discover">
+            Découvrir <i class="fas fa-arrow-right"></i>
+          </a>
         </div>
-
       </div>
-    </div>
-  </section>
-</div>
+
+    }
+
+  </div>
+
+  <!-- 📄 Pagination -->
+  <div class="pagination">
+
+    <button
+      class="page-btn"
+      (click)="changePage(currentPage - 1)"
+      [disabled]="currentPage === 1">
+      ⬅️
+    </button>
+
+    @for (p of [].constructor(totalPages); track $index) {
+      <button
+        class="page-btn"
+        [class.active]="currentPage === $index + 1"
+        (click)="changePage($index + 1)">
+        {{ $index + 1 }}
+      </button>
+    }
+
+    <button
+      class="page-btn"
+      (click)="changePage(currentPage + 1)"
+      [disabled]="currentPage === totalPages">
+      ➡️
+    </button>
+
+  </div>
+
+}

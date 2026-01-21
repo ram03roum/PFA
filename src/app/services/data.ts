@@ -84,16 +84,16 @@ export class DataService {
     ];
   }
 
-  getDestinations(): Destination[] {
-    return [
-      { id: 1, name: 'China', image: 'assets/images/gallary/g1.jpg', tours: 20, places: 15 },
-      { id: 2, name: 'Venuzuela', image: 'assets/images/gallary/g2.jpg', tours: 12, places: 9 },
-      { id: 3, name: 'Brazil', image: 'assets/images/gallary/g3.jpg', tours: 25, places: 10 },
-      { id: 4, name: 'Australia', image: 'assets/images/gallary/g4.jpg', tours: 18, places: 9 },
-      { id: 5, name: 'Netherlands', image: 'assets/images/gallary/g5.jpg', tours: 14, places: 12 },
-      { id: 6, name: 'Turkey', image: 'assets/images/gallary/g6.jpg', tours: 14, places: 6 }
-    ];
-  }
+//   getDestinations(): Destination[] {
+//     return [
+//       { id: 1, name: 'China', image: 'assets/images/gallary/g1.jpg', tours: 20, places: 15 },
+//       { id: 2, name: 'Venuzuela', image: 'assets/images/gallary/g2.jpg', tours: 12, places: 9 },
+//       { id: 3, name: 'Brazil', image: 'assets/images/gallary/g3.jpg', tours: 25, places: 10 },
+//       { id: 4, name: 'Australia', image: 'assets/images/gallary/g4.jpg', tours: 18, places: 9 },
+//       { id: 5, name: 'Netherlands', image: 'assets/images/gallary/g5.jpg', tours: 14, places: 12 },
+//       { id: 6, name: 'Turkey', image: 'assets/images/gallary/g6.jpg', tours: 14, places: 6 }
+//     ];
+//   }
 
   getTestimonials(): Testimonial[] {
     return [

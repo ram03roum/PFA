@@ -1,37 +1,46 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-
+import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef } from '@angular/core'; // 1. Ajoutez cet import
+import { DataService } from '../../services/data.service';
 @Component({
   selector: 'app-destinations',
-  templateUrl: './destinations.html',
-  imports: [CommonModule],
-  styleUrls: ['./destinations.css']
+  standalone: true,
+  imports: [CommonModule,],
+  templateUrl: './destinations.component.html',
+  styleUrls: ['./destinations.component.css']
 })
 export class DestinationsComponent implements OnInit {
-  destinations = [
-    {
-      id: 1,
-      name: 'Paris, France',
-      description: 'La ville lumière vous attend',
-      image: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a',
-      price: 599
+
+  destinations: any[] = [];
+
+  constructor(private dataService: DataService,
+    private cdr: ChangeDetectorRef
+  ) { }
+
+// Dans ton fichier destinations.ts ou destinations-page.ts
+ngOnInit(): void {
+  this.dataService.getDestinations().subscribe({
+    next: (data: any) => {
+      console.log("Données reçues de Flask :", data);
+
+      // Sécurité : on s'assure que 'data' est bien le tableau
+      if (Array.isArray(data)) {
+        this.destinations = data;
+      } else if (data && data.destinations) {
+        // Au cas où Flask envoie { destinations: [...] }
+        this.destinations = data.destinations;
+      }
+
+      console.log("Nombre de destinations chargées :", this.destinations.length);
     },
-    {
-      id: 2,
-      name: 'Tokyo, Japon',
-      description: 'Culture et modernité',
-      image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf',
-      price: 1299
-    },
-    // Ajoutez plus de destinations...
-  ];
+    error: (err) => {
+      console.error("Erreur Backend :", err);
+    }
+  });
+}
 
-  constructor(private router: Router) { }
-
-  ngOnInit(): void { }
-
-  goToDetail(id: number): void {
-    this.router.navigate(['/destinations', id]);
+  goToDetail(id: number) {
+    window.location.href = `/destination/${id}`;
   }
+
 }
