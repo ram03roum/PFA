@@ -46,12 +46,21 @@ Thumbs.db
 backend/venv/
 backend/.venv/
 venv/
-.venv/
-ENV/
+__pycache__/
+*.pyc
 
-# Python cache
-**/__pycache__/
-*.py[cod]
-*$py.class
+# Angular
+.angular/
+dist/
+node_modules/
 
-frontend/.git_old/
+# Cache Angular
+.angular/
+frontend/.angular/
+
+# Dépendances (très important de ne pas les commit)
+node_modules/
+backend/venv/
+
+# Fichiers de build
+dist/
