@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , Inject, PLATFORM_ID } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router'; // 1. Importe ceci
@@ -16,10 +16,12 @@ export class DestinationsPageComponent implements OnInit {
 
    // 🔹 Pagination
   currentPage: number = 1;
-  itemsPerPage: number = 10;
+  itemsPerPage: number = 20;
 
   constructor(private dataService: DataService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object
+  
   ) {}
 
   ngOnInit(): void {
@@ -39,6 +41,7 @@ export class DestinationsPageComponent implements OnInit {
 
         setTimeout(() => {
           this.chargement = false;
+          this.cdr.markForCheck();
           this.cdr.detectChanges();
         }, 0);
       },
@@ -57,6 +60,7 @@ export class DestinationsPageComponent implements OnInit {
   get paginatedDestinations(): any[] {
   const startIndex = (this.currentPage - 1) * this.itemsPerPage;
   const endIndex = startIndex + this.itemsPerPage;
+  console.log(this.destinations.length);
 
   return this.destinations.slice(startIndex, endIndex);
 }
