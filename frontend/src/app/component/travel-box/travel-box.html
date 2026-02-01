@@ -1,0 +1,76 @@
+<section class="travel-box">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="single-travel-boxes">
+          <div class="desc-tabs">
+            <ul class="nav nav-tabs">
+              <li class="nav-item">
+                <a class="nav-link" [ngClass]="{'active': activeTab === 'tours'}" 
+                   (click)="setActiveTab('tours')">
+                  <i class="fa fa-tree"></i> tours
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" [ngClass]="{'active': activeTab === 'hotels'}" 
+                   (click)="setActiveTab('hotels')">
+                  <i class="fa fa-building"></i> hotels
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" [ngClass]="{'active': activeTab === 'flights'}" 
+                   (click)="setActiveTab('flights')">
+                  <i class="fa fa-plane"></i> flights
+                </a>
+              </li>
+            </ul>
+
+            <div class="tab-content mt-4">
+              <!-- Onglet Tours -->
+              <div class="tab-pane" [ngClass]="{'active show': activeTab === 'tours'}">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Destination Country</label>
+                      <select class="form-control" [(ngModel)]="searchData.tours.destinationCountry">
+                        <option value="">Select country</option>
+                        <option value="turkey">Turkey</option>
+                        <option value="russia">Russia</option>
+                        <option value="egypt">Egypt</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Check-in Date</label>
+                      <input type="date" class="form-control" [(ngModel)]="searchData.tours.checkIn">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Duration (days)</label>
+                      <select class="form-control" [(ngModel)]="searchData.tours.duration">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-md-12 text-right">
+                    <button class="btn btn-primary" (click)="search()">Search Tours</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Onglets Hotels et Flights similaires -->
+              <!-- ... -->
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

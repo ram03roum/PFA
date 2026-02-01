@@ -1,0 +1,23 @@
+package com.bacoge.constructionmaterial.dto.admin;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class DashboardStatsDto {
+    
+    private Long totalUsers;
+    private Long totalProducts;
+    private Long totalOrders;
+    private BigDecimal totalRevenue;
+    private Long newUsersToday;
+    private Long newOrdersToday;
+    private BigDecimal revenueToday;
+    private LocalDateTime lastUpdated;
+}

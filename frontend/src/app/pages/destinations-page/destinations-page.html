@@ -1,0 +1,55 @@
+<h1 class="page-title">
+  Découvrez nos {{ destinations.length }} destinations
+</h1>
+
+@if (chargement) {
+
+<div class="spinner">
+  <p>Chargement en cours...</p>
+</div>
+
+} @else {
+
+<!-- 🌍 Grille des destinations -->
+<div class="destinations-grid">
+
+  @for (d of paginatedDestinations; track d.id) {
+
+  <div class="card">
+    <img [src]="d.image" [alt]="d.name" loading="lazy" class="destination-image" />
+
+    <div class="card-content">
+      <h3>{{ d.name }}</h3>
+      <p class="country">{{ d.country }}</p>
+      <p class="price">Prix : {{ d.price }} $</p>
+
+      <a [routerLink]="['/destinations', d.id]" class="btn-discover">
+        Découvrir <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+
+  }
+
+</div>
+
+<!-- 📄 Pagination -->
+<div class="pagination">
+
+  <button class="page-btn" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+    ⬅️
+  </button>
+
+  @for (p of [].constructor(totalPages); track $index) {
+  <button class="page-btn" [class.active]="currentPage === $index + 1" (click)="changePage($index + 1)">
+    {{ $index + 1 }}
+  </button>
+  }
+
+  <button class="page-btn" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+    ➡️
+  </button>
+
+</div>
+
+}
