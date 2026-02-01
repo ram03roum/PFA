@@ -1,0 +1,32 @@
+<header class="sticky top-0 z-50 bg-white shadow-md">
+  <nav class="container mx-auto px-6 py-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center cursor-pointer" routerLink="/">
+        <i class="fas fa-plane-departure text-3xl text-purple-600 mr-3"></i>
+        <span class="text-2xl font-bold text-purple-600">TravelExplore</span>
+      </div>
+
+      <div class="hidden md:flex space-x-8">
+        <a routerLink="/" routerLinkActive="text-purple-600" [routerLinkActiveOptions]="{exact: true}"
+          class="text-gray-700 hover:text-purple-600 transition font-medium">Accueil</a>
+        <a routerLink="/destinations" routerLinkActive="text-purple-600"
+          class="text-gray-700 hover:text-purple-600 transition font-medium">Destinations</a>
+        <a routerLink="/packages" routerLinkActive="text-purple-600"
+          class="text-gray-700 hover:text-purple-600 transition font-medium">Packages</a>
+        <a routerLink="/about" routerLinkActive="text-purple-600"
+          class="text-gray-700 hover:text-purple-600 transition font-medium">À Propos</a>
+        <a routerLink="/blog" routerLinkActive="text-purple-600"
+          class="text-gray-700 hover:text-purple-600 transition font-medium">Blog</a>
+        <a routerLink="/contact" routerLinkActive="text-purple-600"
+          class="text-gray-700 hover:text-purple-600 transition font-medium">Contact</a>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <button routerLink="/login"
+          class="bg-gradient-to-r from-purple-600 to-purple-800 text-white px-6 py-2 rounded-full hover:opacity-90 transition">
+          Réserver
+        </button>
+      </div>
+    </div>
+  </nav>
+</header>

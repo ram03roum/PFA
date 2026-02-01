@@ -1,0 +1,48 @@
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
+    <div class="row w-100 justify-content-center">
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4 fw-bold">Connexion</h2>
+
+                    <form (ngSubmit)="onSubmit()">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" [class.is-invalid]="emailError" id="email"
+                                placeholder="Email" [(ngModel)]="email" name="email" (blur)="validateEmail()" required>
+
+                            <div *ngIf="emailError" class="text-danger mt-1 small">
+                                {{ emailError }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mot de passe</label>
+                            <input type="password" class="form-control" id="password" placeholder="Mot de passe"
+                                [(ngModel)]="password" name="password" required>
+                            <div *ngIf="passwordError" class="text-danger mt-1 small">
+                                {{ passwordError }}
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Se connecter
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-2">
+                            <a href="#" class="text-decoration-none">Mot de passe oublié ?</a>
+                        </p>
+                        <p class="text-muted">
+                            Vous n'avez pas de compte ?
+                            <a routerLink="/signup" class="text-decoration-none fw-bold">S'inscrire</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+<div class="detail-container" *ngIf="package">
+
+  <img [src]="package.image" alt="{{ package.title }}" />
+
+  <div class="info">
+    <h1>{{ package.title }}</h1>
+    <p>{{ package.description }}</p>
+    <h2>{{ package.price }} €</h2>
+
+    <button (click)="goBack()">Back to packages</button>
+  </div>
+
+</div>

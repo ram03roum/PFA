@@ -1,0 +1,299 @@
+/* ==================== TITRE PRINCIPAL ==================== */
+h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin: 2rem 0 3rem 0;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+/* Animation du titre */
+h1 {
+    animation: fadeInDown 0.6s ease-out;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================== SPINNER DE CHARGEMENT ==================== */
+.spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    flex-direction: column;
+}
+
+.spinner p {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    margin-top: 1rem;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Animation du texte de chargement */
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Spinner animé (optionnel - ajoutez un élément <div class="spinner-circle"></div>) */
+.spinner::before {
+    content: '';
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e0e0e0;
+    border-top-color: #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==================== GRILLE DES DESTINATIONS ==================== */
+.destinations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 0 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Responsive - Tablettes */
+@media (max-width: 768px) {
+    .destinations-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        padding: 0 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+}
+
+/* Responsive - Mobiles */
+@media (max-width: 480px) {
+    .destinations-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+        margin: 1.5rem 0 2rem 0;
+    }
+}
+
+/* ==================== CARTE DESTINATION ==================== */
+.card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Effet hover sur la carte */
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Animation d'apparition des cartes */
+.card {
+    animation: fadeInUp 0.6s ease-out backwards;
+}
+
+/* Délai d'animation pour chaque carte (effet cascade) */
+.card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.card:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.card:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================== IMAGE DE LA DESTINATION ==================== */
+.card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.card:hover img {
+    transform: scale(1.1);
+}
+
+/* ==================== CONTENU DE LA CARTE ==================== */
+.card h3 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin: 1rem 1.25rem 0.5rem 1.25rem;
+    font-weight: 600;
+}
+
+.card p {
+    color: #7f8c8d;
+    margin: 0.5rem 1.25rem;
+    font-size: 1rem;
+}
+
+/* Prix en gras et avec couleur spéciale */
+.card p:last-of-type {
+    font-weight: 600;
+    color: #e74c3c;
+    font-size: 1.1rem;
+    margin-bottom: 1.25rem;
+}
+
+/* ==================== BOUTON DÉCOUVRIR ==================== */
+.btn-discover {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    margin: 0 1.25rem 1.25rem 1.25rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-discover:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    transform: translateX(4px);
+}
+
+/* Icône flèche */
+.btn-discover i {
+    margin-left: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-discover:hover i {
+    transform: translateX(4px);
+}
+
+/* ==================== VARIANTE : BOUTON ALTERNATIF ==================== */
+/* Si vous préférez un bouton plus sobre, remplacez .btn-discover par : */
+.btn-discover-alt {
+    display: inline-block;
+    background: #3498db;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    margin: 0 1.25rem 1.25rem 1.25rem;
+    transition: all 0.3s ease;
+    border: 2px solid #3498db;
+}
+
+.btn-discover-alt:hover {
+    background: transparent;
+    color: #3498db;
+    transform: translateY(-2px);
+}
+
+/* ==================== ÉTAT VIDE (PAS DE RÉSULTATS) ==================== */
+.no-results {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #7f8c8d;
+    font-size: 1.2rem;
+}
+
+.no-results i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* ==================== BADGE POPULAIRE (OPTIONNEL) ==================== */
+/* Ajoutez cette classe si vous voulez un badge "Populaire" */
+.card.popular::before {
+    content: '⭐ Populaire';
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #f39c12;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+button {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+button.active {
+    background-color: #6d28d9;
+    color: white;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

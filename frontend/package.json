@@ -1,0 +1,59 @@
+{
+  "name": "pfa",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "serve:ssr:pfa": "node dist/pfa/server/server.mjs"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
+  "private": true,
+  "packageManager": "pnpm@10.26.2",
+  "dependencies": {
+    "@angular/common": "^21.0.0",
+    "@angular/compiler": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@angular/forms": "^21.0.0",
+    "@angular/platform-browser": "^21.0.0",
+    "@angular/platform-server": "^21.0.0",
+    "@angular/router": "^21.0.0",
+    "@angular/ssr": "^21.0.4",
+    "animate.css": "^4.1.1",
+    "bootstrap": "^5.3.8",
+    "express": "^5.1.0",
+    "hover.css": "^2.3.2",
+    "jquery": "^3.7.1",
+    "owl.carousel": "^2.3.4",
+    "popper.js": "^1.16.1",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.0.4",
+    "@angular/cli": "^21.0.4",
+    "@angular/compiler-cli": "^21.0.0",
+    "@types/express": "^5.0.1",
+    "@types/jquery": "^3.5.33",
+    "@types/node": "^20.17.19",
+    "autoprefixer": "^10.4.18",
+    "jsdom": "^27.1.0",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.0",
+    "typescript": "~5.9.2",
+    "vitest": "^4.0.8"
+  }
+}
