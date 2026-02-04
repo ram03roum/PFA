@@ -5,14 +5,26 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
+from routes.auth import auth_bp  # On importe le blueprint du fichier auth.py
+
 
 # --- CHARGEMENT DU .ENV ---
 # On remonte d'un dossier (..) car app.py est dans /backend
 load_dotenv(os.path.join(os.path.dirname(__file__), '../.env'))
 
 app = Flask(__name__)
-CORS(app)
+# Autorise explicitement ton Angular local
+# CORS(app, resources={r"/*": {
+#     "origins": ["http://localhost:4200"],
+#     "methods": ["GET", "POST", "OPTIONS"],
+#     "allow_headers": ["Content-Type", "Authorization"]
+# }})
 
+
+# On "enregistre" le blueprint dans l'application Flask
+app.register_blueprint(auth_bp)  # Maintenant Flask sait que /register et /login existent
+
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 # --- CONFIGURATION DYNAMIQUE ---
 # On récupère les infos du .env ou on met une valeur par défaut
 DB_USER = os.getenv('DB_USER')
@@ -96,45 +108,7 @@ def get_destination_detail(dest_id):
     else:
         return jsonify({"error": "Destination not found"}), 404
 
-@app.route('/register', methods=['POST'])
-def register():
-    data = request.get_json()
-    name = data.get('name')
-    email = data.get('email')
-    password = data.get('password')
 
-    if not name or not email or not password:
-        return jsonify({'error': 'Tous les champs sont requis'}), 400
-
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:    
-        return jsonify({"message": "Email déjà utilisé"}), 400
-    
-    hashed_pw = generate_password_hash(password)
-    user = User(email=email, password=hashed_pw, name=name)
-
-    db.session.add(user)
-    db.session.commit()
-    return jsonify({"message": "Inscription réussie"}), 201
-
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
-
-    if not email or not password:
-        return jsonify({'error': 'Email et mot de passe requis'}), 400
-
-    user = User.query.filter_by(email=email).first()
-
-    if user and user.check_password(password):
-        return jsonify({
-            'message': 'Login successful',
-            'user': {'id': user.id, 'name': user.name, 'email': user.email}
-        }), 200
-    else:
-        return jsonify({"message": "Email ou mot de passe incorrect"}), 401
 
 if __name__ == '__main__':
     app.run(debug=True)
