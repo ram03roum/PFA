@@ -4,3 +4,5 @@ Flask-Migrate
 Flask-Cors
 PyMySQL
 Werkzeug
+python-dotenv
+flask-jwt-extended

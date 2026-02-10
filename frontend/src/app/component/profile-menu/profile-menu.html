@@ -1,0 +1,49 @@
+<div class="menu-container">
+  <button class="profile-trigger" (click)="toggleMenu()">
+    <div class="avatar-ring" [class.active]="open">
+    
+    @if (user) {
+        {{ user.name?.charAt(0).toUpperCase() }}
+      } @else {
+        <ng-container *ngTemplateOutlet="guestTemplate"></ng-container>
+    
+
+      <ng-template #guestTemplate>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="8" r="4"/>
+        </svg>
+      </ng-template>
+    }
+    </div>
+    
+    
+    <span *ngIf="user" class="online-status"></span>
+  </button>
+
+  <div *ngIf="open" class="dropdown-card">
+    
+    <div *ngIf="user" class="user-info-header">
+      <div class="avatar-circle-small">{{ user.name?.charAt(0).toUpperCase() }}</div>
+      <div class="text-group">
+        <span class="name">{{ user.name }}</span>
+        <span class="email">{{ user.email }}</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="menu-links">
+      <ng-container *ngIf="user; else guestLinks">
+        <button class="menu-row"><span class="icon">👤</span> Mon Profil</button>
+        <button class="menu-row"><span class="icon">📅</span> Mes Réservations</button>
+        <button class="menu-row" (click)="logout()"><span class="icon text-red">🚪</span> Déconnexion</button>
+      </ng-container>
+
+      <ng-template #guestLinks>
+        <button class="menu-row" routerLink="/login"><span class="icon">🔑</span> Se connecter</button>
+        <button class="menu-row" routerLink="/signup"><span class="icon">📝</span> S'inscrire</button>
+      </ng-template>
+    </div>
+  </div>
+</div>

@@ -9,8 +9,8 @@ import { DestinationsPageComponent } from './pages/destinations-page/destination
 import { DestinationDetail } from './pages/destination-detail/destination-detail';
 import { LoginComponent } from './pages/login/login';
 import { SignupComponent } from './pages/signup/signup';
-import { DestinationsComponent } from './component/destinations/destinations';
-
+import { DashboardComponent } from './component/dashboard/dashboard';
+import { AdminLayoutComponent } from './pages/admindash/admindash';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -23,5 +23,6 @@ export const routes: Routes = [
   { path: 'about', component: About },
   { path: 'contact', component: ContactComponent },
   { path: 'blog', component: BlogPage },
+  { path: 'admin', component: AdminLayoutComponent },
   { path: '**', redirectTo: '' }
 ];
