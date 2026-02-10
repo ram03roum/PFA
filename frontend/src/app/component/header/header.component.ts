@@ -1,18 +1,22 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { ProfileMenuComponent } from '../profile-menu/profile-menu';
+import { AuthService } from '../../services/AuthService';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.html',
   standalone: true,  
-  imports: [CommonModule, RouterModule], 
+  imports: [CommonModule, RouterModule, ProfileMenuComponent], 
   styleUrls: ['./header.css']
 })
+
 export class HeaderComponent implements OnInit {
   isMenuCollapsed = true;
 
-  constructor() { }
+  constructor(public authService: AuthService) { 
+  }
 
   ngOnInit(): void {
   }

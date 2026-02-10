@@ -1,6 +1,6 @@
 import { Component, OnInit , Inject, PLATFORM_ID } from '@angular/core';
-import { DataService } from '../../services/data.service';
 import { CommonModule } from '@angular/common';
+import { DataService } from '../../services/data.service';
 import { RouterLink } from '@angular/router'; // 1. Importe ceci
 import { ChangeDetectorRef } from '@angular/core'; // 2. Importez ChangeDetectorRef
 @Component({

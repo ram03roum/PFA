@@ -1,0 +1,38 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+  <!-- Header -->
+  <div class="sidebar-header">
+    <div *ngIf="!collapsed" class="logo-section">
+      <div class="logo">🌐</div>
+      <span class="logo-text">Travelly</span>
+    </div>
+    <button class="collapse-btn" (click)="onToggle()">
+      {{ collapsed ? '›' : '‹' }}
+    </button>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <button
+      *ngFor="let item of navItems"
+      [class.active]="activeSection === item.id"
+      class="nav-item"
+      (click)="onNavClick(item.id)"
+    >
+      <span class="nav-icon">{{ item.icon }}</span>
+      <span *ngIf="!collapsed" class="nav-label">{{ item.label }}</span>
+      <span *ngIf="!collapsed && item.badge" class="nav-badge">
+        {{ item.badge }}
+      </span>
+    </button>
+  </nav>
+
+  <!-- Footer -->
+  <div *ngIf="!collapsed" class="sidebar-footer">
+    <div class="admin-avatar">OB</div>
+    <div class="admin-info">
+      <div class="admin-name">Omar Benali</div>
+      <div class="admin-role">Administrateur</div>
+    </div>
+    <span class="online-dot">●</span>
+  </div>
+</aside>

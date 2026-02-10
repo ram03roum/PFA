@@ -1,0 +1,31 @@
+<header class="navbar">
+  <div class="navbar-left">
+    <h1 class="page-title">
+      <span class="page-icon">{{ pageIcon }}</span>
+      {{ pageTitle }}
+    </h1>
+  </div>
+
+  <div class="navbar-right">
+    <!-- Search Box -->
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        placeholder="Rechercher..."
+        class="search-input"
+      />
+    </div>
+
+    <!-- Notifications -->
+    <button class="notif-btn">
+      🔔
+      <span class="notif-badge">5</span>
+    </button>
+
+    <!-- User Avatar -->
+    <div class="user-avatar" (click)="onLogout()">OB</div>
+  </div>
+</header>
