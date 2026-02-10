@@ -15,18 +15,17 @@
           class="text-gray-700 hover:text-purple-600 transition font-medium">Packages</a>
         <a routerLink="/about" routerLinkActive="text-purple-600"
           class="text-gray-700 hover:text-purple-600 transition font-medium">À Propos</a>
-        <a routerLink="/blog" routerLinkActive="text-purple-600"
-          class="text-gray-700 hover:text-purple-600 transition font-medium">Blog</a>
         <a routerLink="/contact" routerLinkActive="text-purple-600"
           class="text-gray-700 hover:text-purple-600 transition font-medium">Contact</a>
       </div>
-
-      <div class="flex items-center space-x-4">
-        <button routerLink="/login"
-          class="bg-gradient-to-r from-purple-600 to-purple-800 text-white px-6 py-2 rounded-full hover:opacity-90 transition">
-          Réserver
-        </button>
-      </div>
+    <div class="flex items-center space-x-4">
+      <app-profile-menu></app-profile-menu>
+      @if (authService.isAdmin()) {
+      <button routerLink="/admin" class="btn-admin-special">
+        🛠 Dashboard
+      </button>
+      }
+    </div>
     </div>
   </nav>
 </header>
