@@ -1,0 +1,24 @@
+<!-- src/app/components/admin/layout/admin-layout.component.html -->
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <app-sidebar
+    [collapsed]="sidebarCollapsed"
+    [activeSection]="activeSection"
+    (sectionChange)="onSectionChange($event)"
+    (toggleCollapse)="onToggleCollapse()"
+  ></app-sidebar>
+
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <!-- Navbar -->
+    <app-navbar
+      [pageTitle]="pageTitle"
+      [pageIcon]="pageIcon"
+    ></app-navbar>
+
+    <!-- Page Content (router-outlet) -->
+    <div class="content-area">
+        <app-dashboard></app-dashboard>
+    </div>
+  </div>
+</div>

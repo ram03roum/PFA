@@ -1,0 +1,87 @@
+<div class="dashboard-content">
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!isLoading">
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div *ngFor="let kpi of kpisArray" class="kpi-card">
+        <div class="kpi-row">
+          <div class="kpi-icon" [style.background]="kpi.bg">{{ kpi.icon }}</div>
+          <span class="kpi-label">{{ kpi.title }}</span>
+          <!-- <span class="kpi-badge" [class.up]="kpi.up" [class.down]="!kpi.up">
+            {{ kpi.up ? '↑' : '↓' }} {{ kpi.change }}
+          </span> -->
+        </div>
+          <div class="kpi-value">{{ kpi.value }}</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3>Stats Mensuelles</h3>
+        <div class="stats-list">
+          <div *ngFor="let stat of monthlyStats" class="stat-item">
+            <span>{{ stat.month }}</span>
+            <span>{{ stat.bookings }} rés</span>
+            <span>{{ stat.revenue }} TND</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Destinations</h3>
+        <div *ngFor="let dest of destinationsStats" class="dest-row">
+          <span>{{ dest.name }}</span>
+          <span>{{ dest.value }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Réservations -->
+    <div class="card">
+      <h3>Dernières Réservations</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Destination</th>
+            <th>Dates</th>
+            <th>Montant</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let res of recentReservations">
+            <td>{{ res.client }}</td>
+            <td>{{ res.destination }}</td>
+            <td>{{ res.dates }}</td>
+            <td class="amount">{{ res.amount }} TND</td>
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(res.status)">
+                {{ res.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Logs -->
+    <div class="card">
+      <h3>Activités Récentes</h3>
+      <div *ngFor="let log of activityLogs" class="log-item">
+        <span class="log-time">{{ log.created_at }}</span>
+        <div class="log-content">
+          <div>{{ log.action }}</div>
+          <small>{{ log.user }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

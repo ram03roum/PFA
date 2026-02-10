@@ -42,7 +42,7 @@ export class SignupComponent {
             password: this.password
         };
 
-        this.authService.register(userData).subscribe({
+        this.authService.register(this.name, this.email, this.password).subscribe({
             next: (response) => {
                 console.log('Inscription réussie', response);
                 alert('Compte créé avec succès ! Connectez-vous.');
