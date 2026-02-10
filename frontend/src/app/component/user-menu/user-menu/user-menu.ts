@@ -15,11 +15,17 @@ export class UserMenuComponent {
   auth = inject(AuthService);
 
   isOpen = false;
+  isLoggedIn$ = this.auth.isLoggedIn$;
+
 
   toggleMenu() { this.isOpen = !this.isOpen; }
 
   logout() {
     this.auth.logout();
     this.isOpen = false;
+    localStorage.removeItem('token'); // Supprime le jeton
+    localStorage.removeItem('favorites'); // Supprime l'ancienne liste de favoris
+    // this.favorites = new Set(); // Vide la variable dans votre composant
+    // this.router.navigate(['/login']);
   }
 }

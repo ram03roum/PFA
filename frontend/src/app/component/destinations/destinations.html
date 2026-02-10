@@ -1,5 +1,4 @@
 <div class="min-h-screen bg-gray-50">
-  <!-- Hero Section -->
   <section class="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-20">
     <div class="container mx-auto px-6 text-center">
       <h1 class="text-5xl font-bold mb-4">Nos Destinations</h1>
@@ -7,23 +6,45 @@
     </div>
   </section>
 
-  <!-- Destinations Grid -->
   <section class="py-20">
     <div class="container mx-auto px-6">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Destination Card -->
-        <div *ngFor="let destination of destinations" class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition cursor-pointer" (click)="goToDetail(destination.id)">
-          <img [src]="destination.image" [alt]="destination.name" class="w-full h-64 object-cover">
+
+        <div *ngFor="let destination of destinations"
+          class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition relative">
+
+          <!-- Cœur favoris -->
+          <button
+            class="absolute top-4 right-4 z-50 bg-white rounded-full p-2 shadow-md hover:scale-110 transition-transform"
+            (click)="toggleFavorite(destination.id)">
+            <svg width="28" height="28" viewBox="0 0 24 24">
+              <path
+                d="M20.8 4.6c-1.8-1.8-4.7-1.8-6.5 0L12 6.9l-2.3-2.3c-1.8-1.8-4.7-1.8-6.5 0s-1.8 4.7 0 6.5L12 21l8.8-8.8c1.8-1.8 1.8-4.7 0-6.6z"
+                [attr.fill]="checkIfFavorite(destination.id) ? 'red' : 'none'"
+                [attr.stroke]="checkIfFavorite(destination.id) ? 'red' : 'gray'" stroke-width="2" />
+            </svg>
+          </button>
+
+          <div class="relative">
+            <img [src]="destination.image" [alt]="destination.name" class="w-full h-64 object-cover cursor-pointer"
+              (click)="goToDetail(destination.id)">
+          </div>
+
           <div class="p-6">
-            <h3 class="text-2xl font-bold mb-2">{{ destination.name }}</h3>
-            <p class="text-gray-600 mb-4">{{ destination.description }}</p>
+            <div class="cursor-pointer" (click)="goToDetail(destination.id)">
+              <h3 class="text-2xl font-bold mb-2">{{ destination.name }}</h3>
+              <p class="text-gray-600 mb-4">{{ destination.description }}</p>
+            </div>
+
             <div class="flex items-center justify-between">
               <span class="text-purple-600 font-bold">À partir de {{ destination.price }}€</span>
-              <button class="bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700 transition">
-                Découvrir
+              <button (click)="goToDetail(destination.id)"
+                class="bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700 transition">
+                Voir plus
               </button>
             </div>
           </div>
+
         </div>
       </div>
     </div>

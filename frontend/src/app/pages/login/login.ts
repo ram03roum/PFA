@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { ValidationService } from '../../services/validation';
 import { AuthService } from '../../services/auth'; // ✅ Importe ton AuthService
+import { FavoritesService } from '../../services/favorites.service';
 
 @Component({
     selector: 'app-login',
@@ -18,12 +19,16 @@ export class LoginComponent {
     emailError: string = '';
     passwordError: string = '';
     serverError: string = ''; // ✅ Pour afficher les erreurs du backend (ex: mauvais mdp)
+    token = localStorage.getItem('token') || '';
+
 
     // Utilisation de inject() pour la modernité ou conservation du constructeur
     constructor(
         private validationService: ValidationService,
         private router: Router,
-        private authService: AuthService // ✅ Injecte le service ici
+        private authService: AuthService,// ✅ Injecte le service ici
+        private favoritesService: FavoritesService // ✅ AJOUT
+
     ) { }
 
     validateEmail() {
@@ -48,14 +53,22 @@ export class LoginComponent {
         this.authService.login({ email: this.email, password: this.password }).subscribe({
             next: (response) => {
                 console.log('Connexion réussie !', response);
-                // On redirige vers la racine (ou /home)
-                // Le Header changera automatiquement car il observe le Signal dans AuthService
-                this.router.navigate(['/']);
-            },
-            error: (err) => {
-                // On récupère le message d'erreur envoyé par Flask (ex: "Email ou mot de passe incorrect")
-                this.serverError = err.error?.message || 'Une erreur est survenue lors de la connexion';
-                console.error('Erreur login:', err);
+
+                // ✅ Charger les données depuis la base
+                //subscribe: lorsque les donnes youslu ekhdem l code eli fi next 
+                this.favoritesService.getFavorites(this.token).subscribe({
+                    next: (data) => {
+                        console.table(data); // Affiche un joli tableau dans la console
+                        this.favoritesService.setFavorites(data); // stockage en mémoire
+                        // console.log(this.favoritesService.setFavorites(data));
+                        this.router.navigate(['/']); // navigation APRÈS chargement
+                    },
+                    error: (err) => {
+                        // On récupère le message d'erreur envoyé par Flask (ex: "Email ou mot de passe incorrect")
+                        this.serverError = err.error?.message || 'Une erreur est survenue lors de la connexion';
+                        console.error('Erreur login:', err);
+                    }
+                });
             }
         });
     }

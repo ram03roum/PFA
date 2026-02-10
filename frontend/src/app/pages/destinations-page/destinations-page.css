@@ -297,3 +297,45 @@ button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+
+.favorite-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 50;
+
+    /* Style */
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(0, 0, 0, 0.05);
+
+    /* Layout */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Interaction */
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+/* Hover effect */
+.favorite-btn:hover {
+    transform: scale(1.1);
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.2),
+        0 0 0 2px rgba(255, 105, 180, 0.3);
+}
+
+/* Active (au clic) */
+.favorite-btn:active {
+    transform: scale(0.95);
+}
