@@ -2,7 +2,6 @@
 <div class="py-1">
     <!-- Menu utilisateur uniquement si connecté -->
     <div *ngIf="auth.currentUser()" class="relative inline-block text-left">
-
         <!-- Bouton avatar -->
         <button (click)="toggleMenu()" type="button"
             class="flex items-center gap-2 p-2 rounded-full hover:bg-gray-100 transition-all focus:outline-none">

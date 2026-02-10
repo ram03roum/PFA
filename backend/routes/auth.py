@@ -1,7 +1,9 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import get_db_connection  # <-- import propre
-
+# --- AJOUTE CET IMPORT ---
+from flask_jwt_extended import create_access_token
+# Un Blueprint = un module pour regrouper des routes Flask
 auth_bp = Blueprint('auth', __name__)
 
 # --- ROUTE INSCRIPTION ---
@@ -46,6 +48,8 @@ def register():
         "message": "Inscription réussie",
         "user": {"id": user_id, "name": name, "email": email}
     }), 201
+    
+    
 
 # --- ROUTE LOGIN ---
 @auth_bp.route('/login', methods=['POST'])
@@ -66,8 +70,13 @@ def login():
 
     if not user or not check_password_hash(user['password'], password):
         return jsonify({'error': 'Email ou mot de passe incorrect'}), 401
+   
+    # On crée le token en utilisant l'ID de l'utilisateur (converti en string)
+    # récupérer token
+    access_token = create_access_token(identity=str(user['id']))
 
     return jsonify({
         "message": f"Bienvenue {user['name']} !",
+        "access_token": access_token, # On renvoie le token au frontend
         "user": {"id": user['id'], "name": user['name'], "email": user['email']}
     }), 200

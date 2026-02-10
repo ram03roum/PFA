@@ -1,0 +1,11 @@
+button svg {
+    transition: transform 0.2s ease, fill 0.2s ease;
+}
+
+button:hover svg {
+    transform: scale(1.2);
+}
+
+.absolute {
+    position: absolute;
+}

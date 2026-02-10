@@ -10,12 +10,28 @@
 
 } @else {
 
-<!-- 🌍 Grille des destinations -->
 <div class="destinations-grid">
 
   @for (d of paginatedDestinations; track d.id) {
 
   <div class="card">
+
+    <!-- ❤️ Bouton simple avec emoji -->
+    <button class="favorite-btn" [class.is-favorite]="checkIfFavorite(d.id)"
+      (click)="toggleFavorite(d.id); $event.stopPropagation()" type="button"
+      [attr.aria-label]="checkIfFavorite(d.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'">
+
+      <svg class="heart-icon" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path class="heart-path"
+          d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+          [attr.fill]="checkIfFavorite(d.id) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+
+      <!-- Ripple effect au clic -->
+      <span class="ripple"></span>
+    </button>
+
     <img [src]="d.image" [alt]="d.name" loading="lazy" class="destination-image" />
 
     <div class="card-content">
@@ -30,8 +46,10 @@
   </div>
 
   }
-
 </div>
+
+}
+
 
 <!-- 📄 Pagination -->
 <div class="pagination">
@@ -51,5 +69,3 @@
   </button>
 
 </div>
-
-}

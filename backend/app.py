@@ -6,6 +6,9 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from routes.auth import auth_bp  # On importe le blueprint du fichier auth.py
+from routes.favorites import favorites_bp
+from flask_jwt_extended import JWTManager
+
 
 
 # --- CHARGEMENT DU .ENV ---
@@ -13,18 +16,29 @@ from routes.auth import auth_bp  # On importe le blueprint du fichier auth.py
 load_dotenv(os.path.join(os.path.dirname(__file__), '../.env'))
 
 app = Flask(__name__)
-# Autorise explicitement ton Angular local
-# CORS(app, resources={r"/*": {
-#     "origins": ["http://localhost:4200"],
-#     "methods": ["GET", "POST", "OPTIONS"],
-#     "allow_headers": ["Content-Type", "Authorization"]
-# }})
+
+# C'est ICI qu'on définit la config, pas dans le blueprint
+# app.config["JWT_SECRET_KEY"] = "ton_secret_key_super_secure"
+
+# Permet au navigateur de faire ses vérifications de sécurité sans token
+app.config["JWT_SECRET_KEY"] = os.getenv('SECRET_KEY') # Utilisez votre clé secrète
+app.config["JWT_OPTIONS_ARE_TOKEN_REQUIRED"] = False
+# On initialise le manager JWT avec l'app
+jwt = JWTManager(app)
+
+
+# Configurez CORS pour accepter l'origine Angular et les headers d'authentification
+CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}}, 
+     supports_credentials=True,
+    #  Sans allow_headers=["Authorization"], le navigateur refuse d'envoyer votre token JWT.
+     allow_headers=["Content-Type", "Authorization"])
 
 
 # On "enregistre" le blueprint dans l'application Flask
 app.register_blueprint(auth_bp)  # Maintenant Flask sait que /register et /login existent
+app.register_blueprint(favorites_bp)  # On "branche" le blueprint sur l'application
 
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+
 # --- CONFIGURATION DYNAMIQUE ---
 # On récupère les infos du .env ou on met une valeur par défaut
 DB_USER = os.getenv('DB_USER')
