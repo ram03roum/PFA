@@ -11,8 +11,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         Authorization: `Bearer ${token}` // C'est ici que le "Missing Authorization Header" se règle
       }
     });
+    console.log('Header Authorization ajouté');
     return next(authReq);
+
   }
+  console.log('Aucun token trouvé, requête sans Authorization');
 
   // 3. Si pas de token (ex: page login), on laisse passer la requête normale
   return next(req);

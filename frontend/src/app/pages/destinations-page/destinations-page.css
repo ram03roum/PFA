@@ -18,6 +18,7 @@ h1 {
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -42,9 +43,12 @@ h1 {
 
 /* Animation du texte de chargement */
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.6;
   }
+
   50% {
     opacity: 1;
   }
@@ -84,7 +88,7 @@ h1 {
     gap: 1.5rem;
     padding: 0 1rem;
   }
-  
+
   h1 {
     font-size: 2rem;
   }
@@ -96,7 +100,7 @@ h1 {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   h1 {
     font-size: 1.75rem;
     margin: 1.5rem 0 2rem 0;
@@ -126,18 +130,36 @@ h1 {
 }
 
 /* Délai d'animation pour chaque carte (effet cascade) */
-.card:nth-child(1) { animation-delay: 0.1s; }
-.card:nth-child(2) { animation-delay: 0.2s; }
-.card:nth-child(3) { animation-delay: 0.3s; }
-.card:nth-child(4) { animation-delay: 0.4s; }
-.card:nth-child(5) { animation-delay: 0.5s; }
-.card:nth-child(6) { animation-delay: 0.6s; }
+.card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.card:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.card:nth-child(6) {
+  animation-delay: 0.6s;
+}
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -274,4 +296,46 @@ button.active {
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+
+.favorite-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 50;
+
+  /* Style */
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Interaction */
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+/* Hover effect */
+.favorite-btn:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.2),
+    0 0 0 2px rgba(255, 105, 180, 0.3);
+}
+
+/* Active (au clic) */
+.favorite-btn:active {
+  transform: scale(0.95);
 }

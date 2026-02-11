@@ -42,16 +42,15 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
-# venv folder
+# Python Virtual Environment
 backend/venv/
+backend/.venv/
 venv/
 __pycache__/
 *.pyc
 
 
-<<<<<<< HEAD
 .env
-=======
 frontend/.angular/cache/21.0.4/pfa/vite/deps/chunk-2PV23YZM.js
         frontend/.angular/cache/21.0.4/pfa/vite/deps/chunk-2PV23YZM.js.map
         frontend/.angular/cache/21.0.4/pfa/vite/deps/chunk-J6X2EDVQ.js
@@ -295,4 +294,19 @@ frontend/.angular/cache/21.0.4/pfa/vite/deps/chunk-2PV23YZM.js
         frontend/node_modules/zod/v4/locales/uz.d.cts     
         frontend/node_modules/zod/v4/locales/uz.d.ts      
         frontend/node_modules/zod/v4/locales/uz.js  
->>>>>>> dcba0309e63e061c9f2bc4d010823f0a17248a0f
+# Angular
+.angular/
+dist/
+node_modules/
+
+# Cache Angular
+.angular/
+frontend/.angular/
+
+# Dépendances (très important de ne pas les commit)
+node_modules/
+backend/venv/
+
+# Fichiers de build
+dist/
+

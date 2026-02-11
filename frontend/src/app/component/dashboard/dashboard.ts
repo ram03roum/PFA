@@ -19,26 +19,34 @@ export class DashboardComponent implements OnInit {
   recentReservations: any[] = [];
   isLoading = true;
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(private dashboardService: DashboardService
+
+  ) { }
 
   // ngOnInit(): void {
   //   this.loadDashboardData();
   // }
   ngOnInit(): void {
-    this.isLoading = true; 
+    // console.log('1. DEBUT - isLoading =', this.isLoading);
+    this.isLoading = true;
     this.dashboardService.getDashboardData().pipe(
-        finalize(() => {
-          this.isLoading = false; // S'exécutera TOUJOURS (Succès ou Erreur)
-        })
-      ).subscribe({
+      finalize(() => {
+        // console.log(this.isLoading)
+        this.isLoading = false;
+        // S'exécutera TOUJOURS (Succès ou Erreur)
+        // console.log(this.isLoading)
+      })
+    ).subscribe({
       next: (data) => {
+        console.log('2. DATA REÇUE:', data);
+        // console.log(data);
         // On transforme les données Flask pour le format de votre HTML
         this.formatKpis(data.kpis);
         this.monthlyStats = data.revenue;
         this.destinationsStats = data.destinations;
         this.recentReservations = data.reservations;
         this.activityLogs = data.logs;
-        
+
       },
       error: (err) => {
         console.error("Erreur Backend Flask:", err);
@@ -48,9 +56,9 @@ export class DashboardComponent implements OnInit {
   }
   formatKpis(kpis: any) {
     this.kpisArray = [
-      { title: 'Réservations', value: kpis.totalReservations, icon: '✈️', bg: '#eef2ff'},
+      { title: 'Réservations', value: kpis.totalReservations, icon: '✈️', bg: '#eef2ff' },
       { title: 'Revenus', value: kpis.totalRevenue + ' TND', icon: '💰', bg: '#ecfdf5' },
-      { title: 'Clients Fidèles', value: kpis.loyalClients, icon: '⭐', bg: '#f5f3ff'},
+      { title: 'Clients Fidèles', value: kpis.loyalClients, icon: '⭐', bg: '#f5f3ff' },
       { title: 'Annulations', value: kpis.cancellationRate + '%', icon: '📉', bg: '#fef2f2' }
     ];
   }

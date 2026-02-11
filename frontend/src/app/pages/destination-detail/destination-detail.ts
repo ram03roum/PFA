@@ -8,18 +8,18 @@ import { DataService } from '../../services/data.service';
 @Component({
   selector: 'app-destination-detail',
   standalone: true,
-  imports: [CommonModule,RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './destination-detail.html',
 })
 export class DestinationDetail implements OnInit {
 
- loading: boolean = true; // Pour afficher un état de chargement
+  loading: boolean = true; // Pour afficher un état de chargement
   destination: any = null;
   constructor(private route: ActivatedRoute,
-    private http: HttpClient ,// Injectez le service HttpClient
+    private http: HttpClient,// Injectez le service HttpClient
     private cdr: ChangeDetectorRef, // Injecte le détecteur de changement
     private dataService: DataService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Écoute les changements d'ID dans l'URL
@@ -33,7 +33,7 @@ export class DestinationDetail implements OnInit {
 
   loadDetail(id: string): void {
     this.loading = true;
-     this.destination = null;// Réinitialise la destination avant de charger une nouvelle
+    this.destination = null;// Réinitialise la destination avant de charger une nouvelle
     this.dataService.getDestinationById(id).subscribe({
       next: (data) => {
         // Comme ton Flask renvoie Array(1), on prend le premier élément

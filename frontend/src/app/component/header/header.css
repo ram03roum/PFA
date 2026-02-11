@@ -28,7 +28,7 @@
   text-transform: uppercase;
   font-weight: 500;
   padding: 10px 15px;
-  
+
   cursor: pointer;
   transition: color 0.3s ease;
 }
@@ -66,8 +66,9 @@
   color: var(--dark-color);
 }
 
-.navbar-toggler:focus {
+/* .navbar-toggler:focus {
   outline: none;
+<<<<<<< HEAD
 }
 
 
@@ -83,4 +84,6 @@
 
 .btn-admin-special:hover {
   background-color: #e74c3c;
-}
+=======
+>>>>>>> yasmine
+} */
