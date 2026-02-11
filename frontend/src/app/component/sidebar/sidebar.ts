@@ -10,7 +10,7 @@ interface NavItem {
   icon: string;
   badge?: number;
   route: string;
-  
+
 }
 
 @Component({
@@ -25,10 +25,10 @@ export class SidebarComponent {
   @Input() activeSection = 'admin';
   @Output() sectionChange = new EventEmitter<string>();
   @Output() toggleCollapse = new EventEmitter<void>();
-  
+
   constructor(private router: Router,
     public authService: AuthService
-  ) {}
+  ) { }
 
   navItems: NavItem[] = [
     { id: 'home', label: 'Home', icon: '🏠', route: '/home' },
@@ -44,11 +44,11 @@ export class SidebarComponent {
     this.toggleCollapse.emit();
   }
 
-onNavClick(itemId: string) {
-  const item = this.navItems.find(i => i.id === itemId);
-  if (!item) return;
+  onNavClick(itemId: string) {
+    const item = this.navItems.find(i => i.id === itemId);
+    if (!item) return;
 
-  this.activeSection = itemId;
-  this.router.navigate([item.route]);
-}
+    this.activeSection = itemId;
+    this.router.navigate([item.route]);
+  }
 }

@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { forkJoin, Observable } from 'rxjs';
-import { AuthService } from './AuthService';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   private apiUrl = 'http://127.0.0.1:5000/dashboard'; // Votre route Flask
 
-  constructor(private http: HttpClient) {}
-/**
-   * Cette méthode combine tous les appels vers Flask en un seul flux
-   */
+  constructor(private http: HttpClient) { }
+  /**
+     * Cette méthode combine tous les appels vers Flask en un seul flux
+     */
   getDashboardData(): Observable<any> {
     // On ajoute this.getHeaders() à chaque appel pour que Flask reçoive le token
     const headers = this.getHeaders();
@@ -41,6 +40,6 @@ export class DashboardService {
   getActivityLogs(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/activity-logs`, this.getHeaders());
   }
-  
+
 
 }

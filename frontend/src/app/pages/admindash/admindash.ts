@@ -9,7 +9,7 @@ import { DashboardComponent } from '../../component/dashboard/dashboard';
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, SidebarComponent, NavbarComponent,DashboardComponent],
+  imports: [CommonModule, RouterModule, SidebarComponent, NavbarComponent, DashboardComponent],
   templateUrl: './admindash.html',
   styleUrls: ['./admindash.css']
 })

@@ -4,68 +4,68 @@
 
 @if (chargement) {
 
-  <div class="spinner">
-    <p>Chargement en cours...</p>
-  </div>
+<div class="spinner">
+  <p>Chargement en cours...</p>
+</div>
 
 } @else {
 
-  <!-- 🌍 Grille des destinations -->
-  <div class="destinations-grid">
+<div class="destinations-grid">
 
-    @for (d of paginatedDestinations; track d.id) {
+  @for (d of paginatedDestinations; track d.id) {
 
-      <div class="card">
-        <img
-          [src]="d.image"
-          [alt]="d.name"
-          loading="lazy"
-          class="destination-image"
-        />
+  <div class="card">
 
-        <div class="card-content">
-          <h3>{{ d.name }}</h3>
-          <p class="country">{{ d.country }}</p>
-          <p class="price">Prix : {{ d.price }} $</p>
+    <!-- ❤️ Bouton simple avec emoji -->
+    <button class="favorite-btn" [class.is-favorite]="checkIfFavorite(d.id)"
+      (click)="toggleFavorite(d.id); $event.stopPropagation()" type="button"
+      [attr.aria-label]="checkIfFavorite(d.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'">
 
-          <a
-            [routerLink]="['/destinations', d.id]"
-            class="btn-discover">
-            Découvrir <i class="fas fa-arrow-right"></i>
-          </a>
-        </div>
-      </div>
+      <svg class="heart-icon" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path class="heart-path"
+          d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+          [attr.fill]="checkIfFavorite(d.id) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
 
-    }
-
-  </div>
-
-  <!-- 📄 Pagination -->
-  <div class="pagination">
-
-    <button
-      class="page-btn"
-      (click)="changePage(currentPage - 1)"
-      [disabled]="currentPage === 1">
-      ⬅️
+      <!-- Ripple effect au clic -->
+      <span class="ripple"></span>
     </button>
 
-    @for (p of [].constructor(totalPages); track $index) {
-      <button
-        class="page-btn"
-        [class.active]="currentPage === $index + 1"
-        (click)="changePage($index + 1)">
-        {{ $index + 1 }}
-      </button>
-    }
+    <img [src]="d.image" [alt]="d.name" loading="lazy" class="destination-image" />
 
-    <button
-      class="page-btn"
-      (click)="changePage(currentPage + 1)"
-      [disabled]="currentPage === totalPages">
-      ➡️
-    </button>
+    <div class="card-content">
+      <h3>{{ d.name }}</h3>
+      <p class="country">{{ d.country }}</p>
+      <p class="price">Prix : {{ d.price }} $</p>
 
+      <a [routerLink]="['/destinations', d.id]" class="btn-discover">
+        Découvrir <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
   </div>
+
+  }
+</div>
 
 }
+
+
+<!-- 📄 Pagination -->
+<div class="pagination">
+
+  <button class="page-btn" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+    ⬅️
+  </button>
+
+  @for (p of [].constructor(totalPages); track $index) {
+  <button class="page-btn" [class.active]="currentPage === $index + 1" (click)="changePage($index + 1)">
+    {{ $index + 1 }}
+  </button>
+  }
+
+  <button class="page-btn" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+    ➡️
+  </button>
+
+</div>

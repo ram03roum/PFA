@@ -17,9 +17,8 @@ export class PackageDetail implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-  
     private packageService: PackageService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));

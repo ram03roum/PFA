@@ -13,10 +13,10 @@ import { AuthService } from '../../services/AuthService';
 export class NavbarComponent {
   @Input() pageTitle = 'Dashboard';
   @Input() pageIcon = '📊';
-  
+
   searchQuery = '';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   onSearch(): void {
     console.log('Recherche:', this.searchQuery);
