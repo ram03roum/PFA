@@ -4,7 +4,6 @@
     <div class="spinner"></div>
     <p>Chargement...</p>
   </div>
-
   <!-- Content -->
   <div *ngIf="!isLoading">
     <!-- KPIs -->
@@ -17,7 +16,7 @@
             {{ kpi.up ? '↑' : '↓' }} {{ kpi.change }}
           </span> -->
         </div>
-          <div class="kpi-value">{{ kpi.value }}</div>
+        <div class="kpi-value">{{ kpi.value }}</div>
       </div>
     </div>
 

@@ -1,29 +1,31 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ProfileMenuComponent } from '../profile-menu/profile-menu';
+import { UserMenuComponent } from '../user-menu/user-menu/user-menu';
 import { AuthService } from '../../services/AuthService';
+
+
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.html',
-  standalone: true,  
-  imports: [CommonModule, RouterModule, ProfileMenuComponent], 
+  standalone: true,
+  imports: [CommonModule, RouterModule, UserMenuComponent],
   styleUrls: ['./header.css']
 })
+
 
 export class HeaderComponent implements OnInit {
   isMenuCollapsed = true;
 
-  constructor(public authService: AuthService) { 
-  }
+
+  constructor(public auth: AuthService) { }
 
   ngOnInit(): void {
   }
 
   toggleMenu(): void {
     this.isMenuCollapsed = !this.isMenuCollapsed;
-    
   }
 
   scrollToSection(sectionId: string): void {

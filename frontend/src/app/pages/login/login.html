@@ -5,25 +5,39 @@
                 <div class="card-body p-5">
                     <h2 class="text-center mb-4 fw-bold">Connexion</h2>
 
-                    <form (ngSubmit)="onSubmit()">
+                    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" [class.is-invalid]="emailError" id="email"
-                                placeholder="Email" [(ngModel)]="email" name="email" (blur)="validateEmail()" required>
+                            <label class="form-label">Email</label>
 
-                            <div *ngIf="emailError" class="text-danger mt-1 small">
-                                {{ emailError }}
+                            <input type="email" class="form-control" formControlName="email"
+                                [class.is-invalid]="email?.invalid && email?.touched">
+
+                            <div class="invalid-feedback" *ngIf="email?.invalid && email?.touched">
+
+                                <div *ngIf="email?.errors?.['required']">
+                                    Email obligatoire
+                                </div>
+
+                                <div *ngIf="email?.errors?.['email']">
+                                    Format email invalide
+                                </div>
+
                             </div>
                         </div>
-
                         <div class="mb-3">
                             <label for="password" class="form-label">Mot de passe</label>
-                            <input type="password" class="form-control" id="password" placeholder="Mot de passe"
-                                [(ngModel)]="password" name="password" required>
-                        </div>
+                            <input type="password" class="form-control" formControlName="password"
+                                [class.is-invalid]="password?.invalid && password?.touched">
 
+                            <div class="invalid-feedback" *ngIf="password?.invalid && password?.touched">
+
+                                <div *ngIf="password?.errors?.['required']">
+                                    Mot de passe obligatoire
+                                </div>
+                            </div>
+                        </div>
                         <div class="d-grid">
-                            <button  type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" class="btn btn-primary btn-lg">
                                 Se connecter
                             </button>
                         </div>

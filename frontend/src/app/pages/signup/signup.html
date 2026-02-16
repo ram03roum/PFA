@@ -5,7 +5,7 @@
                 <div class="card-body p-5">
                     <h2 class="text-center mb-4 fw-bold">Créer un compte</h2>
 
-                    <form (ngSubmit)="onSubmit()">
+                    <form #signupForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
                         <div class="mb-3">
                             <label for="name" class="form-label">Nom complet</label>
                             <input type="text" class="form-control" id="name" placeholder="Nom complet"
@@ -39,7 +39,7 @@
                         </div>
 
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" class="btn btn-primary btn-lg" [disabled]="signupForm.invalid">
                                 S'inscrire
                             </button>
                         </div>

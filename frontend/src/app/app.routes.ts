@@ -11,6 +11,7 @@ import { LoginComponent } from './pages/login/login';
 import { SignupComponent } from './pages/signup/signup';
 import { DashboardComponent } from './component/dashboard/dashboard';
 import { AdminLayoutComponent } from './pages/admindash/admindash';
+import { ReservationFormComponent } from './pages/reservation-form/reservation-form';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -24,5 +25,6 @@ export const routes: Routes = [
   { path: 'contact', component: ContactComponent },
   { path: 'blog', component: BlogPage },
   { path: 'admin', component: AdminLayoutComponent },
+  { path: 'formreservation/:id', component: ReservationFormComponent },
   { path: '**', redirectTo: '' }
 ];

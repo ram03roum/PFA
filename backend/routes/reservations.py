@@ -50,7 +50,7 @@ def get_reservations():
 
 # POST /reservations — créer une réservation
 @reservations_bp.route('/reservations', methods=['POST'])
-# @jwt_required()
+@jwt_required()
 def create_reservation():
     data = request.get_json()
     current_user_id = int(get_jwt_identity())
