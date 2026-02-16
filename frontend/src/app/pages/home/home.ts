@@ -13,7 +13,7 @@ import { DestinationsPageComponent } from '../destinations-page/destinations-pag
 })
 export class HomeComponent {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   exploreNow() {
     this.router.navigate(['/destinations']);

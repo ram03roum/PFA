@@ -18,8 +18,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     reservations = db.relationship('Reservation', backref='user', lazy=True)
-    logs = db.relationship('ActivityLog', backref='user', lazy=True)
-    
+        
     def check_password(self, password):
         return check_password_hash(self.password, password)
     
@@ -72,6 +71,9 @@ class Destination(db.Model):
 class Reservation(db.Model):
     __tablename__ = 'reservations'
     id = db.Column(db.Integer, primary_key=True)
+   
+    # relations
+
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     destination_id = db.Column(db.Integer,db.ForeignKey('destinations.id'),nullable=False)
 
@@ -106,15 +108,17 @@ class Reservation(db.Model):
 
 class ActivityLog(db.Model):
     __tablename__ = 'activity_logs'
-    id          = db.Column(db.Integer, primary_key=True)
-    user_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    action      = db.Column(db.String(255), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    action = db.Column(db.String(255), nullable=False)
     entity_type = db.Column(db.String(100))
         # ex : 'reservation', 'user', 'offer', 'document'
-    entity_id   = db.Column(db.Integer)
-    details     = db.Column(db.Text)
-    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+    entity_id = db.Column(db.Integer)
+    details = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    user = db.relationship('User', backref=db.backref('logs', lazy=True))
+    
     def to_dict(self):
         return {
             'id': self.id,

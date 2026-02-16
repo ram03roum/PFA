@@ -4,8 +4,9 @@ import { HeaderComponent } from './component/header/header.component';
 import { Footer } from './component/footer/footer';
 import { HomeComponent } from "./pages/home/home";
 import { About } from "./pages/about/about";
-import { HeroComponent } from "./component/hero/hero";
 import { DestinationDetail } from './pages/destination-detail/destination-detail';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ReservationFormComponent } from './pages/reservation-form/reservation-form';
 
 @Component({
   selector: 'app-root',
@@ -13,12 +14,13 @@ import { DestinationDetail } from './pages/destination-detail/destination-detail
   imports: [
     RouterOutlet,
     HeaderComponent,
+    ReservationFormComponent,
     Footer,
     DestinationDetail,
     HomeComponent,
     About,
-    HeroComponent
-],
+    ReactiveFormsModule
+  ],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })

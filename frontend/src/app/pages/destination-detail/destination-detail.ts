@@ -5,35 +5,36 @@ import { HttpClientModule } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef } from '@angular/core';
 import { DataService } from '../../services/data.service';
+import { ReservationFormComponent } from '../reservation-form/reservation-form';
 @Component({
   selector: 'app-destination-detail',
   standalone: true,
-  imports: [CommonModule,RouterLink],
+  imports: [CommonModule, RouterLink, ReservationFormComponent],
   templateUrl: './destination-detail.html',
 })
 export class DestinationDetail implements OnInit {
 
- loading: boolean = true; // Pour afficher un état de chargement
+  loading: boolean = true; // Pour afficher un état de chargement
   destination: any = null;
   constructor(private route: ActivatedRoute,
-    private http: HttpClient ,// Injectez le service HttpClient
+    private http: HttpClient,// Injectez le service HttpClient
     private cdr: ChangeDetectorRef, // Injecte le détecteur de changement
     private dataService: DataService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Écoute les changements d'ID dans l'URL
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
-        this.loadDetail(id);
+        this.loadDetail(parseInt(id));
       }
     });
   }
 
-  loadDetail(id: string): void {
+  loadDetail(id: number): void {
     this.loading = true;
-     this.destination = null;// Réinitialise la destination avant de charger une nouvelle
+    this.destination = null;// Réinitialise la destination avant de charger une nouvelle
     this.dataService.getDestinationById(id).subscribe({
       next: (data) => {
         // Comme ton Flask renvoie Array(1), on prend le premier élément

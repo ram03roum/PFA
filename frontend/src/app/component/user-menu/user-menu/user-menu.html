@@ -1,0 +1,47 @@
+<!-- Conteneur général -->
+<div class="py-1">
+    <!-- Menu utilisateur uniquement si connecté -->
+    <div *ngIf="AuthService.currentUser()" class="relative inline-block text-left">
+        <!-- Bouton avatar -->
+        <button (click)="toggleMenu()" type="button"
+            class="flex items-center gap-2 p-2 rounded-full hover:bg-gray-100 transition-all focus:outline-none">
+            @if (AuthService.currentUser(); as user) {
+            <span class="hidden md:block font-medium text-gray-700">
+                {{ user.name }}
+            </span>
+            } <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+
+        <!-- Dropdown menu -->
+        <div *ngIf="isOpen"
+            class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-50 overflow-hidden">
+            <div class="py-1">
+                <a routerLink="/user/profile"
+                    class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition-colors">
+                    Mon Profil
+                </a>
+                <a routerLink="/user/favorites"
+                    class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition-colors">
+                    Mes Favoris
+                </a>
+                <a routerLink="/user/messages"
+                    class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition-colors">
+                    Messages
+                </a>
+
+                <div class="border-t border-gray-100"></div>
+
+                <button (click)="logout()"
+                    class="w-full text-left flex items-center px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                    Déconnexion
+                </button>
+            </div>
+        </div>
+
+        <!-- Backdrop pour fermer le menu -->
+        <div *ngIf="isOpen" (click)="isOpen = false" class="fixed inset-0 z-40"></div>
+
+    </div> <!-- fin menu utilisateur -->
+</div> <!-- fin container général -->

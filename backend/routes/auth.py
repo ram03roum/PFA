@@ -1,15 +1,17 @@
-# routes/auth.py
-from flask import Blueprint, jsonify, request
+
+from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity , get_jwt
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
+from database import get_db_connection  # <-- import propre
 from datetime import datetime
 from extensions import db
 from models import User, ActivityLog
 
+# --- AJOUTE CET IMPORT ---
+# Un Blueprint = un module pour regrouper des routes Flask
 auth_bp = Blueprint('auth', __name__)
 
-
-# POST /register
+# --- ROUTE INSCRIPTION ---
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
