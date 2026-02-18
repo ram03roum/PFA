@@ -18,19 +18,18 @@ export class DestinationsPageComponent implements OnInit {
   currentPage: number = 1;
   itemsPerPage: number = 20;
   favorites = new Set<number>();
-
+  // ✅ On déclare la variable pour que le HTML puisse la voir
+  // On lui assigne l'observable qui vient du service
   token: string | null = null;
-  // if(!this.token) {
-  //   console.error("Utilisateur non connecté !");
-  //   return;
-  // }
+
 
   constructor(
     private dataService: DataService,
-    private favoriteService: FavoritesService, // 2. Injecte le service ici
+    public favoriteService: FavoritesService, // 2. Injecte le service ici
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
+
     // On ne touche au localStorage que si on est côté client (navigateur)
     if (isPlatformBrowser(this.platformId)) {
       this.token = localStorage.getItem('token');
@@ -38,24 +37,31 @@ export class DestinationsPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // On vérifie si on est sur le navigateur pour éviter les erreurs SSR
     if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token'); // Vérifie bien si c'est 'token' ou 'access_token'
+      console.log('Valeur du token récupérée :'); // <--- Ajoute ça ICI
+
+      console.log('Valeur du token récupérée :', token); // <--- Ajoute ça ICI
+      // 1. On s'abonne au flux du service. 
+      // Dès que le service change (clic ou chargement), ce code s'exécute TOUT SEUL.
+      this.favoriteService.favorites$.subscribe(ids => {
+        // On ne fait que lire ici, on ne modifie rien manuellement
+        console.log('Mise à jour visuelle des favoris reçue');
+      });
 
       if (token) {
-        // On récupère les favoris de l'utilisateur actuel via le backend
+        // 2. On demande au serveur les favoris
         this.favoriteService.getFavorites(token).subscribe({
-          next: (favIds: number[]) => {
-            // On remplace les anciens favoris par ceux de l'ID utilisateur connecté
-            this.favorites = new Set(favIds);
-            this.saveToLocalStorage();
+          next: (favIds: any[]) => {
+            // On envoie les données au service pour qu'il remplisse son BehaviorSubject
+            this.favoriteService.setFavorites(favIds);
+            console.log('Favoris chargés depuis le serveur :', favIds);
           },
-          error: (err) => console.error('Erreur de chargement des favoris', err)
+          error: (err) => console.error('Erreur de chargement', err)
         });
       } else {
-        // Si pas de token, on s'assure que la liste est vide pour le nouvel utilisateur
-        this.favorites = new Set();
-        localStorage.removeItem('favorites');
+        // 3. Si pas de token, on vide le service
+        this.favoriteService.setFavorites([]);
       }
 
       this.chargerDestinations();
@@ -101,33 +107,9 @@ export class DestinationsPageComponent implements OnInit {
   //   return;
   // }
 
-  toggleFavorite(destinationId: number): void {
-
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const token = localStorage.getItem('token') || '';
-
-
-      if (this.favorites.has(destinationId)) {
-        // Cas : Retrait du favori
-        this.favoriteService.removeFavorite(destinationId, token).subscribe({
-          next: () => {
-            this.favorites.delete(destinationId);
-            console.log(`Retiré de la BDD : ${destinationId}`);
-          },
-          error: (err) => console.error('Erreur suppression BDD', err)
-        });
-      } else {
-        // Cas : Ajout du favori
-        this.favoriteService.addFavorite(destinationId, token).subscribe({
-          next: (response) => {
-            this.favorites.add(destinationId);
-            this.saveToLocalStorage();
-            console.log('Ajouté à la BDD !', response);
-          },
-          error: (err) => console.error('Erreur ajout BDD', err)
-        });
-      }
-    }
+  toggleFavorite(id: number): void {
+    const token = localStorage.getItem('token') || '';
+    this.favoriteService.toggleFavorite(id, token);
   }
 
   private saveToLocalStorage(): void {
@@ -136,8 +118,9 @@ export class DestinationsPageComponent implements OnInit {
     }
   }
 
-  checkIfFavorite(destinationId: number): boolean {
-    return this.favorites.has(destinationId);
+  // Ta fonction de vérification dans le HTML doit maintenant appeler le SERVICE
+  checkIfFavorite(id: number): boolean {
+    return this.favoriteService.isFavorite(id);
   }
 
   trackDestination = (_: number, item: any) => item.id;

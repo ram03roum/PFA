@@ -1,8 +1,10 @@
 Flask
 Flask-SQLAlchemy
-Flask-Migrate
+Flask-migrate
 Flask-Cors
 PyMySQL
 Werkzeug
 python-dotenv
 flask-jwt-extended
+mysql-connector-python
+python-dotenv
