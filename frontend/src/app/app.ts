@@ -7,6 +7,7 @@ import { About } from "./pages/about/about";
 import { DestinationDetail } from './pages/destination-detail/destination-detail';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ReservationFormComponent } from './pages/reservation-form/reservation-form';
+import { ReservationDashboardComponent } from './component/reservation-dashboard/reservation-dashboard';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,7 @@ import { ReservationFormComponent } from './pages/reservation-form/reservation-f
     RouterOutlet,
     HeaderComponent,
     ReservationFormComponent,
+    ReservationDashboardComponent,
     Footer,
     DestinationDetail,
     HomeComponent,

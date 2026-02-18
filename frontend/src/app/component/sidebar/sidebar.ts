@@ -10,7 +10,14 @@ interface NavItem {
   icon: string;
   badge?: number;
   route: string;
+  internal?: boolean; // ← AJOUT: pour marquer les sections internes
+}
 
+interface User {
+  id: number;
+  name: string; 
+  email: string;
+  role: string;
 }
 
 @Component({
@@ -32,11 +39,12 @@ export class SidebarComponent {
 
   navItems: NavItem[] = [
     { id: 'home', label: 'Home', icon: '🏠', route: '/home' },
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', route: '/admin' },
-    { id: 'reservations', label: 'Réservations', icon: '✈️', badge: 12, route: '/admin' },
-    { id: 'users', label: 'Utilisateurs', icon: '👥', route: '/admin' },
+    { id: 'dashboard', label: 'Dashboard', icon: '📊', route: '/admin', internal: true },
+    { id: 'reservations', label: 'Réservations', icon: '✈️', badge: 12, route: '/admin', internal: true },
+    //  Parce que ces sections doivent rester dans /admin et ne pas créer de nouvelles routes.
+    { id: 'users', label: 'Utilisateurs', icon: '👥', route: '/admin/users' },
     // { id: 'offers', label: 'Offres & Destinations', icon: '🌍', badge: 3, route: '/admin/offers' },
-    { id: 'settings', label: 'Paramètres', icon: '⚙️', route: '/admin' },
+    { id: 'settings', label: 'Paramètres', icon: '⚙️', route: '/admin/settings' },
   ];
 
 
@@ -49,6 +57,24 @@ export class SidebarComponent {
     if (!item) return;
 
     this.activeSection = itemId;
-    this.router.navigate([item.route]);
+    this.sectionChange.emit(itemId);
+    
+    // Only navigate if it's not an internal section
+    if (!item.internal) {
+      this.router.navigate([item.route]);
+    }
+  }
+
+  getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(' '); 
+    return parts.map(p => p[0].toUpperCase()).join(''); 
   }
 }
+
+/////////////////////////////////////////////////////////////////////////////////
+// Clic sur "Réservations" → onNavClick('reservations')
+// sectionChange.emit('reservations') → envoie à admindash.ts
+// onSectionChange() dans admindash → met à jour activeSection = 'reservations'
+// Dans admindash.html → *ngIf="activeSection === 'reservations'" affiche le composant
+// ✅ Pas de navigation d'URL, juste un changement d'affichage!

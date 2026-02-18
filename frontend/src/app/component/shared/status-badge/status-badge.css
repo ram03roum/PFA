@@ -1,0 +1,63 @@
+.status-badge {
+  padding: 3px 9px;
+  border-radius: 18px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.confirmed {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.pending {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.cancelled {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.actif {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.inactif {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.suspendu {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.validé {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.en-cours {
+  background: #eef2ff;
+  color: #6366f1;
+}
+
+.ouvert {
+  background: #eef2ff;
+  color: #6366f1;
+}
+
+.résolu {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.à-valider {
+  background: #eef2ff;
+  color: #6366f1;
+}
