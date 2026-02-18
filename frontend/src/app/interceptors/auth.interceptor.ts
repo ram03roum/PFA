@@ -1,22 +1,36 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // 1. On récupère le token que vous avez enregistré lors du login
+  const router = inject(Router); // Pour rediriger l'utilisateur
   const token = localStorage.getItem('access_token');
 
-  // 2. Si le token existe, on "clône" la requête pour lui ajouter le badge d'identité
+  let authReq = req;
+
+  // 1. Ajout du token si présent
   if (token) {
-    const authReq = req.clone({
+    authReq = req.clone({
       setHeaders: {
-        Authorization: `Bearer ${token}` // C'est ici que le "Missing Authorization Header" se règle
+        Authorization: `Bearer ${token}`
       }
     });
-    console.log('Header Authorization ajouté');
-    return next(authReq);
-
   }
-  console.log('Aucun token trouvé, requête sans Authorization');
 
-  // 3. Si pas de token (ex: page login), on laisse passer la requête normale
-  return next(req);
+  // 2. Gestion de la réponse et des erreurs (Le "Nettoyage")
+  return next(authReq).pipe(
+    catchError((error: HttpErrorResponse) => {
+      // Si le code est 401 (Unauthorized), le token est probablement expiré ou invalide
+      if (error.status === 401) {
+        console.warn('Session expirée ou invalide. Nettoyage...');
+
+        localStorage.removeItem('access_token'); // On supprime le token mort
+        router.navigate(['/login']); // On renvoie l'utilisateur à la connexion
+      }
+
+      // On laisse l'erreur remonter pour que le composant puisse aussi l'afficher si besoin
+      return throwError(() => error);
+    })
+  );
 };

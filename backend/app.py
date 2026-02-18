@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 from flask_migrate import Migrate
 from flask import Flask, jsonify, request
@@ -35,13 +36,8 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}},
     #  Sans allow_headers=["Authorization"], le navigateur refuse d'envoyer votre token JWT.
      allow_headers=["Content-Type", "Authorization"])
 
-
-# CORS(app)
-
-
-
-
-
+# Élargir la durée à 24 heures par exemple
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 # --- CONFIGURATION DYNAMIQUE ---
 # On récupère les infos du .env ou on met une valeur par défaut
 DB_USER = os.getenv('DB_USER')

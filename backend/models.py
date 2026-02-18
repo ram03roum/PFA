@@ -123,3 +123,10 @@ class ActivityLog(db.Model):
             'entity_type': self.entity_type,
             'created_at': self.created_at.strftime('%H:%M') if self.created_at else None,
         }
+        
+class Favorite(db.Model):
+    __tablename__ = 'favorites'  # <--- Ajoute cette ligne exacte
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    destination_id = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
