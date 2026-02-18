@@ -39,14 +39,14 @@ export class DestinationsPageComponent implements OnInit {
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('access_token'); // Vérifie bien si c'est 'token' ou 'access_token'
-      console.log('Valeur du token récupérée :'); // <--- Ajoute ça ICI
+      // console.log('Valeur du token récupérée :'); // <--- Ajoute ça ICI
 
-      console.log('Valeur du token récupérée :', token); // <--- Ajoute ça ICI
+      // console.log('Valeur du token récupérée :', token); // <--- Ajoute ça ICI
       // 1. On s'abonne au flux du service. 
       // Dès que le service change (clic ou chargement), ce code s'exécute TOUT SEUL.
       this.favoriteService.favorites$.subscribe(ids => {
         // On ne fait que lire ici, on ne modifie rien manuellement
-        console.log('Mise à jour visuelle des favoris reçue');
+        // console.log('Mise à jour visuelle des favoris reçue');
       });
 
       if (token) {
@@ -55,7 +55,7 @@ export class DestinationsPageComponent implements OnInit {
           next: (favIds: any[]) => {
             // On envoie les données au service pour qu'il remplisse son BehaviorSubject
             this.favoriteService.setFavorites(favIds);
-            console.log('Favoris chargés depuis le serveur :', favIds);
+            // console.log('Favoris chargés depuis le serveur :', favIds);
           },
           error: (err) => console.error('Erreur de chargement', err)
         });
