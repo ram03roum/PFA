@@ -127,3 +127,5 @@ class ActivityLog(db.Model):
             'entity_type': self.entity_type,
             'created_at': self.created_at.strftime('%H:%M') if self.created_at else None,
         }
+    
+

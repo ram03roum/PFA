@@ -28,10 +28,9 @@
 
   <!-- Footer -->
   <div *ngIf="!collapsed" class="sidebar-footer">
-    <div class="admin-avatar">OB</div>
+    <div class="admin-avatar">{{ getInitials(authService.getCurrentUser()?.name || '') }}</div>
     <div class="admin-info">
-      <div class="admin-name">Omar Benali</div>
-      <div class="admin-role">Administrateur</div>
+      <div class="admin-name">{{ authService.getCurrentUser()?.name || 'Invité' }}</div>
     </div>
     <span class="online-dot">●</span>
   </div>

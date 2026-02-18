@@ -16,7 +16,7 @@ export class NavbarComponent {
 
   searchQuery = '';
 
-  constructor(private authService: AuthService) { }
+  constructor(public authService: AuthService) { }
 
   onSearch(): void {
     console.log('Recherche:', this.searchQuery);
@@ -27,4 +27,11 @@ export class NavbarComponent {
       this.authService.logout();
     }
   }
+  
+  getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(' '); 
+    return parts.map(p => p[0].toUpperCase()).join(''); 
+  }
+  
 }

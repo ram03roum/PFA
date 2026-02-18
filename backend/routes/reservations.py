@@ -7,6 +7,8 @@ from datetime import datetime
 
 reservations_bp = Blueprint('reservations', __name__)
 
+#################################
+######### Vue Admin ############
 
 # GET /reservations — avec search, filter, pagination
 @reservations_bp.route('/reservations', methods=['GET'])
@@ -40,7 +42,12 @@ def get_reservations():
             'check_in': r.check_in.isoformat(),
             'check_out': r.check_out.isoformat(),
             'total_amount': r.total_amount,
-            'status': r.status, 
+            'status': r.status,
+            # Champs simplifiés pour le frontend (affichage tableau)
+            'client': r.user.name,
+            'destination_name': r.destination.name,
+            'dates': f"{r.check_in.strftime('%d/%m')} - {r.check_out.strftime('%d/%m')}",
+            'amount': r.total_amount,
             } for r in reservations.items],
         'total': total,
         'page': page,

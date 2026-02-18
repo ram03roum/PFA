@@ -1,0 +1,24 @@
+/* role-badge.component.css */
+.role-badge {
+  padding: 3px 9px;
+  border-radius: 18px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.admin {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.agent {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.client {
+  background: #eef2ff;
+  color: #6366f1;
+}

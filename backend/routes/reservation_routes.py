@@ -6,7 +6,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 client_reservation_bp = Blueprint('client_reservations', __name__, url_prefix='/client')
 
-
+#################################
+######### Vue Client ############
 @client_reservation_bp.route('/reservations', methods=['POST'])
 @jwt_required()
 def create_reservation():
