@@ -6,3 +6,5 @@ PyMySQL
 Werkzeug
 python-dotenv
 flask-jwt-extended
+mysql-connector-python
+python-dotenv

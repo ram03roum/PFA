@@ -16,7 +16,7 @@ export class FavoritesService {
 
   constructor(private http: HttpClient) {
     console.log('FavoritesService initialisé');
-
+    console.log(this.favoritesSubject);
   }
 
 
@@ -60,17 +60,55 @@ export class FavoritesService {
 
   // 🔹 Mettre à jour les favoris en mémoire après login
   setFavorites(data: any[]) {
-    const ids = new Set<number>(data.map(f => f.id)); // récupère uniquement les ids
+    // On extrait les IDs. Attention : vérifie si ton backend renvoie [1, 2] 
+    // ou [{id: 1}, {id: 2}]. Si c'est des objets, utilise .map(f => f.id)
+    const ids = new Set<number>(data.map(f => typeof f === 'number' ? f : f.destination_id || f.id));
+
     this.favoritesSubject.next(ids);
+
+    // Optionnel : sauvegarde en local pour le hors-ligne
+    localStorage.setItem('favorites', JSON.stringify(Array.from(ids)));
   }
   /**
    * Bascule l'état favori d'une destination
    */
   toggleFavorite(destinationId: number, token: string): void {
-    if (this.isFavorite(destinationId)) {
-      this.removeFavorite(destinationId, token);
+    const currentFavorites = this.favoritesSubject.value;
+    const newFavorites = new Set(currentFavorites);
+
+    // --- ÉTAPE 1 : UI OPTIMISTE (On change tout de suite) ---
+    const isRemoving = newFavorites.has(destinationId);
+
+    if (isRemoving) {
+      newFavorites.delete(destinationId);
     } else {
-      this.addFavorite(destinationId, token);
+      newFavorites.add(destinationId);
+    }
+
+    // On met à jour le Subject immédiatement -> Le cœur change dans le HTML
+    this.favoritesSubject.next(newFavorites);
+
+    // --- ÉTAPE 2 : SYNCHRONISATION AVEC LE BACKEND ---
+    if (isRemoving) {
+      this.removeFavorite(destinationId, token).subscribe({
+        error: (err) => {
+          console.error('Erreur backend, on remet le favori');
+          // En cas d'erreur, on annule le changement visuel
+          const rollbackSet = new Set(this.favoritesSubject.value);
+          rollbackSet.add(destinationId);
+          this.favoritesSubject.next(rollbackSet);
+        }
+      });
+    } else {
+      this.addFavorite(destinationId, token).subscribe({
+        error: (err) => {
+          console.error('Erreur backend, on retire le favori');
+          // En cas d'erreur, on annule le changement visuel
+          const rollbackSet = new Set(this.favoritesSubject.value);
+          rollbackSet.delete(destinationId);
+          this.favoritesSubject.next(rollbackSet);
+        }
+      });
     }
   }
   /**
@@ -86,13 +124,13 @@ export class FavoritesService {
     return this.favoritesSubject.value.size;
   }
 
-  /**
-   * Vide tous les favoris
-   */
-  // --- Supprimer tous les favoris ---
-  clearFavorites(token: string): Observable<any> {
-    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
-    const url = `${this.apiUrl}/clear`; // endpoint DELETE /favorites/clear
-    return this.http.delete(url, { headers });
-  }
+  // /**
+  //  * Vide tous les favoris
+  //  */
+  // // --- Supprimer tous les favoris ---
+  // clearFavorites(token: string): Observable<any> {
+  //   const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+  //   const url = `${this.apiUrl}/clear`; // endpoint DELETE /favorites/clear
+  //   return this.http.delete(url, { headers });
+  // }
 }
