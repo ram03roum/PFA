@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { FavoritesService } from '../../services/favorites.service'; // 1. Importe le service
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
@@ -27,7 +27,9 @@ export class DestinationsPageComponent implements OnInit {
     private dataService: DataService,
     public favoriteService: FavoritesService, // 2. Injecte le service ici
     private cdr: ChangeDetectorRef,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router, // ✅ ajoute juste cette ligne
+
   ) {
 
     // On ne touche au localStorage que si on est côté client (navigateur)
@@ -55,7 +57,7 @@ export class DestinationsPageComponent implements OnInit {
           next: (favIds: any[]) => {
             // On envoie les données au service pour qu'il remplisse son BehaviorSubject
             this.favoriteService.setFavorites(favIds);
-            // console.log('Favoris chargés depuis le serveur :', favIds);
+            console.log('Favoris chargés depuis le serveur :', favIds);
           },
           error: (err) => console.error('Erreur de chargement', err)
         });
@@ -108,15 +110,15 @@ export class DestinationsPageComponent implements OnInit {
   // }
 
   toggleFavorite(id: number): void {
-    const token = localStorage.getItem('token') || '';
+    const token = localStorage.getItem('access_token') || '';
+    // ❌ Non connecté → redirection login
+    if (!token) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.favoriteService.toggleFavorite(id, token);
   }
 
-  private saveToLocalStorage(): void {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('favorites', JSON.stringify(Array.from(this.favorites)));
-    }
-  }
 
   // Ta fonction de vérification dans le HTML doit maintenant appeler le SERVICE
   checkIfFavorite(id: number): boolean {

@@ -17,6 +17,15 @@ export class FavoritesService {
   constructor(private http: HttpClient) {
     console.log('FavoritesService initialisé');
     console.log(this.favoritesSubject);
+    // ✅ On recharge les favoris du localStorage immédiatement
+    const saved = localStorage.getItem('favorites');
+    if (saved) {
+      const ids = new Set<number>(JSON.parse(saved));
+      this.favoritesSubject = new BehaviorSubject<Set<number>>(ids);
+    } else {
+      this.favoritesSubject = new BehaviorSubject<Set<number>>(new Set());
+    }
+    this.favorites$ = this.favoritesSubject.asObservable();
   }
 
 
@@ -128,9 +137,8 @@ export class FavoritesService {
   //  * Vide tous les favoris
   //  */
   // // --- Supprimer tous les favoris ---
-  // clearFavorites(token: string): Observable<any> {
-  //   const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
-  //   const url = `${this.apiUrl}/clear`; // endpoint DELETE /favorites/clear
-  //   return this.http.delete(url, { headers });
-  // }
+  clearFavorites(): void {
+    this.favoritesSubject.next(new Set()); // ✅ vide le Set en mémoire
+    localStorage.removeItem('favorites');  // ✅ vide le localStorage
+  }
 }
