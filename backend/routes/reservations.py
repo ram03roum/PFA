@@ -83,7 +83,7 @@ def create_reservation():
 
 # PUT /reservations/<id>/status — confirmer / refuser
 @reservations_bp.route('/reservations/<int:res_id>/status', methods=['PUT'])
-# @jwt_required()
+@jwt_required()
 def update_reservation_status(res_id):
     current_user = get_jwt_identity()
     data = request.get_json()
@@ -102,12 +102,13 @@ def update_reservation_status(res_id):
 
 
 # DELETE /reservations/<id> — annuler
-@reservations_bp.route('/reservations/<int:res_id>', methods=['DELETE'])
-# @jwt_required()
+@reservations_bp.route('/reservations/<int:res_id>/cancel', methods=['DELETE'])
+@jwt_required()
 def cancel_reservation(res_id):
     current_user = get_jwt_identity()
     reservation = Reservation.query.get_or_404(res_id)
     reservation.status = 'annulée'
+    # db.session.delete(reservation)
     db.session.commit()
 
     log = ActivityLog(user_id=int(current_user), action='Réservation annulée', entity_type='reservation', entity_id=res_id)
