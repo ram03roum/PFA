@@ -13,6 +13,8 @@ import { DashboardComponent } from './component/dashboard/dashboard';
 import { AdminLayoutComponent } from './pages/admindash/admindash';
 import { ReservationFormComponent } from './pages/reservation-form/reservation-form';
 import { ReservationDashboardComponent } from './component/reservation-dashboard/reservation-dashboard';
+import { FavorisComponent } from './pages/favoris/favoris';
+import { AuthGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -28,5 +30,12 @@ export const routes: Routes = [
   { path: 'admin', component: AdminLayoutComponent },
   { path: 'reservations', component: ReservationDashboardComponent },
   { path: 'formreservation/:id', component: ReservationFormComponent },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
+  { path: '**', redirectTo: '' },
+  // ✅ Route protégée
+  {
+    path: 'favoris',
+    component: FavorisComponent,
+    canActivate: [AuthGuard]
+  },
 ];

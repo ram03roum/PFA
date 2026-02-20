@@ -1,0 +1,55 @@
+<h1 class="page-title">
+    Mes favorites
+</h1>
+
+@if (favoriteDestinations.length === 0) {
+<div class="empty-state">
+    <div class="empty-heart">
+        <svg width="60" height="60" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                fill="none" stroke="#667eea" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+    </div>
+    <h2>Aucun favori pour l'instant</h2>
+    <p>Vous n'avez pas encore ajouté de destinations à vos favoris.<br>
+        Explorez nos destinations et cliquez sur ❤️ pour les sauvegarder.</p>
+    <a routerLink="/destinations" class="btn-discover">
+        Explorer les destinations <i class="fas fa-arrow-right"></i>
+    </a>
+</div>
+}@else {
+<div class="destinations-grid">
+
+    @for (d of favoriteDestinations; track d.id) {
+    <div class="card">
+
+        <button class="favorite-btn" [class.is-favorite]="checkIfFavorite(d.id)"
+            (click)="toggleFavorite(d.id); $event.stopPropagation()" type="button"
+            [attr.aria-label]="'Retirer des favoris'">
+
+            <svg class="heart-icon" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path class="heart-path"
+                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                    [attr.fill]="checkIfFavorite(d.id) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="ripple"></span>
+        </button>
+
+        <img [src]="d.image" [alt]="d.name" loading="lazy" class="destination-image" />
+
+        <div class="card-content">
+            <h3>{{ d.name }}</h3>
+            <p class="country">{{ d.country }}</p>
+            <p class="price">Prix : {{ d.price }} $</p>
+            <a [routerLink]="['/destinations', d.id]" class="btn-discover">
+                Découvrir <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+    </div>
+    }
+
+</div>
+}
