@@ -129,3 +129,10 @@ class ActivityLog(db.Model):
         }
     
 
+        
+class Favorite(db.Model):
+    __tablename__ = 'favorites'  # <--- Ajoute cette ligne exacte
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    destination_id = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
