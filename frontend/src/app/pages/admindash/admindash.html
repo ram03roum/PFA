@@ -18,7 +18,11 @@
 
     <!-- Page Content (router-outlet) -->
     <div class="content-area">
-        <app-dashboard></app-dashboard>
+        <router-outlet></router-outlet>
+        <!-- Dashboard -->
+        <app-dashboard *ngIf="activeSection === 'dashboard'"></app-dashboard>
+        <!-- Reservations -->
+        <app-reservations *ngIf="activeSection === 'reservations'"></app-reservations>
     </div>
   </div>
 </div>

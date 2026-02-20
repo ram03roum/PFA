@@ -7,6 +7,8 @@ from datetime import datetime
 
 reservations_bp = Blueprint('reservations', __name__)
 
+#################################
+######### Vue Admin ############
 
 # GET /reservations — avec search, filter, pagination
 @reservations_bp.route('/reservations', methods=['GET'])
@@ -40,7 +42,12 @@ def get_reservations():
             'check_in': r.check_in.isoformat(),
             'check_out': r.check_out.isoformat(),
             'total_amount': r.total_amount,
-            'status': r.status, 
+            'status': r.status,
+            # Champs simplifiés pour le frontend (affichage tableau)
+            'client': r.user.name,
+            'destination_name': r.destination.name,
+            'dates': f"{r.check_in.strftime('%d/%m')} - {r.check_out.strftime('%d/%m')}",
+            'amount': r.total_amount,
             } for r in reservations.items],
         'total': total,
         'page': page,
@@ -50,7 +57,7 @@ def get_reservations():
 
 # POST /reservations — créer une réservation
 @reservations_bp.route('/reservations', methods=['POST'])
-# @jwt_required()
+@jwt_required()
 def create_reservation():
     data = request.get_json()
     current_user_id = int(get_jwt_identity())
@@ -76,7 +83,7 @@ def create_reservation():
 
 # PUT /reservations/<id>/status — confirmer / refuser
 @reservations_bp.route('/reservations/<int:res_id>/status', methods=['PUT'])
-# @jwt_required()
+@jwt_required()
 def update_reservation_status(res_id):
     current_user = get_jwt_identity()
     data = request.get_json()
@@ -95,12 +102,13 @@ def update_reservation_status(res_id):
 
 
 # DELETE /reservations/<id> — annuler
-@reservations_bp.route('/reservations/<int:res_id>', methods=['DELETE'])
-# @jwt_required()
+@reservations_bp.route('/reservations/<int:res_id>/cancel', methods=['DELETE'])
+@jwt_required()
 def cancel_reservation(res_id):
     current_user = get_jwt_identity()
     reservation = Reservation.query.get_or_404(res_id)
     reservation.status = 'annulée'
+    # db.session.delete(reservation)
     db.session.commit()
 
     log = ActivityLog(user_id=int(current_user), action='Réservation annulée', entity_type='reservation', entity_id=res_id)

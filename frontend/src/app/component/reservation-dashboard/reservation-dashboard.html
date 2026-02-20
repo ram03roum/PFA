@@ -1,0 +1,108 @@
+
+<div class="reservations-container">
+  <!-- Filter Bar -->
+  <app-filter-bar 
+    [filters]="filters" 
+    [activeFilter]="activeFilter"
+    (filterChange)="onFilterChange($event)">
+    <button class="action-btn-primary">+ Nouvelle Réservation</button>
+  </app-filter-bar>
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input 
+      type="text" 
+      [(ngModel)]="searchQuery"
+      (keyup.enter)="onSearch()"
+      placeholder="Rechercher par client ou destination..."
+      class="search-input"
+    />
+    <button (click)="onSearch()" class="search-btn">🔍 Rechercher</button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Chargement des réservations...</p>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!isLoading" class="card" >
+    <div class="table-header">
+      <h3>{{ totalItems }}  réservation(s)</h3>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Client</th>
+            <th>Destination</th>
+            <th>Dates</th>
+            <th>Montant</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let res of filteredReservations">
+            <td>
+              <span class="id-badge">RES-{{ res.id }}</span>
+            </td>
+            <td>
+              <app-client-cell 
+                [name]="res.client" 
+                [initials]="getInitials(res.client)">
+              </app-client-cell>
+            </td>
+            <td>{{ res.destination_name }}</td>
+            <td>{{ res.dates }}</td>
+            <td class="amount">{{ res.amount }} TND</td>
+            <td>
+              <app-status-badge [status]="res.status"></app-status-badge>
+            </td>
+            <td>
+              <div class="action-btns">
+                <button class="small-btn" title="Voir">👁️</button>
+                <button class="small-btn" title="Modifier">✏️</button>
+                <button 
+                  *ngIf="res.status === 'en attente'"
+                  (click)="confirmReservation(res)"
+                  class="small-btn confirm-btn" 
+                  title="Confirmer">
+                  ✓
+                </button>
+                <button 
+                  (click)="cancelReservation(res)"
+                  class="small-btn cancel-btn" 
+                  title="Annuler">
+                  ✕
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button 
+        (click)="prevPage()" 
+        [disabled]="currentPage === 1"
+        class="pagination-btn">
+        ← Précédent
+      </button>
+      <span class="pagination-info">
+        Page {{ currentPage }} sur {{ totalPages }}
+      </span>
+      <button 
+        (click)="nextPage()" 
+        [disabled]="currentPage === totalPages"
+        class="pagination-btn">
+        Suivant →
+      </button>
+    </div>
+  </div>
+</div>

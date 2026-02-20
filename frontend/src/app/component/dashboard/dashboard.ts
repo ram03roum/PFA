@@ -3,10 +3,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboard.service';
 import { finalize } from 'rxjs/internal/operators/finalize';
+import { title } from 'node:process';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgxChartsModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
@@ -18,34 +21,32 @@ export class DashboardComponent implements OnInit {
   activityLogs: any[] = [];
   recentReservations: any[] = [];
   isLoading = true;
+  revenueChartData: any[] = [];
+  destinationChartData: any[] = [];
 
-  constructor(private dashboardService: DashboardService
+  constructor(private dashboardService: DashboardService) { }
 
-  ) { }
-
-  // ngOnInit(): void {
-  //   this.loadDashboardData();
-  // }
   ngOnInit(): void {
-    // console.log('1. DEBUT - isLoading =', this.isLoading);
     this.isLoading = true;
     this.dashboardService.getDashboardData().pipe(
       finalize(() => {
-        // console.log(this.isLoading)
         this.isLoading = false;
         // S'exécutera TOUJOURS (Succès ou Erreur)
         // console.log(this.isLoading)
-      })
+        })
     ).subscribe({
       next: (data) => {
         console.log('2. DATA REÇUE:', data);
-        // console.log(data);
-        // On transforme les données Flask pour le format de votre HTML
         this.formatKpis(data.kpis);
         this.monthlyStats = data.revenue;
         this.destinationsStats = data.destinations;
         this.recentReservations = data.reservations;
         this.activityLogs = data.logs;
+        // 1. KPI Cards
+        this.formatKpis(data.kpis);
+        
+        // 2. Transformer les données pour les graphiques
+        this.prepareCharts(data.revenue, data.destinations);
 
       },
       error: (err) => {
@@ -59,7 +60,8 @@ export class DashboardComponent implements OnInit {
       { title: 'Réservations', value: kpis.totalReservations, icon: '✈️', bg: '#eef2ff' },
       { title: 'Revenus', value: kpis.totalRevenue + ' TND', icon: '💰', bg: '#ecfdf5' },
       { title: 'Clients Fidèles', value: kpis.loyalClients, icon: '⭐', bg: '#f5f3ff' },
-      { title: 'Annulations', value: kpis.cancellationRate + '%', icon: '📉', bg: '#fef2f2' }
+      // { title: 'Annulations', value: kpis.cancellation_rate + '%', icon: '📉', bg: '#fef2f2' }
+      { title: 'Annulations', value: kpis.cancelRes, icon: '⭐' ,bg: '#fef2f2'}
     ];
   }
   loadDashboardData(): void {
@@ -119,5 +121,20 @@ export class DashboardComponent implements OnInit {
       'annulée': 'cancelled'
     };
     return map[status] || '';
+  }
+
+  // Transformation cruciale pour ngx-charts
+  prepareCharts(revenueRaw: any[], destinationsRaw: any[]) {
+    // Transformation des revenus mensuels
+    this.revenueChartData = revenueRaw.map(item => ({
+      name: item.month, // ex: 'Jan'
+      value: item.revenue // le montant
+    }));
+
+    // Transformation des destinations
+    this.destinationChartData = destinationsRaw.map(item => ({
+      name: item.name,
+      value: item.value // le pourcentage
+    }));
   }
 }

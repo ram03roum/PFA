@@ -6,13 +6,16 @@ import { map, Observable } from 'rxjs';
 export class DataService {
   private apiUrl = 'http://127.0.0.1:5000/destinations';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient
+
+  ) { }
 
   getDestinations(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
   // data.service.ts
-  getDestinationById(id: string): Observable<any> {
+  getDestinationById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
       map(response => {
         console.log("Brut reçu de Flask:", response); // Pour vérifier ce qui sort du serveur

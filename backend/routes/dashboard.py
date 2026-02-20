@@ -22,28 +22,29 @@ def get_kpis():
     try:
         # Total réservations
         total_reservations = Reservation.query.count()
-
+        # total_annulations = Reservation.query.fitler(Reservation.status=='annulée').count()
         # Revenus totaux (On se base sur toutes les réservations car payment_status n'existe pas encore)
         # Note : Si tu ajoutes payment_status plus tard, ajoute .filter_by(payment_status='payé')
         total_revenue = db.session.query(func.sum(Reservation.total_amount)).scalar() or 0
 
         # Clients / Users actifs
         active_users = User.query.filter(User.status == 'actif').count()
-
+        total_cancellations_all_time = Reservation.query.filter_by(status='annulée').count()
         # Annulations ce mois
-        # now = datetime.utcnow()
-        # cancellations_month = Reservation.query.filter(
-        #     Reservation.status == 'annulée',
-        #     extract('month', Reservation.created_at) == now.month,
-        #     extract('year', Reservation.created_at) == now.year
-        # ).count()
+        now = datetime.utcnow()
+        cancellations_month = Reservation.query.filter(
+            Reservation.status == 'annulée',
+            extract('month', Reservation.created_at) == now.month,
+            extract('year', Reservation.created_at) == now.year
+        ).count()
 
         # Taux d'annulation
-        # reservations_month = Reservation.query.filter(
-        #     extract('month', Reservation.created_at) == now.month,
-        #     extract('year', Reservation.created_at) == now.year
-        # ).count()
-        # cancellation_rate = round((cancellations_month / reservations_month * 100), 1) if reservations_month > 0 else 0
+        reservations_month = Reservation.query.filter(
+            extract('month', Reservation.created_at) == now.month,
+            extract('year', Reservation.created_at) == now.year
+        ).count()
+
+        cancellation_rate = round((cancellations_month / reservations_month * 100), 1) if reservations_month > 0 else 0
 
         # Clients fidèles (3+ réservations)
         loyal_clients = db.session.query(Reservation.user_id).group_by(
@@ -58,6 +59,7 @@ def get_kpis():
             'totalRevenue': float(total_revenue),
             'activeClients': active_users,
             # 'cancellationRate': cancellation_rate,
+            'cancelRes': total_cancellations_all_time,
             'loyalClients': loyal_clients,
             'pendingReservations': pending,
         }), 200

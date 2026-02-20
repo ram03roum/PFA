@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { PackageService } from '../../services/package.service';
+// import { PackageService } from '../../services/destination.service';
 
 @Component({
   selector: 'app-package-detail',
@@ -17,12 +17,12 @@ export class PackageDetail implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private packageService: PackageService
+    // private packageService: PackageService
   ) { }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.package = this.packageService.getPackageById(id);
+    // this.package = this.packageService.getPackageById(id);
   }
 
   goBack() {

@@ -5,11 +5,11 @@ import { RouterModule } from '@angular/router';
 import { SidebarComponent } from '../../component/sidebar/sidebar';
 import { NavbarComponent } from '../../component/navbar/navbar';
 import { DashboardComponent } from '../../component/dashboard/dashboard';
-
+import { ReservationDashboardComponent } from '../../component/reservation-dashboard/reservation-dashboard';
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, SidebarComponent, NavbarComponent, DashboardComponent],
+  imports: [CommonModule, RouterModule, SidebarComponent, NavbarComponent, DashboardComponent, ReservationDashboardComponent],
   templateUrl: './admindash.html',
   styleUrls: ['./admindash.css']
 })
@@ -21,7 +21,7 @@ export class AdminLayoutComponent {
 
   navItems: any = {
     dashboard: { title: 'Dashboard', icon: '📊' },
-    reservations: { title: 'Réservations', icon: '✈️' },
+    reservations: { title: 'Reservations', icon: '✈️' },
     users: { title: 'Utilisateurs', icon: '👥' },
     // offers: { title: 'Offres & Destinations', icon: '🌍' },
     // documents: { title: 'Documents', icon: '📄' },
