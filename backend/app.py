@@ -10,6 +10,7 @@ from routes.favorites import favorites_bp
 from flask_jwt_extended import JWTManager
 from extensions import db, migrate, jwt
 from models import User, Destination, Reservation, ActivityLog 
+from datetime import timedelta
 
 # from models import User, Destination ,Reservation, ActivityLog
 
@@ -28,6 +29,8 @@ app = Flask(__name__)
 # Permet au navigateur de faire ses vérifications de sécurité sans token
 app.config["JWT_SECRET_KEY"] = os.getenv('SECRET_KEY') # Utilisez votre clé secrète
 app.config["JWT_OPTIONS_ARE_TOKEN_REQUIRED"] = False
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24) # Le token durera 24h
+
 # On initialise le manager JWT avec l'app
 
 
