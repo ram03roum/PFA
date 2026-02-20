@@ -1,0 +1,463 @@
+<div class="reservation-page">
+
+ 
+
+  <!-- Loading State -->
+
+  <!-- @if (loading) { -->
+
+    <!-- <div class="loading-container">
+
+  <div class="spinner-large"></div>
+
+    <p class="loading-text">Chargement de la destination...</p>
+
+  </div> -->
+
+  <!-- } -->
+
+  <!-- Main Content -->
+
+  <div class="reservation-container">
+
+   
+
+    <!-- Colonne Gauche: Informations Destination -->
+
+    <aside class="destination-card">
+
+      <div class="destination-image-wrapper">
+
+        <img
+
+          [src]="destination?.image"
+
+          [alt]="destination.name"
+
+          class="destination-image"
+
+          loading="lazy">
+
+        <div class="destination-badge">
+
+          <i class="fas fa-star"></i>
+
+          <span>Destination populaire</span>
+
+        </div>
+
+      </div>
+
+     
+
+      <div class="destination-info">
+
+        <h2 class="destination-name">{{ destination.name }}</h2>
+
+        <p class="destination-location">
+
+          <i class="fas fa-map-marker-alt"></i>
+
+          {{ destination.country }}
+
+        </p>
+
+       
+
+        <p class="destination-description">
+
+          {{ destination.description }}
+
+        </p>
+
+       
+
+        <div class="price-box">
+
+          <div class="price-label">Prix par nuit</div>
+
+          <div class="price-amount">{{ destination.price}}€</div>
+
+        </div>
+
+
+
+        <div class="destination-features">
+
+          <div class="feature-item">
+
+            <i class="fas fa-wifi"></i>
+
+            <span>Wi-Fi gratuit</span>
+
+          </div>
+
+          <div class="feature-item">
+
+            <i class="fas fa-concierge-bell"></i>
+
+            <span>Service 24/7</span>
+
+          </div>
+
+          <div class="feature-item">
+
+            <i class="fas fa-utensils"></i>
+
+            <span>Petit déjeuner inclus</span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </aside>
+
+
+
+    <!-- Colonne Droite: Formulaire -->
+
+    <main class="form-card">
+
+      <div class="form-header">
+
+        <i class="fas fa-calendar-check"></i>
+
+        <h1>Réserver votre séjour</h1>
+
+      </div>
+
+      <!-- Messages d'alerte -->
+
+      <div *ngIf="error" class="alert alert-error animate-slide-down">
+
+        <i class="fas fa-exclamation-circle"></i>
+
+        <span>{{ error }}</span>
+
+        <button class="alert-close" (click)="error = ''">
+
+          <i class="fas fa-times"></i>
+
+        </button>
+
+      </div>
+
+
+
+      <div *ngIf="success" class="alert alert-success animate-slide-down">
+
+        <i class="fas fa-check-circle"></i>
+
+        <span>{{ success }}</span>
+
+      </div>
+
+
+
+      <!-- Formulaire -->
+
+      <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
+
+       
+
+        <!-- Aperçu destination sélectionnée -->
+
+        <div class="selected-destination">
+
+          <div class="selected-destination-icon">
+
+            <i class="fas fa-map-pin"></i>
+
+          </div>
+
+          <div class="selected-destination-info">
+
+            <div class="selected-destination-label">Destination sélectionnée</div>
+
+            <div class="selected-destination-name">{{ destination.name }}, {{ destination.country }}</div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- Dates -->
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label for="check_in" class="form-label">
+
+              <i class="fas fa-calendar-alt"></i>
+
+              Date d'arrivée <span class="required">*</span>
+
+            </label>
+
+            <input
+
+              type="date"
+
+              id="check_in"
+
+              formControlName="check_in"
+
+              [min]="minDate"
+
+              class="form-control"
+
+              [class.is-invalid]="reservationForm.get('check_in')?.invalid && reservationForm.get('check_in')?.touched">
+
+            <div class="invalid-feedback" *ngIf="reservationForm.get('check_in')?.invalid && reservationForm.get('check_in')?.touched">
+
+              La date d'arrivée est requise
+
+            </div>
+
+          </div>
+
+
+
+          <div class="form-group">
+
+            <label for="check_out" class="form-label">
+
+              <i class="fas fa-calendar-alt"></i>
+
+              Date de départ <span class="required">*</span>
+
+            </label>
+
+            <input
+
+              type="date"
+
+              id="check_out"
+
+              formControlName="check_out"
+
+              [min]="minCheckOut || minDate"
+
+              class="form-control"
+
+              [class.is-invalid]="reservationForm.get('check_out')?.invalid && reservationForm.get('check_out')?.touched">
+
+            <div class="invalid-feedback" *ngIf="reservationForm.get('check_out')?.invalid && reservationForm.get('check_out')?.touched">
+
+              La date de départ est requise
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- Résumé du prix -->
+
+        <div *ngIf="numberOfNights > 0" class="price-summary animate-fade-in">
+
+          <div class="price-summary-header">
+
+            <i class="fas fa-calculator"></i>
+
+            <h3>Résumé du prix</h3>
+
+          </div>
+
+         
+
+          <div class="price-summary-body">
+
+            <div class="price-row">
+
+              <span class="price-row-label">
+
+                {{ pricePerNight }}€ × {{ getNightsText() }}
+
+              </span>
+
+              <span class="price-row-value">{{ pricePerNight * numberOfNights }}€</span>
+
+            </div>
+
+           
+
+            <div class="price-divider"></div>
+
+           
+
+            <div class="price-row price-total">
+
+              <span class="price-row-label">
+
+                <strong>Total</strong>
+
+              </span>
+
+              <span class="price-row-value">
+
+                <strong>{{ totalAmount }}€</strong>
+
+              </span>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="price-summary-footer">
+
+            <i class="fas fa-info-circle"></i>
+
+            <span>Taxes et frais inclus</span>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- Loader calcul prix -->
+
+        <div *ngIf="calculatingPrice" class="calculating-loader">
+
+          <div class="spinner-small"></div>
+
+          <span>Calcul en cours...</span>
+
+        </div>
+
+
+
+        <!-- Notes -->
+
+        <div class="form-group">
+
+          <label for="notes" class="form-label">
+
+            <i class="fas fa-sticky-note"></i>
+
+            Notes ou demandes spéciales
+
+          </label>
+
+          <textarea
+
+            id="notes"
+
+            formControlName="notes"
+
+            class="form-control form-textarea"
+
+            rows="4"
+
+            placeholder="Ex: Chambre avec vue sur mer, arrivée tardive, allergies alimentaires..."></textarea>
+
+          <div class="form-hint">
+
+            <i class="fas fa-lightbulb"></i>
+
+            Ajoutez toute information utile pour votre séjour
+
+          </div>
+
+        </div>
+
+
+
+        <!-- Conditions -->
+
+        <div class="terms-notice">
+
+          <i class="fas fa-shield-alt"></i>
+
+          <span>En confirmant, vous acceptez nos <a href="#" class="link">conditions générales</a> et notre <a href="#" class="link">politique d'annulation</a>.</span>
+
+        </div>
+
+
+
+        <!-- Boutons d'action -->
+
+        <div class="form-actions">
+
+          <button
+
+            type="button"
+
+            class="btn btn-secondary"
+
+            (click)="goBack()"
+
+            [disabled]="loading">
+
+            <i class="fas fa-arrow-left"></i>
+
+            <span>Retour</span>
+
+          </button>
+
+         
+
+          <button
+
+            type="submit"
+
+            class="btn btn-primary"
+
+            [disabled]="reservationForm.invalid || loading || numberOfNights === 0">
+
+            <span *ngIf="loading" class="spinner-small"></span>
+
+            <i *ngIf="!loading" class="fas fa-check"></i>
+
+            <span>{{ loading ? 'Réservation en cours...' : 'Confirmer la réservation' }}</span>
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </main>
+
+
+
+  </div>
+
+
+
+  <!-- Error State -->
+
+  <div *ngIf="!loading && error && !destination" class="error-state">
+
+    <div class="error-icon">
+
+      <i class="fas fa-exclamation-triangle"></i>
+
+    </div>
+
+    <h2>Destination introuvable</h2>
+
+    <p>{{ error }}</p>
+
+    <button class="btn btn-primary" (click)="goBack()">
+
+      <i class="fas fa-arrow-left"></i>
+
+      Retour aux destinations
+
+    </button>
+
+  </div>
+
+
+
+</div>

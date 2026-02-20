@@ -48,7 +48,7 @@ def update_user_status(user_id):
     
     db.session.commit()
 
-    log = ActivityLog(user_id=current_user['id'], action=f'Compte {data.get("status")}', entity_type='user', entity_id=user_id)
+    log = ActivityLog(user_id=int(current_user), action=f'Compte {data.get("status")}', entity_type='user', entity_id=user_id)
     db.session.add(log)
     db.session.commit()
 
@@ -66,7 +66,7 @@ def update_user_role(user_id):
     user.role = data.get('role')
     db.session.commit()
 
-    log = ActivityLog(user_id=current_user['id'], action=f'Rôle changé en {data.get("role")}', entity_type='user', entity_id=user_id)
+    log = ActivityLog(user_id=int(current_user), action=f'Rôle changé en {data.get("role")}', entity_type='user', entity_id=user_id)
     db.session.add(log)
     db.session.commit()
 

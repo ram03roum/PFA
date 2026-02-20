@@ -39,6 +39,11 @@
           </a>
         </div>
         }
+        @if (auth.isAdmin()) {
+      <button routerLink="/admin" class="btn-admin-special">
+        🛠 Dashboard
+      </button>
+      }
 
       </div>
     </div>

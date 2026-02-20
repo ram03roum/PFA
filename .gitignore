@@ -49,6 +49,10 @@ venv/
 __pycache__/
 *.pyc
 
+#angular
+.angular/
+node_modules/
+dist/
 
 .env
 frontend/.angular/cache/21.0.4/pfa/vite/deps/chunk-2PV23YZM.js

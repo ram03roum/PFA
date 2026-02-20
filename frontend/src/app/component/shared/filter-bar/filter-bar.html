@@ -1,0 +1,15 @@
+<!-- filter-bar.component.html -->
+<div class="filter-bar">
+  <button
+    *ngFor="let filter of filters"
+    (click)="onFilterChange(filter)"
+    class="filter-btn"
+    [class.active]="activeFilter === filter"
+  >
+    {{ filter.charAt(0).toUpperCase() + filter.slice(1) }}
+  </button>
+  
+  <div class="filter-actions">
+    <ng-content></ng-content>
+  </div>
+</div>

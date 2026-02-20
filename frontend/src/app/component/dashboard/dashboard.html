@@ -21,7 +21,7 @@
     </div>
 
     <!-- Charts -->
-    <div class="charts-row">
+    <!-- <div class="charts-row">
       <div class="chart-card">
         <h3>Stats Mensuelles</h3>
         <div class="stats-list">
@@ -40,7 +40,35 @@
           <span>{{ dest.value }}%</span>
         </div>
       </div>
+    </div> -->
+  <div class="charts-row">
+  <div class="chart-card">
+    <h3>Stats Mensuelles (TND)</h3>
+    <div class="chart-container" style="height: 300px;">
+      <ngx-charts-bar-vertical
+        [results]="revenueChartData"
+        [xAxis]="true"
+        [yAxis]="true"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [xAxisLabel]="'Mois'"
+        [yAxisLabel]="'Revenu'">
+      </ngx-charts-bar-vertical>
     </div>
+  </div>
+
+  <div class="chart-card">
+    <h3>Répartition Destinations</h3>
+    <div class="chart-container" style="height: 300px;">
+      <ngx-charts-pie-chart
+        [results]="destinationChartData"
+        [doughnut]="true"
+        [legend]="true"
+        [labels]="true">
+      </ngx-charts-pie-chart>
+    </div>
+  </div>
+</div>
 
     <!-- Réservations -->
     <div class="card">

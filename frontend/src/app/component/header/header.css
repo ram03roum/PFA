@@ -66,9 +66,8 @@
   color: var(--dark-color);
 }
 
-/* .navbar-toggler:focus {
+.navbar-toggler:focus {
   outline: none;
-<<<<<<< HEAD
 }
 
 
@@ -76,7 +75,7 @@
   background-color: #2c3e50;
   color: #ecf0f1;
   border: 1px solid #e74c3c;
-  padding: 5px 15px;
+  padding : 5px 15px;
   border-radius: 4px;
   cursor: pointer;
   transition: 0.3s;
@@ -84,6 +83,4 @@
 
 .btn-admin-special:hover {
   background-color: #e74c3c;
-=======
->>>>>>> yasmine
-} */
+}

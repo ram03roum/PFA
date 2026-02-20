@@ -22,10 +22,10 @@
     <!-- Notifications -->
     <button class="notif-btn">
       🔔
-      <span class="notif-badge">5</span>
+      <!-- <span class="notif-badge">5</span> -->
     </button>
 
     <!-- User Avatar -->
-    <div class="user-avatar" (click)="onLogout()">OB</div>
+    <div class="user-avatar" >{{ getInitials(authService.getCurrentUser()?.name || '') }}</div>
   </div>
 </header>

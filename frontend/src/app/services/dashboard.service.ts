@@ -21,6 +21,7 @@ export class DashboardService {
       logs: this.http.get(`${this.apiUrl}/activity-logs`, headers)
     });
   }
+  
   // On récupère le token pour l'autorisation (JWT)
   private getHeaders() {
     const token = localStorage.getItem('access_token');// Assurez-vous que c'est le même nom que dans le Login
@@ -40,6 +41,7 @@ export class DashboardService {
   getActivityLogs(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/activity-logs`, this.getHeaders());
   }
-
+   
+  
 
 }
