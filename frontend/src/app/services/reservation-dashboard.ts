@@ -1,8 +1,7 @@
 // src/app/services/reservations.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams ,HttpHeaders} from '@angular/common/http';
 import { Observable } from 'rxjs';
-
 /**
  * Interface pour une réservation (vue admin)
  */
@@ -57,6 +56,14 @@ export class ReservationsDashboard {
     
     return this.http.get<ReservationsResponse>(this.apiUrl, { params });
   }
+  
+  // On récupère le token pour l'autorisation (JWT)
+  private getHeaders() {
+    const token = localStorage.getItem('access_token');// Assurez-vous que c'est le même nom que dans le Login
+    return {
+      headers: new HttpHeaders().set('Authorization', `Bearer ${token}`)
+    };
+  }
 
   /**
    * Récupère une réservation spécifique par ID
@@ -81,7 +88,7 @@ export class ReservationsDashboard {
    * @param id - ID de la réservation à annuler
    */
   cancel(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/${id}/cancel`);
   }
 
   /**

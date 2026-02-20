@@ -41,6 +41,7 @@ export class DashboardService {
   getActivityLogs(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/activity-logs`, this.getHeaders());
   }
-
+   
+  
 
 }
