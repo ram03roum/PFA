@@ -22,20 +22,15 @@ export const routes: Routes = [
   { path: 'signup', component: SignupComponent },
   { path: 'destinations', component: DestinationsPageComponent },
   { path: 'destinations/:id', component: DestinationDetail },
-  { path: 'packages', component: PackagePage },
-  { path: 'packages/:id', component: PackageDetail },
   { path: 'about', component: About },
   { path: 'contact', component: ContactComponent },
-  { path: 'blog', component: BlogPage },
   { path: 'admin', component: AdminLayoutComponent },
   { path: 'reservations', component: ReservationDashboardComponent },
   { path: 'formreservation/:id', component: ReservationFormComponent },
-  { path: '**', redirectTo: '' },
-  { path: '**', redirectTo: '' },
-  // ✅ Route protégée
   {
     path: 'favoris',
     component: FavorisComponent,
     canActivate: [AuthGuard]
   },
+  { path: '**', redirectTo: '' },
 ];
