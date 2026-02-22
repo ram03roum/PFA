@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <div style="max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px;">
+        <h2 style="color: #d9534f;">Rappel de paiement</h2>
+        <p>Bonjour <strong>{{ user.name }}</strong>,</p>
+        <p>Votre réservation est actuellement au statut : <span style="color: orange;">{{ reservation.status }}</span>.</p>
+        
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+            <p><strong>Détails du séjour :</strong></p>
+            <ul>
+                <li>Dates : du {{ reservation.check_in }} au {{ reservation.check_out }}</li>
+                <li>Montant total : <strong>{{ reservation.total_amount }} €</strong></li>
+            </ul>
+        </div>
+
+        <p>Merci de procéder au règlement pour confirmer définitivement votre voyage.</p>
+        <p style="text-align: center;">
+            <a href="http://localhost:4200" 
+               style="background-color: #007bff; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+               Accéder à mon espace client
+            </a>
+        </p>
+    </div>
+</body>
+</html>

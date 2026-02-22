@@ -1,4 +1,3 @@
-from datetime import timedelta
 import os
 from flask_migrate import Migrate
 from flask import Flask, jsonify, request
@@ -6,12 +5,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
-from routes.auth import auth_bp  # On importe le blueprint du fichier auth.py
-from routes.favorites import favorites_bp
 from flask_jwt_extended import JWTManager
 from extensions import db, migrate, jwt
 from models import User, Destination, Reservation, ActivityLog 
 from datetime import timedelta
+
+from extensions import mail, scheduler
+from tasks.scheduled_jobs import check_and_send_reminders
 
 # from models import User, Destination ,Reservation, ActivityLog
 
@@ -56,12 +56,24 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')
 
+# 2. Injecter les variables dans la config Flask (C'EST CETTE ÉTAPE QUI MANQUE SÛREMENT)
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True') == 'True'
+
 
 # --RIM--
 # --- INITIALISATION  DES EXTENSIONS ---
 db.init_app(app)
 migrate.init_app(app, db)
 jwt.init_app(app)
+# Initialisation
+mail.init_app(app)
+scheduler.init_app(app)
+scheduler.start()
+
 # --- IMPORT DES MODÈLES (IMPORTANT : après db.init_app) ---
 with app.app_context():
     db.create_all()  # Crée les tables si elles n'existent pas
@@ -72,6 +84,7 @@ from routes.reservations import reservations_bp
 from routes.users import users_bp
 from routes.destinations import destinations_bp
 from routes.reservation_routes import client_reservation_bp
+from routes.favorites import favorites_bp
 
 # --- ENREGISTREMENT DES BLUEPRINTS ---
 
@@ -87,6 +100,11 @@ app.register_blueprint(client_reservation_bp)
 # -----
     
 # --- ROUTES ---
+# Définition de la règle de temps
+@scheduler.task('cron', id='relance_paiement_quotidienne', hour=13, minute=23)
+def job_matinal():
+    check_and_send_reminders(app) 
+
 
 @app.route("/")
 def home():

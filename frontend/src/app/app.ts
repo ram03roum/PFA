@@ -8,6 +8,7 @@ import { DestinationDetail } from './pages/destination-detail/destination-detail
 import { ReactiveFormsModule } from '@angular/forms';
 import { ReservationFormComponent } from './pages/reservation-form/reservation-form';
 import { ReservationDashboardComponent } from './component/reservation-dashboard/reservation-dashboard';
+import { UsersComponent } from './component/users-dashboard/users-dashboard';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,7 @@ import { ReservationDashboardComponent } from './component/reservation-dashboard
     HeaderComponent,
     ReservationFormComponent,
     ReservationDashboardComponent,
+    UsersComponent,
     Footer,
     DestinationDetail,
     HomeComponent,
