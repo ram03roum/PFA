@@ -16,6 +16,7 @@ import { ReservationDashboardComponent } from './component/reservation-dashboard
 import { FavorisComponent } from './pages/favoris/favoris';
 import { AuthGuard } from './guards/auth-guard';
 
+import { UsersComponent } from './component/users-dashboard/users-dashboard';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
@@ -26,11 +27,8 @@ export const routes: Routes = [
   { path: 'contact', component: ContactComponent },
   { path: 'admin', component: AdminLayoutComponent },
   { path: 'reservations', component: ReservationDashboardComponent },
+  { path: 'users', component: UsersComponent},
   { path: 'formreservation/:id', component: ReservationFormComponent },
-  {
-    path: 'favoris',
-    component: FavorisComponent,
-    canActivate: [AuthGuard]
-  },
+  { path: 'favoris',component: FavorisComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '' },
 ];

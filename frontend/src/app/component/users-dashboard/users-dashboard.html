@@ -1,0 +1,101 @@
+<!-- src/app/components/admin/users/users.component.html -->
+<div class="users-container">
+  
+  <!-- ✅ Filter Bar -->
+  <app-filter-bar 
+    [filters]="filters" 
+    [activeFilter]="activeFilter"
+    (filterChange)="onFilterChange($event)">
+    <button class="action-btn-primary">+ Ajouter Utilisateur</button>
+  </app-filter-bar>
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input 
+      type="text" 
+      [(ngModel)]="searchQuery"
+      (keyup.enter)="onSearch()"
+      placeholder="Rechercher..."
+      class="search-input"
+    />
+    <button (click)="onSearch()" class="search-btn">🔍 Rechercher</button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!isLoading" class="card">
+    <div class="table-header">
+      <h3>{{ totalItems }} utilisateur(s)</h3>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Utilisateur</th>
+          <th>Email</th>
+          <th>Rôle</th>
+          <th>Statut</th>
+          <th>Dernière connexion</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>
+            <!-- ✅ ClientCell avec couleur selon le rôle -->
+            <app-client-cell 
+              [name]="user.name" 
+              [initials]="getInitials(user.name)"
+              [color]="getAvatarColor(user.role)">
+            </app-client-cell>
+          </td>
+          <td>
+            <span class="email">{{ user.email }}</span>
+          </td>
+          <td>
+            <!-- ✅ RoleBadge -->
+            <app-role-badge [role]="user.role"></app-role-badge>
+          </td>
+          <td>
+            <!-- ✅ StatusBadge -->
+            <app-status-badge [status]="user.status"></app-status-badge>
+          </td>
+          <td>
+            <span class="last-login">{{ user.last_login || 'Jamais' }}</span>
+          </td>
+          <td>
+            <div class="action-btns">
+              <button class="small-btn">👁️</button>
+              <button class="small-btn">✏️</button>
+              <button class="small-btn cancel-btn">🚫</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button 
+        (click)="prevPage()" 
+        [disabled]="currentPage === 1"
+        class="pagination-btn">
+        ← Précédent
+      </button>
+      <span class="pagination-info">
+        Page {{ currentPage }} sur {{ totalPages }}
+      </span>
+      <button 
+        (click)="nextPage()" 
+        [disabled]="currentPage === totalPages"
+        class="pagination-btn">
+        Suivant →
+      </button>
+    </div>
+  </div>
+</div>

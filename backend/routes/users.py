@@ -6,6 +6,8 @@ from models import User, ActivityLog
 
 users_bp = Blueprint('users', __name__)
 
+#################################
+######### Vue Client ############
 
 # GET /users — avec search, filtrer par rôle, pagination
 @users_bp.route('/users', methods=['GET'])

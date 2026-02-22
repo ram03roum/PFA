@@ -3,7 +3,7 @@
 /* Container principal */
 .users-container {
   padding: 22px 24px;
-  background: #f0f4f8;
+  background: #f8f9fc;
   min-height: calc(100vh - 60px);
 }
 
@@ -22,6 +22,7 @@
   font-size: 13px;
   outline: none;
   transition: all 0.2s;
+  background: white;
 }
 
 .search-input:focus {
@@ -52,6 +53,8 @@
   align-items: center;
   justify-content: center;
   min-height: 400px;
+  background: white;
+  border-radius: 8px;
 }
 
 .spinner {
@@ -70,102 +73,115 @@
 /* Card */
 .card {
   background: #fff;
-  border-radius: 13px;
-  padding: 18px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
 }
 
 .table-header {
-  margin-bottom: 14px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: white;
 }
 
 .table-header h3 {
   margin: 0;
-  font-size: 14px;
-  font-weight: 700;
-  color: #1e293b;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
 }
 
 /* Table */
-.table-container {
-  overflow-x: auto;
-}
-
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 14px;
+}
+
+thead {
+  background: #f9fafb;
 }
 
 thead tr {
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 th {
   text-align: left;
-  padding: 9px 10px;
-  color: #94a3b8;
+  padding: 12px 20px;
+  color: #6b7280;
   font-weight: 600;
-  font-size: 10px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 tbody tr {
-  border-bottom: 1px solid #f8fafc;
-  transition: background 0.2s;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.15s;
 }
 
 tbody tr:hover {
-  background: #f8fafc;
+  background: #f9fafb;
+}
+
+tbody tr:last-child {
+  border-bottom: none;
 }
 
 td {
-  padding: 10px;
-  color: #475569;
+  padding: 16px 20px;
+  color: #374151;
+  vertical-align: middle;
 }
 
 /* Email */
 .email {
-  color: #64748b;
-  font-size: 13px;
+  color: #6b7280;
+  font-size: 14px;
 }
 
 /* Last Login */
 .last-login {
-  color: #64748b;
-  font-size: 13px;
+  color: #6b7280;
+  font-size: 14px;
 }
 
 /* Action Buttons */
 .action-btns {
   display: flex;
-  gap: 5px;
+  gap: 8px;
+  align-items: center;
 }
 
 .small-btn {
-  padding: 4px 8px;
-  border-radius: 5px;
+  padding: 6px 10px;
+  border-radius: 6px;
   border: none;
-  background: #f1f5f9;
-  color: #64748b;
+  background: transparent;
+  color: #6b7280;
   cursor: pointer;
-  font-size: 12px;
-  transition: all 0.2s;
+  font-size: 16px;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .small-btn:hover {
-  background: #e2e8f0;
+  background: #f3f4f6;
+  color: #374151;
 }
 
 .cancel-btn {
-  background: #fef2f2;
   color: #ef4444;
 }
 
 .cancel-btn:hover {
-  background: #fee2e2;
+  background: #fef2f2;
+  color: #dc2626;
 }
 
 /* Pagination */
@@ -174,55 +190,52 @@ td {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #f1f5f9;
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  background: white;
 }
 
 .pagination-btn {
   padding: 8px 16px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 7px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   font-size: 13px;
-  font-weight: 600;
-  color: #475569;
+  font-weight: 500;
+  color: #374151;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s;
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background: #f8fafc;
-  border-color: #6366f1;
-  color: #6366f1;
+  background: #f9fafb;
+  border-color: #9ca3af;
 }
 
 .pagination-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .pagination-info {
-  font-size: 13px;
-  color: #64748b;
+  font-size: 14px;
+  color: #6b7280;
   font-weight: 500;
 }
 
-/* Action Button Primary (from FilterBar content) */
+/* Action Button Primary */
 .action-btn-primary {
-  padding: 6px 13px;
-  border-radius: 7px;
+  padding: 8px 16px;
+  border-radius: 6px;
   border: none;
   background: #6366f1;
   color: #fff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s;
 }
 
 .action-btn-primary:hover {
   background: #4f46e5;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }

@@ -6,10 +6,11 @@ import { SidebarComponent } from '../../component/sidebar/sidebar';
 import { NavbarComponent } from '../../component/navbar/navbar';
 import { DashboardComponent } from '../../component/dashboard/dashboard';
 import { ReservationDashboardComponent } from '../../component/reservation-dashboard/reservation-dashboard';
+import { UsersComponent } from '../../component/users-dashboard/users-dashboard';
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, SidebarComponent, NavbarComponent, DashboardComponent, ReservationDashboardComponent],
+  imports: [CommonModule, RouterModule, SidebarComponent, NavbarComponent, DashboardComponent, UsersComponent ,ReservationDashboardComponent],
   templateUrl: './admindash.html',
   styleUrls: ['./admindash.css']
 })
