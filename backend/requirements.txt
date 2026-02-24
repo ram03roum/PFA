@@ -8,3 +8,7 @@ python-dotenv
 flask-jwt-extended
 mysql-connector-python
 python-dotenv
+scikit-learn
+numpy
+pandas
+groq

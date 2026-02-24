@@ -6,21 +6,25 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
-from routes.auth import auth_bp  # On importe le blueprint du fichier auth.py
-from routes.favorites import favorites_bp
 from flask_jwt_extended import JWTManager
 from extensions import db, migrate, jwt
 from models import User, Destination, Reservation, ActivityLog 
 from datetime import timedelta
-
-# from models import User, Destination ,Reservation, ActivityLog
-
+from routes.favorites import favorites_bp
+from routes.recommendations import recommendations_bp
+from routes.auth import auth_bp
+from routes.dashboard import dashboard_bp
+from routes.reservations import reservations_bp
+from routes.users import users_bp
+from routes.destinations import destinations_bp
+from routes.reservation_routes import client_reservation_bp
 
 
 
 # --- CHARGEMENT DU .ENV ---
 # On remonte d'un dossier (..) car app.py est dans /backend
 load_dotenv(os.path.join(os.path.dirname(__file__), '../.env'))
+print("SECRET_KEY chargée:", os.getenv('SECRET_KEY'))
 
 app = Flask(__name__)
 
@@ -29,8 +33,7 @@ app = Flask(__name__)
 
 # Permet au navigateur de faire ses vérifications de sécurité sans token
 app.config["JWT_SECRET_KEY"] = os.getenv('SECRET_KEY') # Utilisez votre clé secrète
-app.config["JWT_OPTIONS_ARE_TOKEN_REQUIRED"] = False
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24) # Le token durera 24h
+
 
 # On initialise le manager JWT avec l'app
 
@@ -56,7 +59,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')
 
-
 # --RIM--
 # --- INITIALISATION  DES EXTENSIONS ---
 db.init_app(app)
@@ -66,12 +68,6 @@ jwt.init_app(app)
 with app.app_context():
     db.create_all()  # Crée les tables si elles n'existent pas
 # --- IMPORT DES ROUTES ---
-from routes.auth import auth_bp
-from routes.dashboard import dashboard_bp
-from routes.reservations import reservations_bp
-from routes.users import users_bp
-from routes.destinations import destinations_bp
-from routes.reservation_routes import client_reservation_bp
 
 # --- ENREGISTREMENT DES BLUEPRINTS ---
 
@@ -84,6 +80,7 @@ app.register_blueprint(reservations_bp)
 app.register_blueprint(users_bp)
 app.register_blueprint(destinations_bp)
 app.register_blueprint(client_reservation_bp)
+app.register_blueprint(recommendations_bp)
 # -----
     
 # --- ROUTES ---

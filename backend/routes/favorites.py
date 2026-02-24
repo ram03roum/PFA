@@ -35,10 +35,18 @@ def add_favorite():
     if exists:
         return jsonify({"message": "Already in favorites"}), 200
 
+    # 1. Enregistre dans favorites (existant)
     favorite = Favorite(user_id=user_id, destination_id=destination_id)
-
     db.session.add(favorite)
     db.session.commit()
+
+    # 2. Log dans interaction_logs (nouveau)
+    from services.data_collector import DataCollector
+    DataCollector().log_interaction(
+        user_id=user_id,
+        destination_id=destination_id,
+        action='favorite'
+    )
 
     return jsonify({"message": "Added to favorites"}), 201
 
@@ -58,5 +66,12 @@ def clear_favorites(destination_id):
 
     db.session.delete(favorite)
     db.session.commit()
+    
+    from services.data_collector import DataCollector
+    DataCollector().log_interaction(
+        user_id=user_id,
+        destination_id=destination_id,
+        action='cancel'
+    )
 
     return jsonify({"message": "Favori supprimé"}), 200
