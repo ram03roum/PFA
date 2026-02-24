@@ -5,39 +5,41 @@ from models import Favorite, Reservation
 from services.data_collector import DataCollector
 
 
-# from services.personalization import PersonalizationEngine
+from services.personnalisation import PersonalizationEngine
 from extensions import db
 
 recommendations_bp = Blueprint('recommendations', __name__)
 
 collector = DataCollector()
-# engine    = PersonalizationEngine()
-
+def get_engine():
+    """Instancie le moteur une seule fois."""
+    return PersonalizationEngine()
 
 # ─────────────────────────────────────────────────────────────
 # GET /api/recommendations
 # Retourne les destinations personnalisées pour le user connecté
 # Appelé par la page d'accueil Angular au chargement
 # ─────────────────────────────────────────────────────────────
-# @recommendations_bp.route('/api/recommendations', methods=['GET'])
-# @jwt_required(optional=True)
-# def get_recommendations():
+@recommendations_bp.route('/api/recommendations', methods=['GET'])
+@jwt_required(optional=True)
+def get_recommendations():
 
-#     user_id = get_jwt_identity()
+    user_id = get_jwt_identity()
 
-#     # ── User non connecté → destinations populaires ───────────
-#     if not user_id:
-#         destinations = collector.get_popular_destinations(limit=12)
-#         return jsonify({
-#             "source": "popular",
-#             "data": [d.to_dict() for d in destinations]
-#         }), 200
+    # ── User non connecté → destinations populaires ───────────
+    if not user_id:
+        destinations = collector.get_popular_destinations(limit=12)
+        return jsonify({
+            "source": "popular",
+            "data": [d.to_dict() for d in destinations]
+        }), 200
 
-#     # ── User connecté → moteur de personnalisation ────────────
-#     force_refresh = request.args.get('refresh', 'false') == 'true'
-#     result = engine.get_recommendations(user_id, force_refresh=force_refresh)
+    # ── User connecté → moteur de personnalisation ────────────
+    force_refresh = request.args.get('refresh', 'false') == 'true'
+    engine        = get_engine()  # instancié ici, pas au démarrage
+    result = engine.get_recommendations(user_id, force_refresh=force_refresh)
 
-#     return jsonify(result), 200
+    return jsonify(result), 200
 
 
 @recommendations_bp.route('/api/recommendations/test', methods=['GET'])
@@ -56,10 +58,10 @@ def test_algorithm():
     from services.algorithm_filter import AlgorithmFilter
     algo = AlgorithmFilter()
     candidates = algo.filter_candidates(user_data, all_destinations, top_n=10)
-    print(f"DEBUG candidates: {candidates}")
-    print(f"DEBUG type: {type(candidates)}")
-    print(f"DEBUG user_data: {user_data}")
-    print(f"DEBUG all_destinations count: {len(all_destinations)}")
+    # print(f"DEBUG candidates: {candidates}")
+    # print(f"DEBUG type: {type(candidates)}")
+    # print(f"DEBUG user_data: {user_data}")
+    # print(f"DEBUG all_destinations count: {len(all_destinations)}")
     
     # Retourne le résultat brut pour inspection
     return jsonify({
@@ -83,10 +85,7 @@ def test_algorithm():
 
     for c in candidates
     
-]
-        
-        
-        
+] 
     }), 200
 
 
@@ -101,7 +100,6 @@ def log_interaction():
 
     user_id = get_jwt_identity()
     data    = request.get_json()
-
     # Validation des données reçues
     destination_id = data.get('destination_id')
     action         = data.get('action')
@@ -136,9 +134,9 @@ def log_interaction():
     )
 
     # # Invalider le cache si interaction forte
-    # if action in ['favorite', 'reservation', 'cancel']:
-    #     # from services.cache_service import CacheService
-    #     # CacheService().invalidate(user_id)
+    if action in ['favorite', 'reservation', 'cancel']:
+        from services.cache_service import CacheService
+        CacheService().invalidate(user_id)
 
     return jsonify({"message": "interaction enregistrée"}), 201
 

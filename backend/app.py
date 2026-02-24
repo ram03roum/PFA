@@ -89,6 +89,5 @@ app.register_blueprint(recommendations_bp)
 def home():
     return "Backend Flask connecté à Alwaysdata avec succès 🚀"
 
-
 if __name__ == '__main__':
     app.run(debug=True)
