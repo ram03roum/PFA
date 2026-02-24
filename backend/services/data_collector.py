@@ -1,4 +1,7 @@
 # services/data_collector.py
+from flask import views
+
+from routes import favorites
 from models import db, User, Destination, Reservation, Favorite, InteractionLog
 
 class DataCollector:
@@ -8,15 +11,17 @@ class DataCollector:
         Collecte toutes les données d'un utilisateur
         depuis MySQL pour alimenter le moteur.
         """
+        user_id = int(user_id)
 
         # ── Réservations confirmées (signal fort) ─────────────────
-        reservations = Reservation.query.filter_by(
+        reservations = InteractionLog.query.filter_by(
             user_id=user_id,
-            status='confirmed'
+            action='reservation'
         ).all()
 
         # ── Favoris (signal moyen) ─────────────────────────────────
-        favorites = Favorite.query.filter_by(
+        favorites = InteractionLog.query.filter_by(
+            action='favorite',
             user_id=user_id
         ).all()
 
@@ -27,6 +32,16 @@ class DataCollector:
         ).order_by(
             InteractionLog.created_at.desc()
         ).limit(20).all()
+        
+        
+        # ── DEBUG ─────────────────────────────────────────────────
+        print(f"DEBUG user_id: {user_id}")
+        print(f"DEBUG type user_id: {type(user_id)}")
+        print(f"DEBUG reservations count: {len(reservations)}")
+        print(f"DEBUG favorites count: {len(favorites)}")
+        print(f"DEBUG views count: {len(views)}")
+    # ─────────────────────────────────────────────────────────
+    
 
         # ── IDs déjà réservés (à exclure des recommandations) ──────
         reserved_ids = [r.destination_id for r in reservations]

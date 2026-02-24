@@ -47,3 +47,11 @@ Thumbs.db
 node_modules/
 dist/
 .vscode/
+
+
+.env              
+__pycache__/
+*.pyc
+venv/
+.venv/
+instance/

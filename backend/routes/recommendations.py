@@ -60,6 +60,7 @@ def test_algorithm():
     print(f"DEBUG type: {type(candidates)}")
     print(f"DEBUG user_data: {user_data}")
     print(f"DEBUG all_destinations count: {len(all_destinations)}")
+    
     # Retourne le résultat brut pour inspection
     return jsonify({
         "user_id":   user_id,
@@ -77,11 +78,14 @@ def test_algorithm():
         "avgRating":  c['destination'].avgRating,
         "avgCostUSD": c['destination'].avgCostUSD,
         "algo_score": c['algo_score'],
-        "cb_score":   c['cb_score'],
-        "ub_score":   c['ub_score'],
         }
+   
+
     for c in candidates
+    
 ]
+        
+        
         
     }), 200
 
