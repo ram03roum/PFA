@@ -6,6 +6,9 @@ import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { ReservationFormComponent } from '../reservation-form/reservation-form';
+import { RecommendationService } from '../../services/recommenadation.service.ts';
+
+
 @Component({
   selector: 'app-destination-detail',
   standalone: true,
@@ -19,7 +22,8 @@ export class DestinationDetail implements OnInit {
   constructor(private route: ActivatedRoute,
     private http: HttpClient,// Injectez le service HttpClient
     private cdr: ChangeDetectorRef, // Injecte le détecteur de changement
-    private dataService: DataService
+    private dataService: DataService,
+    private recommendationService: RecommendationService
   ) { }
 
   ngOnInit(): void {
@@ -42,10 +46,10 @@ export class DestinationDetail implements OnInit {
         console.log("Données traitées pour affichage :", this.destination);
         this.loading = false;
         this.cdr.detectChanges();
-        // setTimeout(() => {
-        //   this.loading = false;
-        //   this.cdr.detectChanges();
-        // }, 0);
+        const token = localStorage.getItem('access_token');
+        if (token) {
+          this.recommendationService.logInteraction(token, id, 'view');
+        }
         console.log("Données reçues via DataService :", this.destination);
       },
       error: (err) => {

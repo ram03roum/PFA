@@ -41,7 +41,7 @@ class PromptBuilder:
         # Construction du prompt
         prompt = (
             "Tu es un expert en recommandation de voyages personnalises.\n"
-            "Analyse le profil utilisateur et recommande les 5 meilleures destinations.\n\n"
+            "Analyse le profil utilisateur et recommande les 10 meilleures destinations.\n\n"
             "PROFIL UTILISATEUR :\n"
             f"- Destinations reservees : {', '.join(past_destinations) if past_destinations else 'Aucune encore'}\n"
             f"- Destinations favorites : {', '.join(favorites_names) if favorites_names else 'Aucune encore'}\n"

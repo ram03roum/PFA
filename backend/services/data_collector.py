@@ -41,8 +41,6 @@ class DataCollector:
         print(f"DEBUG favorites count: {len(favorites)}")
         print(f"DEBUG views count: {len(views)}")
     # ─────────────────────────────────────────────────────────
-    
-
         # ── IDs déjà réservés (à exclure des recommandations) ──────
         reserved_ids = [r.destination_id for r in reservations]
 
