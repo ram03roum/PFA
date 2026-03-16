@@ -127,7 +127,72 @@ class ActivityLog(db.Model):
             'entity_type': self.entity_type,
             'created_at': self.created_at.strftime('%H:%M') if self.created_at else None,
         }
+
+
+class Conversation(db.Model):
+    __tablename__ = 'conversations'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    title = db.Column(db.String(255), default='Nouvelle conversation')
+    topic = db.Column(db.String(100))  # 'reservation', 'billing', 'general'
+    status = db.Column(db.String(50), default='open')  # 'open', 'closed', 'resolved'
     
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relations
+    user = db.relationship('User', backref=db.backref('conversations', lazy=True))
+    messages = db.relationship('Message', backref='conversation', lazy=True, cascade='all, delete-orphan')
+    summary = db.relationship('ConversationSummary', uselist=False, backref='conversation', cascade='all, delete-orphan')
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'topic': self.topic,
+            'status': self.status,
+            'user_id': self.user_id,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M'),
+            'message_count': len(self.messages)
+        }
+
+
+class Message(db.Model):
+    __tablename__ = 'messages'
+    id = db.Column(db.Integer, primary_key=True)
+    conversation_id = db.Column(db.Integer, db.ForeignKey('conversations.id'), nullable=False)
+    sender_type = db.Column(db.String(50), nullable=False)  # 'user' ou 'ai'
+    content = db.Column(db.Text, nullable=False)
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'conversation_id': self.conversation_id,
+            'sender_type': self.sender_type,
+            'content': self.content,
+            'created_at': self.created_at.strftime('%H:%M')
+        }
+
+
+class ConversationSummary(db.Model):
+    __tablename__ = 'conversation_summaries'
+    id = db.Column(db.Integer, primary_key=True)
+    conversation_id = db.Column(db.Integer, db.ForeignKey('conversations.id'), unique=True, nullable=False)
+    summary = db.Column(db.Text)
+    key_points = db.Column(db.JSON)  # ['point1', 'point2', ...]
+    generated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'conversation_id': self.conversation_id,
+            'summary': self.summary,
+            'key_points': self.key_points,
+            'generated_at': self.generated_at.strftime('%Y-%m-%d %H:%M')
+        }
+
 
 class Favorite(db.Model):
     __tablename__ = 'favorites'  # <--- Ajoute cette ligne exacte

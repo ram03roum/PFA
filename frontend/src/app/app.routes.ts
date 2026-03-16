@@ -14,6 +14,7 @@ import { AdminLayoutComponent } from './pages/admindash/admindash';
 import { ReservationFormComponent } from './pages/reservation-form/reservation-form';
 import { ReservationDashboardComponent } from './component/reservation-dashboard/reservation-dashboard';
 import { FavorisComponent } from './pages/favoris/favoris';
+import { ChatComponent } from './component/chat/chat.component';
 import { AuthGuard } from './guards/auth-guard';
 
 import { UsersComponent } from './component/users-dashboard/users-dashboard';
@@ -30,5 +31,6 @@ export const routes: Routes = [
   { path: 'users', component: UsersComponent},
   { path: 'formreservation/:id', component: ReservationFormComponent },
   { path: 'favoris',component: FavorisComponent, canActivate: [AuthGuard] },
+  { path: 'chat', component: ChatComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '' },
 ];

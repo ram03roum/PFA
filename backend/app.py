@@ -85,6 +85,7 @@ from routes.users import users_bp
 from routes.destinations import destinations_bp
 from routes.reservation_routes import client_reservation_bp
 from routes.favorites import favorites_bp
+from routes.chat import chat_bp
 
 # --- ENREGISTREMENT DES BLUEPRINTS ---
 
@@ -97,6 +98,7 @@ app.register_blueprint(reservations_bp)
 app.register_blueprint(users_bp)
 app.register_blueprint(destinations_bp)
 app.register_blueprint(client_reservation_bp)
+app.register_blueprint(chat_bp)  # Chat avec IA Gemini
 # -----
     
 # --- ROUTES ---

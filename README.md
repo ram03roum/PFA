@@ -4,6 +4,18 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ## Development server
 
+This project includes a backend Flask API that uses Google Gemini for AI chat
+responses. Before running the server you must set the following environment
+variables (e.g. in a `.env` file at the root of the repo):
+
+```env
+GEMINI_API_KEY=<your key from Google Cloud>
+# optionally override if default model is not available
+GEMINI_MODEL=gemini-1.5-flash
+```
+
+The code will try to list available models if initialization fails with a 404.
+
 To start a local development server, run:
 
 ```bash
