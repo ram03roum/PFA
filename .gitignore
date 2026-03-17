@@ -54,7 +54,7 @@ __pycache__/
 node_modules/
 dist/
 
-# .env
+.env
 frontend/.angular/cache/21.0.4/pfa/vite/deps/chunk-2PV23YZM.js
         frontend/.angular/cache/21.0.4/pfa/vite/deps/chunk-2PV23YZM.js.map
         frontend/.angular/cache/21.0.4/pfa/vite/deps/chunk-J6X2EDVQ.js
