@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 
@@ -33,5 +33,15 @@ export class DataService {
         return null; // Si rien ne correspond
       })
     );
+  }
+
+  searchDestinations(params: {query?: string, name?: string, country?: string, continent?: string, type?: string}): Observable<any[]> {
+    let httpParams = new HttpParams();
+    if (params.query) httpParams = httpParams.set('query', params.query);
+    if (params.name) httpParams = httpParams.set('name', params.name);
+    if (params.country) httpParams = httpParams.set('country', params.country);
+    if (params.continent) httpParams = httpParams.set('continent', params.continent);
+    if (params.type) httpParams = httpParams.set('type', params.type);
+    return this.http.get<any[]>(`${this.apiUrl}/search`, { params: httpParams });
   }
 }

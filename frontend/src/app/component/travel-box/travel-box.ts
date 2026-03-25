@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-travel-box',
@@ -44,7 +45,7 @@ export class TravelBoxComponent implements OnInit {
     }
   };
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -55,6 +56,14 @@ export class TravelBoxComponent implements OnInit {
 
   search(): void {
     console.log('Searching with data:', this.searchData[this.activeTab as keyof typeof this.searchData]);
-    alert('Search functionality will be implemented soon!');
+    if (this.activeTab === 'tours') {
+      const params: any = {};
+      if (this.searchData.tours.destinationCountry) {
+        params.country = this.searchData.tours.destinationCountry;
+      }
+      this.router.navigate(['/destinations'], { queryParams: params });
+    } else {
+      alert('Search functionality for ' + this.activeTab + ' will be implemented soon!');
+    }
   }
 }

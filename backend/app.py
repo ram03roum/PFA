@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from routes.auth import auth_bp  # On importe le blueprint du fichier auth.py
 from routes.favorites import favorites_bp
+from routes.ai import ai_bp
 from flask_jwt_extended import JWTManager
 from extensions import db, migrate, jwt
 from models import User, Destination, Reservation, ActivityLog 
@@ -84,6 +85,7 @@ app.register_blueprint(reservations_bp)
 app.register_blueprint(users_bp)
 app.register_blueprint(destinations_bp)
 app.register_blueprint(client_reservation_bp)
+app.register_blueprint(ai_bp)
 # -----
     
 # --- ROUTES ---

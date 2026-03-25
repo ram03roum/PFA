@@ -14,6 +14,7 @@ import { AdminLayoutComponent } from './pages/admindash/admindash';
 import { ReservationFormComponent } from './pages/reservation-form/reservation-form';
 import { ReservationDashboardComponent } from './component/reservation-dashboard/reservation-dashboard';
 import { FavorisComponent } from './pages/favoris/favoris';
+import { AiAssistantComponent } from './pages/ai-assistant/ai-assistant';
 import { AuthGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'destinations/:id', component: DestinationDetail },
   { path: 'about', component: About },
   { path: 'contact', component: ContactComponent },
+  { path: 'ai-assistant', component: AiAssistantComponent },
   { path: 'admin', component: AdminLayoutComponent },
   { path: 'reservations', component: ReservationDashboardComponent },
   { path: 'formreservation/:id', component: ReservationFormComponent },

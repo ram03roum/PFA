@@ -1,0 +1,43 @@
+<div class="ai-assistant-container">
+  <h2>Assistant IA CRM</h2>
+
+  <section class="card">
+    <h3>1. Générer un email commercial</h3>
+    <label>Nom du client</label>
+    <input type="text" [(ngModel)]="customerName" placeholder="Ex : Alice" />
+
+    <label>Sujet</label>
+    <input type="text" [(ngModel)]="subject" placeholder="Ex : Offre spéciale été" />
+
+    <label>Contexte / message</label>
+    <textarea [(ngModel)]="context" rows="4" placeholder="Contexte de la relation client"></textarea>
+
+    <button (click)="generateEmail()" [disabled]="loadingEmail">{{loadingEmail ? 'Génération...' : 'Générer Email'}}</button>
+
+    <div *ngIf="emailResult" class="result-box">
+      <h4>Email généré</h4>
+      <p>{{emailResult}}</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>2. Résumer une conversation</h3>
+    <label>Texte conversation</label>
+    <textarea [(ngModel)]="conversation" rows="6" placeholder="Copier la conversation client ici"></textarea>
+
+    <button (click)="summarizeConversation()" [disabled]="loadingSummary">{{loadingSummary ? 'Résumé...' : 'Résumer'}}</button>
+    <button (click)="generateFollowup()" [disabled]="loadingFollowup">{{loadingFollowup ? 'Suggestion...' : 'Proposition relance'}}</button>
+
+    <div *ngIf="summaryResult" class="result-box">
+      <h4>Résumé</h4>
+      <p>{{summaryResult}}</p>
+    </div>
+
+    <div *ngIf="followupResult" class="result-box">
+      <h4>Relance</h4>
+      <p>{{followupResult}}</p>
+    </div>
+  </section>
+
+  <div *ngIf="errorMessage" class="error-box">{{errorMessage}}</div>
+</div>

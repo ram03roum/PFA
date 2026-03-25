@@ -1,5 +1,5 @@
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from models import Destination
 
 # Créer le Blueprint
@@ -19,3 +19,30 @@ def get_destinations():
 def get_destination_detail(dest_id):
     dest = Destination.query.get_or_404(dest_id)
     return jsonify([dest.to_dict()])
+
+@destinations_bp.route('/destinations/search', methods=['GET'])
+def search_destinations():
+    query_text = request.args.get('query')
+    name = request.args.get('name')
+    country = request.args.get('country')
+    continent = request.args.get('continent')
+    type_ = request.args.get('type')
+
+    query = Destination.query
+
+    if query_text:
+        q = f"%{query_text}%"
+        query = query.filter(
+            (Destination.name.ilike(q)) | (Destination.country.ilike(q))
+        )
+    if name:
+        query = query.filter(Destination.name.ilike(f'%{name}%'))
+    if country:
+        query = query.filter(Destination.country.ilike(f'%{country}%'))
+    if continent:
+        query = query.filter(Destination.continent.ilike(f'%{continent}%'))
+    if type_:
+        query = query.filter(Destination.type.ilike(f'%{type_}%'))
+
+    results = query.all()
+    return jsonify([d.to_dict() for d in results])

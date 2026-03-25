@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { FavoritesService } from '../../services/favorites.service'; // 1. Importe le service
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
@@ -29,6 +29,7 @@ export class DestinationsPageComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router, // ✅ ajoute juste cette ligne
+    private route: ActivatedRoute,
 
   ) {
 
@@ -66,6 +67,30 @@ export class DestinationsPageComponent implements OnInit {
         this.favoriteService.setFavorites([]);
       }
 
+      this.route.queryParams.subscribe(params => {
+        this.loadDestinations(params);
+      });
+    }
+  }
+
+  loadDestinations(params: any = {}): void {
+    this.chargement = true;
+    const hasSearch = params.query || params.country || params.name || params.continent || params.type;
+    if (hasSearch) {
+      this.dataService.searchDestinations(params).subscribe({
+        next: (data) => {
+          this.destinations = data;
+          this.currentPage = 1;
+          this.chargement = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Erreur chargement destinations recherchées :', err);
+          this.chargement = false;
+          this.cdr.detectChanges();
+        }
+      });
+    } else {
       this.chargerDestinations();
     }
   }
