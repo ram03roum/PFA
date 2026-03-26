@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
+from routes.auth import auth_bp  # On importe le blueprint du fichier auth.py
 from flask_jwt_extended import JWTManager
 from extensions import db, migrate, jwt
 from models import User, Destination, Reservation, ActivityLog 
@@ -33,7 +34,6 @@ app = Flask(__name__)
 
 # Permet au navigateur de faire ses vérifications de sécurité sans token
 app.config["JWT_SECRET_KEY"] = os.getenv('SECRET_KEY') # Utilisez votre clé secrète
-
 
 # On initialise le manager JWT avec l'app
 
@@ -88,6 +88,7 @@ app.register_blueprint(recommendations_bp)
 @app.route("/")
 def home():
     return "Backend Flask connecté à Alwaysdata avec succès 🚀"
+
 
 if __name__ == '__main__':
     app.run(debug=True)

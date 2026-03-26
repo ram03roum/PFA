@@ -136,8 +136,7 @@ class Favorite(db.Model):
     user_id = db.Column(db.Integer)
     destination_id = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    
+
 class InteractionLog(db.Model):
     __tablename__ = 'interaction_logs'
 
