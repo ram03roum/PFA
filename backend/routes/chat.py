@@ -154,18 +154,18 @@ def send_message():
 # GET /api/chat/summary/<id>
 # Générer un résumé de la conversation
 # ─────────────────────────────────────────────────
-@chat_bp.route('/chat/summary/<int:conv_id>', methods=['GET'])
+@chat_bp.route('/chat/summary/<int:conversation_id>', methods=['GET'])
 @jwt_required()
-def get_summary(conv_id):
+def get_summary(conversation_id):
     try:
         user_id = get_jwt_identity()
-        conv = Conversation.query.filter_by(id=conv_id, user_id=user_id).first()
+        conv = Conversation.query.filter_by(id=conversation_id, user_id=user_id).first()
         
         if not conv:
             return jsonify({'error': 'Conversation non trouvée'}), 404
         
         # Vérifier si un résumé existe déjà
-        existing_summary = ConversationSummary.query.filter_by(conversation_id=conv_id).first()
+        existing_summary = ConversationSummary.query.filter_by(conversation_id=conversation_id).first()
         if existing_summary:
             return jsonify({
                 'success': True,
@@ -173,7 +173,7 @@ def get_summary(conv_id):
             }), 200
         
         # Générer le résumé
-        messages = Message.query.filter_by(conversation_id=conv_id).all()
+        messages = Message.query.filter_by(conversation_id=conversation_id).all()
         messages_for_ai = [
             {'role': 'user' if m.sender_type == 'user' else 'assistant', 'content': m.content}
             for m in messages
@@ -183,7 +183,7 @@ def get_summary(conv_id):
         
         # Sauvegarder le résumé
         summary = ConversationSummary(
-            conversation_id=conv_id,
+            conversation_id=conversation_id,
             summary=summary_data['summary'],
             key_points=summary_data['key_points']
         )

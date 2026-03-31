@@ -115,7 +115,6 @@ def get_ai_response(messages, user_context=""):
     """
     # 1️⃣ Dernier message utilisateur (pour extraire filtres)
     user_message = messages[-1]["content"]
-
     # 2️⃣ Analyse de la question pour créer filtres
     filters = analyze_user_question(user_message)
 
@@ -198,10 +197,11 @@ CONVERSATION À RÉSUMER:
 Réponds maintenant dans le format exact spécifié ci-dessus."""
     
     try:
-        response = model.generate_content(
+        model_summary = genai.GenerativeModel('gemini-1.5-flash')
+        response = model_summary.generate_content(
             prompt,
             generation_config=genai.types.GenerationConfig(
-                temperature=0.5,
+                temperature=0.7,
                 max_output_tokens=300
             )
         )
