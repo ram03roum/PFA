@@ -201,3 +201,97 @@ class Favorite(db.Model):
     destination_id = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class InteractionLog(db.Model):
+    __tablename__ = 'interaction_logs'
+
+    id             = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id        = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    destination_id = db.Column(db.Integer, db.ForeignKey('destinations.id'), nullable=False)
+    action         = db.Column(
+                        db.Enum('view', 'favorite', 'reservation', 'cancel'),
+                        nullable=False
+                     )
+    created_at     = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    # Relations
+    user        = db.relationship('User', backref='interaction_logs')
+    destination = db.relationship('Destination', backref='interaction_logs')
+
+    # Poids de chaque action pour le moteur
+    ACTION_WEIGHTS = {
+        'view':        0.5,
+        'favorite':    1.0,
+        'reservation': 2.0,
+        'cancel':     -1.0,
+    }
+
+    def get_weight(self):
+        """Retourne le poids de cette interaction pour le scoring."""
+        return self.ACTION_WEIGHTS.get(self.action, 0)
+
+    def to_dict(self):
+        return {
+            "id":             self.id,
+            "user_id":        self.user_id,
+            "destination_id": self.destination_id,
+            "action":         self.action,
+            "weight":         self.get_weight(),
+            "created_at":     self.created_at.isoformat(),
+        }
+
+    def __repr__(self):
+        return f'<InteractionLog user={self.user_id} action={self.action} dest={self.destination_id}>'
+
+
+class LlmLog(db.Model):
+    __tablename__ = 'llm_logs'
+
+    id            = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id       = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    tokens_used   = db.Column(db.Integer, default=0)
+    response_time = db.Column(db.Float, default=0.0)   # en secondes
+    success       = db.Column(db.Boolean, default=True)
+    created_at    = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    # Relation (nullable car si user supprimé on garde le log)
+    user = db.relationship('User', backref='llm_logs')
+
+    def to_dict(self):
+        return {
+            "id":            self.id,
+            "user_id":       self.user_id,
+            "tokens_used":   self.tokens_used,
+            "response_time": self.response_time,
+            "success":       self.success,
+            "created_at":    self.created_at.isoformat(),
+        }
+
+    def __repr__(self):
+        return f'<LlmLog user={self.user_id} success={self.success} tokens={self.tokens_used}>'
+    
+class RecommendationCache(db.Model):
+    __tablename__ = 'recommendation_cache'
+
+    user_id         = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    recommendations = db.Column(db.JSON, nullable=False)
+    generated_at    = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    expires_at      = db.Column(db.DateTime, nullable=False)
+
+    # Relation
+    user = db.relationship('User', backref='recommendation_cache')
+
+    def is_expired(self):
+        """Vérifie si le cache a expiré."""
+        return datetime.utcnow() > self.expires_at
+
+    def to_dict(self):
+        return {
+            "user_id":         self.user_id,
+            "recommendations": self.recommendations,
+            "generated_at":    self.generated_at.isoformat(),
+            "expires_at":      self.expires_at.isoformat(),
+            "is_expired":      self.is_expired(),
+        }
+
+    def __repr__(self):
+        return f'<RecommendationCache user={self.user_id} expires={self.expires_at}>'

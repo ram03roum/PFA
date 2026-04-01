@@ -197,7 +197,7 @@ CONVERSATION À RÉSUMER:
 Réponds maintenant dans le format exact spécifié ci-dessus."""
     
     try:
-        model_summary = genai.GenerativeModel('gemini-1.5-flash')
+        model_summary = genai.GenerativeModel('gemini-2.5-flash')
         response = model_summary.generate_content(
             prompt,
             generation_config=genai.types.GenerationConfig(

@@ -9,3 +9,7 @@ flask-jwt-extended
 mysql-connector-python
 python-dotenv
 openai
+scikit-learn
+numpy
+pandas
+groq

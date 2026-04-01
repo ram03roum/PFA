@@ -313,4 +313,8 @@ backend/venv/
 
 # Fichiers de build
 dist/
+<<<<<<< HEAD
 
+=======
+.env
+>>>>>>> e2a5068f41b943070194ae82d172a49a407ed1db

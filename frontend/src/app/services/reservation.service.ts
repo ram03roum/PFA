@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { RecommendationService } from './recommenadation.service.ts';
 
 export interface Reservation {
   id?: number;
@@ -19,7 +20,9 @@ export interface Reservation {
 export class ReservationService {
   private apiUrl = 'http://localhost:5000/client'; // Assurez-vous que c'est la bonne URL pour votre backend Flask
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+    private recommendationService: RecommendationService
+  ) { }
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('access_token');
@@ -34,7 +37,7 @@ export class ReservationService {
   }
   addActivityLog(action: string, entityType: string, entityId: number, details: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/logs`, {
-      action, 
+      action,
       entity_type: entityType,
       entity_id: entityId,
       details

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { RecommendationService } from './recommenadation.service.ts';
 
 
 @Injectable({
@@ -14,7 +15,9 @@ export class FavoritesService {
   private favoritesSubject = new BehaviorSubject<Set<number>>(new Set());
   favorites$ = this.favoritesSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+    private recommendationService: RecommendationService
+  ) {
     console.log('FavoritesService initialisé');
     console.log(this.favoritesSubject);
     // ✅ On recharge les favoris du localStorage immédiatement
@@ -94,15 +97,15 @@ export class FavoritesService {
       newFavorites.add(destinationId);
     }
 
-    // On met à jour le Subject immédiatement -> Le cœur change dans le HTML
     this.favoritesSubject.next(newFavorites);
 
-    // --- ÉTAPE 2 : SYNCHRONISATION AVEC LE BACKEND ---
     if (isRemoving) {
       this.removeFavorite(destinationId, token).subscribe({
+        next: () => {
+          // ← ajoute cette ligne
+          this.recommendationService.logInteraction(token, destinationId, 'cancel');
+        },
         error: (err) => {
-          console.error('Erreur backend, on remet le favori');
-          // En cas d'erreur, on annule le changement visuel
           const rollbackSet = new Set(this.favoritesSubject.value);
           rollbackSet.add(destinationId);
           this.favoritesSubject.next(rollbackSet);
@@ -110,9 +113,11 @@ export class FavoritesService {
       });
     } else {
       this.addFavorite(destinationId, token).subscribe({
+        next: () => {
+          // ← ajoute cette ligne
+          this.recommendationService.logInteraction(token, destinationId, 'favorite');
+        },
         error: (err) => {
-          console.error('Erreur backend, on retire le favori');
-          // En cas d'erreur, on annule le changement visuel
           const rollbackSet = new Set(this.favoritesSubject.value);
           rollbackSet.delete(destinationId);
           this.favoritesSubject.next(rollbackSet);

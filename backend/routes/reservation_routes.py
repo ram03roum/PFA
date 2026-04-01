@@ -8,7 +8,6 @@ client_reservation_bp = Blueprint('client_reservations', __name__, url_prefix='/
 
 #################################
 ######### Vue Client ############
-
 @client_reservation_bp.route('/reservations', methods=['POST'])
 @jwt_required()
 def create_reservation():

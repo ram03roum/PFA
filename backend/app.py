@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 from flask_migrate import Migrate
 from flask import Flask, jsonify, request
@@ -5,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
+from routes.auth import auth_bp  # On importe le blueprint du fichier auth.py
 from flask_jwt_extended import JWTManager
 from extensions import db, migrate, jwt
 from models import User, Destination, Reservation, ActivityLog 
@@ -15,6 +17,14 @@ from tasks.scheduled_jobs import check_and_send_reminders
 
 # from models import User, Destination ,Reservation, ActivityLog
 
+from routes.favorites import favorites_bp
+from routes.recommendations import recommendations_bp
+from routes.auth import auth_bp
+from routes.dashboard import dashboard_bp
+from routes.reservations import reservations_bp
+from routes.users import users_bp
+from routes.destinations import destinations_bp
+from routes.reservation_routes import client_reservation_bp
 
 
 

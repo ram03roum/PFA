@@ -1,9 +1,10 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { DataService } from '../../services/data.service';
-import { FavoritesService } from '../../services/favorites.service'; // 1. Importe le service
+import { FavoritesService } from '../../services/favorites.service';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
+import { RecommendationService } from '../../services/recommenadation.service.ts';
 
 @Component({
   selector: 'app-destinations-page',
@@ -13,65 +14,77 @@ import { ChangeDetectorRef } from '@angular/core';
   styleUrls: ['./destinations-page.css'],
 })
 export class DestinationsPageComponent implements OnInit {
+
   destinations: any[] = [];
   chargement: boolean = true;
   currentPage: number = 1;
   itemsPerPage: number = 20;
   favorites = new Set<number>();
-  // ✅ On déclare la variable pour que le HTML puisse la voir
-  // On lui assigne l'observable qui vient du service
   token: string | null = null;
-
+  isConnected: boolean = false;
+  isPersonalized: boolean = false;  // true si destinations personnalisées
+  recommendationSource: string = '';     // 'hybrid', 'cache', 'popular'
 
   constructor(
     private dataService: DataService,
-    public favoriteService: FavoritesService, // 2. Injecte le service ici
+    public favoriteService: FavoritesService,
+    private recommendationService: RecommendationService,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router, // ✅ ajoute juste cette ligne
-
+    private router: Router,
   ) {
-
-    // On ne touche au localStorage que si on est côté client (navigateur)
     if (isPlatformBrowser(this.platformId)) {
-      this.token = localStorage.getItem('token');
+      this.token = localStorage.getItem('access_token');
+      this.isConnected = !!this.token;
     }
   }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('access_token'); // Vérifie bien si c'est 'token' ou 'access_token'
-      // console.log('Valeur du token récupérée :'); // <--- Ajoute ça ICI
 
-      // console.log('Valeur du token récupérée :', token); // <--- Ajoute ça ICI
-      // 1. On s'abonne au flux du service. 
-      // Dès que le service change (clic ou chargement), ce code s'exécute TOUT SEUL.
-      this.favoriteService.favorites$.subscribe(ids => {
-        // On ne fait que lire ici, on ne modifie rien manuellement
-        // console.log('Mise à jour visuelle des favoris reçue');
-      });
+      this.favoriteService.favorites$.subscribe(ids => { });
 
-      if (token) {
-        // 2. On demande au serveur les favoris
-        this.favoriteService.getFavorites(token).subscribe({
-          next: (favIds: any[]) => {
-            // On envoie les données au service pour qu'il remplisse son BehaviorSubject
-            this.favoriteService.setFavorites(favIds);
-            console.log('Favoris chargés depuis le serveur :', favIds);
-          },
-          error: (err) => console.error('Erreur de chargement', err)
+      if (this.token) {
+        // ── User connecté ─────────────────────────────────────
+        this.favoriteService.getFavorites(this.token).subscribe({
+          next: (favIds: any[]) => this.favoriteService.setFavorites(favIds),
+          error: (err) => console.error('Erreur favoris', err)
         });
-      } else {
-        // 3. Si pas de token, on vide le service
-        this.favoriteService.setFavorites([]);
-      }
 
-      this.chargerDestinations();
+        // Charger destinations personnalisées
+        this.chargerRecommandations();
+
+      } else {
+        // ── User non connecté ─────────────────────────────────
+        this.chargerDestinations();
+      }
     }
   }
 
+  // ── Destinations personnalisées (user connecté) ─────────────
+  chargerRecommandations(): void {
+    this.chargement = true;
+    this.recommendationService.getRecommendations(this.token!).subscribe({
+      next: (result) => {
+        this.destinations = result.data;
+        this.isPersonalized = true;
+        this.recommendationSource = result.source;
+        this.currentPage = 1;
+        this.chargement = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Erreur recommandations:', err);
+        // Fallback → toutes les destinations
+        this.chargerDestinations();
+      }
+    });
+  }
+
+  // ── Toutes les destinations (user non connecté) ─────────────
   chargerDestinations(): void {
     this.chargement = true;
+    this.isPersonalized = false;
     this.dataService.getDestinations().subscribe({
       next: (data) => {
         this.destinations = data;
@@ -80,14 +93,28 @@ export class DestinationsPageComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Erreur chargement destinations :', err);
+        console.error('Erreur destinations:', err);
         this.chargement = false;
         this.cdr.detectChanges();
       }
     });
   }
 
-  // --- PAGINATION ---
+  // ── Rafraîchir les recommandations ──────────────────────────
+  rafraichirRecommandations(): void {
+    this.chargement = true;
+    this.recommendationService.getRecommendations(this.token!, true).subscribe({
+      next: (result) => {
+        this.destinations = result.data;
+        this.recommendationSource = result.source;
+        this.chargement = false;
+        this.cdr.detectChanges();
+      },
+      error: () => this.chargement = false
+    });
+  }
+
+  // ── Pagination ───────────────────────────────────────────────
   get paginatedDestinations(): any[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     return this.destinations.slice(startIndex, startIndex + this.itemsPerPage);
@@ -103,24 +130,19 @@ export class DestinationsPageComponent implements OnInit {
     }
   }
 
-  // --- GESTION DES FAVORIS (Lien avec le Backend) ---
-  // if(token:) {
-  //   console.error("Utilisateur non connecté !");
-  //   return;
-  // }
-
+  // ── Favoris ──────────────────────────────────────────────────
   toggleFavorite(id: number): void {
     const token = localStorage.getItem('access_token') || '';
-    // ❌ Non connecté → redirection login
     if (!token) {
       this.router.navigate(['/login']);
       return;
     }
     this.favoriteService.toggleFavorite(id, token);
+
+    // Log interaction pour le moteur IA
+    this.recommendationService.logInteraction(token, id, 'favorite');
   }
 
-
-  // Ta fonction de vérification dans le HTML doit maintenant appeler le SERVICE
   checkIfFavorite(id: number): boolean {
     return this.favoriteService.isFavorite(id);
   }
