@@ -109,6 +109,8 @@ app.register_blueprint(users_bp)
 app.register_blueprint(destinations_bp)
 app.register_blueprint(client_reservation_bp)
 app.register_blueprint(chat_bp)  # Chat avec IA Gemini
+app.register_blueprint(recommendations_bp)
+
 # -----
     
 # --- ROUTES ---
