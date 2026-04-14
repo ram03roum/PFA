@@ -28,7 +28,7 @@ def search_destinations():
     if len(country) < 2:
         return jsonify([])
 
-    # ── Étape A : Groq extrait l'intention ────────────────────
+    # ── Étape A : Groq extrait l'intention ────────
     try:
         response = groq_client.chat.completions.create(
             model="llama-3.3-70b-versatile",
