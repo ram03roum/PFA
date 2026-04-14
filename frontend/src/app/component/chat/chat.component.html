@@ -1,11 +1,11 @@
 <div class="chat-container">
-  <!-- Sidebar - Conversations -->
+
+  <!-- Sidebar -->
   <div class="chat-sidebar">
     <button class="btn-new-chat" (click)="showNewConvForm = !showNewConvForm">
       ➕ Nouvelle conversation
     </button>
 
-    <!-- Formulaire nouvelle conversation -->
     <div *ngIf="showNewConvForm" class="new-conv-form">
       <input
         type="text"
@@ -23,7 +23,6 @@
       <button (click)="showNewConvForm = false" class="btn-secondary">Annuler</button>
     </div>
 
-    <!-- Liste des conversations -->
     <div class="conversations-list">
       <div
         *ngFor="let conv of conversations"
@@ -35,19 +34,20 @@
         <div class="conv-meta">💬 {{ conv.message_count }} • {{ conv.created_at }}</div>
         <div class="conv-topic">{{ conv.topic }}</div>
       </div>
-
       <div *ngIf="conversations.length === 0" class="empty-message">Aucune conversation</div>
     </div>
   </div>
 
   <!-- Chat Area -->
   <div class="chat-area">
+
     <div *ngIf="!currentConversation" class="empty-state">
       <div class="empty-icon">💬</div>
       <p>Sélectionnez une conversation ou créez-en une nouvelle</p>
     </div>
 
     <div *ngIf="currentConversation" class="chat-content">
+
       <!-- Header -->
       <div class="chat-header">
         <div class="header-info">
@@ -55,15 +55,16 @@
           <span class="topic-badge">{{ currentConversation.topic }}</span>
         </div>
         <div class="chat-actions">
-          <button (click)="getSummary()" class="btn-icon" title="Générer un résumé">📋</button>
+          <!-- <button (click)="getSummary()" class="btn-icon" title="Générer un résumé">📋</button> -->
           <button (click)="closeConversation()" class="btn-icon" title="Fermer">✕</button>
         </div>
       </div>
 
-      <!-- Messages -->
+      <!-- ✅ Zone messages — scroll vers le bas grâce à flex-direction + overflow -->
       <div #messagesContainer class="messages-area">
-        <div *ngIf="messages.length === 0" class="no-messages">Commencez la conversation...</div>
-
+        <div *ngIf="messages.length === 0" class="no-messages">
+          Commencez la conversation...
+        </div>
         <div
           *ngFor="let msg of messages"
           [ngClass]="getSenderClass(msg.sender_type)"
@@ -74,27 +75,38 @@
             <div class="message-time">{{ msg.created_at }}</div>
           </div>
         </div>
+
+        <!-- Indicateur de chargement IA -->
+        <div *ngIf="isLoading" class="message-wrapper ai-message">
+          <div class="message">
+            <div class="message-content typing-indicator">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Input -->
+      <!-- ✅ Input remplacé par textarea -->
       <div class="chat-input-area">
-        <input
-          type="text"
-          placeholder="Tapez votre message..."
+        <textarea
+          placeholder="Tapez votre message... (Entrée pour envoyer, Maj+Entrée pour nouvelle ligne)"
           [(ngModel)]="newMessage"
-          (keyup.enter)="sendMessage()"
+          (keydown)="onKeyDown($event)"
+          (input)="autoResize($event)"
           [disabled]="isLoading"
-          class="input-field"
-        />
+          class="chat-textarea"
+          rows="1"
+        ></textarea>
         <button
           (click)="sendMessage()"
           [disabled]="isLoading || !newMessage.trim()"
           class="btn-send"
         >
-          <span *ngIf="!isLoading">✈️ Envoyer</span>
-          <span *ngIf="isLoading">⏳...</span>
+          <span *ngIf="!isLoading">✈️</span>
+          <span *ngIf="isLoading">⏳</span>
         </button>
       </div>
+
     </div>
   </div>
 </div>

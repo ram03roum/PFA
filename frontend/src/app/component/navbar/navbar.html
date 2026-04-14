@@ -1,3 +1,35 @@
+<!-- <header class="navbar">
+  <div class="navbar-left">
+    <h1 class="page-title">
+      <span class="page-icon">{{ pageIcon }}</span>
+      {{ pageTitle }}
+    </h1>
+  </div>
+
+  <div class="navbar-right"> -->
+    <!-- Search Box -->
+    <!-- <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        placeholder="Rechercher..."
+        class="search-input"
+      />
+    </div> -->
+
+    <!-- Notifications -->
+    <!-- <button class="notif-btn">
+      🔔 -->
+      <!-- <span class="notif-badge">5</span> -->
+    <!-- </button> -->
+
+    <!-- User Avatar -->
+    <!-- <div class="user-avatar" >{{ getInitials(authService.getCurrentUser()?.name || '') }}</div>
+  </div>
+</header> -->
+
 <header class="navbar">
   <div class="navbar-left">
     <h1 class="page-title">
@@ -20,12 +52,52 @@
     </div>
 
     <!-- Notifications -->
-    <button class="notif-btn">
-      🔔
-      <!-- <span class="notif-badge">5</span> -->
-    </button>
+    <div class="notif-wrapper">
+      <button class="notif-btn" (click)="toggleDropdown()">
+        🔔
+        <span class="notif-badge" *ngIf="unreadCount > 0">
+          {{ unreadCount > 99 ? '99+' : unreadCount }}
+        </span>
+      </button>
+
+      <!-- Dropdown -->
+      <div class="notif-dropdown" *ngIf="showDropdown">
+        <div class="notif-header">
+          <span class="notif-title">Messages clients</span>
+          <button class="mark-all-btn" (click)="markAllRead()">Tout lu</button>
+        </div>
+
+        <div class="notif-empty" *ngIf="messages.length === 0">
+          Aucun message 📭
+        </div>
+
+        <div
+          class="notif-item"
+          *ngFor="let msg of messages"
+          [class.unread]="!msg.is_read"
+        >
+          <div class="notif-avatar">{{ msg.name[0] }}</div>
+          <div class="notif-content">
+            <div class="notif-name">{{ msg.name }}</div>
+            <div class="notif-subject">{{ msg.subject || 'Sans sujet' }}</div>
+            <div class="notif-meta">
+              <span class="notif-category">{{ getCategoryBadge(msg.category) }}</span>
+              <span class="notif-time">{{ msg.created_at }}</span>
+            </div>
+          </div>
+          <span class="unread-dot" *ngIf="!msg.is_read"></span>
+        </div>
+
+        <div class="notif-footer">
+          Voir tous les messages →
+        </div>
+      </div>
+
+      <!-- Overlay pour fermer -->
+      <div class="notif-overlay" *ngIf="showDropdown" (click)="closeDropdown()"></div>
+    </div>
 
     <!-- User Avatar -->
-    <div class="user-avatar" >{{ getInitials(authService.getCurrentUser()?.name || '') }}</div>
+    <div class="user-avatar">{{ getInitials(authService.getCurrentUser()?.name || '') }}</div>
   </div>
 </header>

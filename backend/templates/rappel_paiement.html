@@ -9,6 +9,7 @@
         <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
             <p><strong>Détails du séjour :</strong></p>
             <ul>
+                <li>Destination : {{ reservation.destination }}</li>
                 <li>Dates : du {{ reservation.check_in }} au {{ reservation.check_out }}</li>
                 <li>Montant total : <strong>{{ reservation.total_amount }} €</strong></li>
             </ul>

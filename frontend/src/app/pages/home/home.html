@@ -1,6 +1,5 @@
 <app-header></app-header>
 
-<!-- Hero Section -->
 <section class="hero-section">
   <div class="hero-overlay">
     <div class="hero-container">
@@ -12,7 +11,7 @@
           <i class="fas fa-map-marker-alt"></i>
           <div class="input-group">
             <label>Destination</label>
-            <input type="text" placeholder="Où allez-vous ?">
+            <input type="text" [(ngModel)]="searchDestination" placeholder="Où allez-vous ?">
           </div>
         </div>
 
@@ -22,11 +21,11 @@
           <i class="fas fa-calendar-alt"></i>
           <div class="input-group">
             <label>Date</label>
-            <input type="date">
+            <input type="date" [(ngModel)]="searchDate">
           </div>
         </div>
 
-        <button class="search-button">Rechercher</button>
+        <button class="search-button" (click)="onSearch()">Rechercher</button>
       </div>
     </div>
   </div>

@@ -1,18 +1,27 @@
-<!-- src/app/components/admin/users/users.component.html -->
 <div class="users-container">
-  
-  <!-- ✅ Filter Bar -->
-  <app-filter-bar 
-    [filters]="filters" 
+
+  <!-- Filter Bar -->
+  <app-filter-bar
+    [filters]="filters"
     [activeFilter]="activeFilter"
-    (filterChange)="onFilterChange($event)">
-    <button class="action-btn-primary">+ Ajouter Utilisateur</button>
+    (filterChange)="onFilterChange($event)"
+  >
+    <div class="header-actions">
+      <button class="action-btn-primary">+ Ajouter Utilisateur</button>
+      <button
+        class="scoring-toggle-btn"
+        [class.active]="showScoring"
+        (click)="showScoring = !showScoring"
+      >
+        {{ showScoring ? '👥 Vue normale' : '🏆 Vue Scoring CRM' }}
+      </button>
+    </div>
   </app-filter-bar>
 
   <!-- Search Bar -->
   <div class="search-bar">
-    <input 
-      type="text" 
+    <input
+      type="text"
       [(ngModel)]="searchQuery"
       (keyup.enter)="onSearch()"
       placeholder="Rechercher..."
@@ -27,75 +36,371 @@
     <p>Chargement...</p>
   </div>
 
-  <!-- Table -->
-  <div *ngIf="!isLoading" class="card">
-    <div class="table-header">
-      <h3>{{ totalItems }} utilisateur(s)</h3>
+  <!-- Layout principal : table + panneau CRM côte à côte -->
+  <div class="users-layout" [class.panel-open]="showCrmPanel">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- VUE NORMALE                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div *ngIf="!isLoading && !showScoring" class="card">
+      <div class="table-header">
+        <h3>{{ totalItems }} utilisateur(s)</h3>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Utilisateur</th>
+            <th>Email</th>
+            <th>Rôle</th>
+            <th>Statut</th>
+            <th>Dernière connexion</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- ✅ (click)="openCrmProfile(user)" ajouté sur chaque ligne -->
+          <tr
+            *ngFor="let user of users"
+            (click)="openCrmProfile(user)"
+            [class.selected-row]="selectedUser?.id === user.id"
+            class="clickable-row"
+          >
+            <td>
+              <app-client-cell
+                [name]="user.name"
+                [initials]="getInitials(user.name)"
+                [color]="getAvatarColor(user.role)"
+              ></app-client-cell>
+            </td>
+            <td><span class="email">{{ user.email }}</span></td>
+            <td><app-role-badge [role]="user.role"></app-role-badge></td>
+            <td><app-status-badge [status]="user.status"></app-status-badge></td>
+            <td><span class="last-login">{{ user.last_login || 'Jamais' }}</span></td>
+            <td>
+              <div class="action-btns" (click)="$event.stopPropagation()">
+                <button
+                  class="small-btn cancel-btn"
+                  title="Bloquer / Débloquer"
+                  (click)="toggleUserStatus(user)"
+                >
+                  {{ user.status === 'actif' ? '🚫' : '✅' }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-btn">
+          ← Précédent
+        </button>
+        <span class="pagination-info">Page {{ currentPage }} sur {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-btn">
+          Suivant →
+        </button>
+      </div>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Utilisateur</th>
-          <th>Email</th>
-          <th>Rôle</th>
-          <th>Statut</th>
-          <th>Dernière connexion</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of users">
-          <td>
-            <!-- ✅ ClientCell avec couleur selon le rôle -->
-            <app-client-cell 
-              [name]="user.name" 
-              [initials]="getInitials(user.name)"
-              [color]="getAvatarColor(user.role)">
-            </app-client-cell>
-          </td>
-          <td>
-            <span class="email">{{ user.email }}</span>
-          </td>
-          <td>
-            <!-- ✅ RoleBadge -->
-            <app-role-badge [role]="user.role"></app-role-badge>
-          </td>
-          <td>
-            <!-- ✅ StatusBadge -->
-            <app-status-badge [status]="user.status"></app-status-badge>
-          </td>
-          <td>
-            <span class="last-login">{{ user.last_login || 'Jamais' }}</span>
-          </td>
-          <td>
-            <div class="action-btns">
-              <button class="small-btn">👁️</button>
-              <button class="small-btn">✏️</button>
-              <button class="small-btn cancel-btn">🚫</button>
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- VUE SCORING CRM                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div *ngIf="!isLoading && showScoring" class="card">
+      <div class="segment-filters">
+        <button
+          *ngFor="let segment of ['tous', 'VIP', 'Régulier', 'Nouveau', 'Inactif']"
+          [class]="'segment-filter-btn ' + (segmentFilter === segment ? 'active' : '')"
+          (click)="onSegmentFilterChange(segment)"
+        >{{ segment }}</button>
+      </div>
+
+      <div class="segments-summary">
+        <div class="segment-card vip">
+          <span class="segment-icon">🥇</span>
+          <span class="segment-count">{{ scoringData | scoreFilter: 'VIP' }}</span>
+          <span class="segment-label">VIP</span>
+        </div>
+        <div class="segment-card regulier">
+          <span class="segment-icon">🥈</span>
+          <span class="segment-count">{{ scoringData | scoreFilter: 'Régulier' }}</span>
+          <span class="segment-label">Régulier</span>
+        </div>
+        <div class="segment-card nouveau">
+          <span class="segment-icon">🥉</span>
+          <span class="segment-count">{{ scoringData | scoreFilter: 'Nouveau' }}</span>
+          <span class="segment-label">Nouveau</span>
+        </div>
+        <div class="segment-card inactif">
+          <span class="segment-icon">⚪</span>
+          <span class="segment-count">{{ scoringData | scoreFilter: 'Inactif' }}</span>
+          <span class="segment-label">Inactif</span>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Utilisateur</th>
+            <th>Segment</th>
+            <th>Score Récent</th>
+            <th>Score Historique</th>
+            <th>Réservations</th>
+            <th>Contacts</th>
+            <th>Favoris</th>
+            <th>Vues</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- ✅ (click)="openCrmProfile(user)" ajouté ici aussi -->
+          <tr
+            *ngFor="let user of filteredScoringData"
+            (click)="openCrmProfile(user)"
+            [class.selected-row]="selectedUser?.id === user.id"
+            class="clickable-row"
+          >
+            <td>
+              <app-client-cell
+                [name]="user.name"
+                [initials]="getInitials(user.name)"
+                [color]="getAvatarColor(user.role)"
+              ></app-client-cell>
+            </td>
+            <td>
+              <span class="segment-badge" [ngClass]="getSegmentClass(user.segment)">
+                {{ getSegmentIcon(user.segment) }} {{ user.segment }}
+              </span>
+            </td>
+            <td>
+              <div class="score-bar-wrapper">
+                <div class="score-bar"
+                  [style.width.%]="(user.score_recent / 100) * 100"
+                  [ngClass]="getSegmentClass(user.segment)"></div>
+                <span class="score-value">{{ user.score_recent }}</span>
+              </div>
+              <small class="score-period">(30j)</small>
+            </td>
+            <td>
+              <div class="score-bar-wrapper">
+                <div class="score-bar historical"
+                  [style.width.%]="(user.score_historique / 100) * 100"
+                  [ngClass]="getSegmentClass(user.segment)"></div>
+                <span class="score-value">{{ user.score_historique }}</span>
+              </div>
+              <small class="score-period">(total)</small>
+            </td>
+            <td><span class="stat-chip recent">✈️ {{ user.reservations_recent }}</span></td>
+            <td><span class="stat-chip recent">📧 {{ user.contact_recent }}</span></td>
+            <td><span class="stat-chip recent">❤️ {{ user.favorites_recent }}</span></td>
+            <td><span class="stat-chip recent">👁️ {{ user.views_recent }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- PANNEAU CRM — s'ouvre à droite au clic sur un user -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="crm-panel" [class.open]="showCrmPanel" *ngIf="showCrmPanel">
+
+      <!-- Header panneau -->
+      <div class="crm-panel-header">
+        <div class="crm-panel-title">
+          <span class="crm-icon">🧠</span>
+          <div>
+            <h3>Profil CRM</h3>
+            <p *ngIf="selectedUser">{{ selectedUser.name }}</p>
+          </div>
+        </div>
+        <button class="crm-close-btn" (click)="closeCrmPanel()">✕</button>
+      </div>
+
+      <!-- Loader -->
+      <div class="crm-loader" *ngIf="isLoadingProfile">
+        <div class="spinner"></div>
+        <p>Chargement du profil...</p>
+      </div>
+
+      <!-- Contenu CRM -->
+      <div class="crm-panel-body" *ngIf="!isLoadingProfile && clientProfile">
+
+        <!-- ── Infos client ── -->
+        <div class="crm-section">
+          <div class="crm-client-header">
+            <div class="crm-avatar">{{ selectedUser?.name[0] }}</div>
+            <div class="crm-client-info">
+              <h4>{{ clientProfile.client.name }}</h4>
+              <p class="crm-email">{{ clientProfile.client.email }}</p>
+              <p class="crm-since">Client depuis le {{ clientProfile.client.created_at }}</p>
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </div>
 
-    <!-- Pagination -->
-    <div class="pagination">
-      <button 
-        (click)="prevPage()" 
-        [disabled]="currentPage === 1"
-        class="pagination-btn">
-        ← Précédent
-      </button>
-      <span class="pagination-info">
-        Page {{ currentPage }} sur {{ totalPages }}
-      </span>
-      <button 
-        (click)="nextPage()" 
-        [disabled]="currentPage === totalPages"
-        class="pagination-btn">
-        Suivant →
-      </button>
-    </div>
-  </div>
+          <!-- Segment + Churn -->
+          <div class="crm-badges">
+            <span class="segment-badge" [ngClass]="getSegmentClass(clientProfile.client.segment)">
+              {{ getSegmentIcon(clientProfile.client.segment) }} {{ clientProfile.client.segment }}
+            </span>
+            <span class="churn-badge" [ngClass]="getChurnClass(clientProfile.client.churn_risk)">
+              ⚠️ Churn : {{ clientProfile.client.churn_risk }}
+            </span>
+            <span class="rfm-badge">
+              📊 RFM : {{ clientProfile.client.rfm_score }}/100
+            </span>
+          </div>
+
+          <p class="crm-last-activity">
+            🕐 {{ clientProfile.client.last_activity }}
+          </p>
+        </div>
+
+        <!-- ── Stats globales ── -->
+        <div class="crm-section">
+          <h5 class="crm-section-title">📊 Statistiques</h5>
+          <div class="crm-stats-grid">
+            <div class="crm-stat-box">
+              <span class="crm-stat-number">{{ clientProfile.stats.reservations_total }}</span>
+              <span class="crm-stat-label">Réservations</span>
+            </div>
+            <div class="crm-stat-box">
+              <span class="crm-stat-number">{{ clientProfile.stats.total_spent }}$</span>
+              <span class="crm-stat-label">Total dépensé</span>
+            </div>
+            <div class="crm-stat-box">
+              <span class="crm-stat-number">{{ clientProfile.stats.conversations_total }}</span>
+              <span class="crm-stat-label">Conversations</span>
+            </div>
+            <div class="crm-stat-box">
+              <span class="crm-stat-number">{{ clientProfile.stats.contact_total }}</span>
+              <span class="crm-stat-label">Messages contact</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Résumés conversations chat ── -->
+<!-- ── Résumés conversations chat ── -->
+        <div class="crm-section">
+          <h5 class="crm-section-title">💬 Conversations avec l'assistant IA</h5>
+
+          <div *ngIf="clientProfile.chat_summaries.length === 0" class="crm-empty">
+            Ce client n'a pas encore utilisé le chat IA.
+          </div>
+
+          <div
+            *ngFor="let conv of clientProfile.chat_summaries; let i = index"
+            class="crm-conv-card"
+            [class.has-summary]="conv.has_summary"
+          >
+            <!-- En-tête conversation -->
+            <div class="crm-conv-top">
+              <div class="crm-conv-title-row">
+                <span class="crm-conv-icon">
+                  {{ conv.status === 'closed' ? '🔒' : '🟢' }}
+                </span>
+                <span class="crm-conv-title">{{ conv.title }}</span>
+              </div>
+              <div class="crm-conv-right">
+                <span class="crm-msg-count">{{ conv.message_count }} msg</span>
+                <span class="crm-conv-date">{{ conv.updated_at }}</span>
+              </div>
+            </div>
+
+            <!-- Résumé disponible -->
+            <div class="crm-summary-block" *ngIf="conv.has_summary">
+
+              <!-- Points clés — affichés par défaut -->
+              <div class="crm-key-points-wrap" *ngIf="conv.key_points?.length > 0">
+                <span class="crm-kp-label">Points clés</span>
+                <div class="crm-key-points-list">
+                  <span
+                    class="crm-kp-badge"
+                    *ngFor="let pt of conv.key_points; let j = index"
+                    [class.kp-1]="j === 0"
+                    [class.kp-2]="j === 1"
+                    [class.kp-3]="j === 2"
+                    [class.kp-4]="j >= 3"
+                  >
+                    {{ pt }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Bouton toggle résumé détaillé -->
+              <button
+                class="crm-detail-btn"
+                (click)="toggleSummary(i)"
+              >
+                {{ expandedSummaries[i] ? '🔼 Masquer le résumé' : '🔽 Voir le résumé détaillé' }}
+              </button>
+
+              <!-- Résumé détaillé — masqué par défaut, visible au clic -->
+              <div class="crm-summary-quote" *ngIf="expandedSummaries[i]">
+                <span class="crm-summary-label">🤖 Résumé IA</span>
+                <p class="crm-summary-text">{{ conv.summary }}</p>
+              </div>
+
+            </div>
+
+            <!-- Pas encore de résumé -->
+            <div class="crm-no-summary" *ngIf="!conv.has_summary">
+              <div class="crm-progress-bar-wrap">
+                <div
+                  class="crm-progress-bar"
+                  [style.width.%]="(conv.message_count / 5) * 100"
+                ></div>
+              </div>
+              <span class="crm-no-summary-text">
+                ⏳ {{ conv.message_count }}/5 messages — résumé bientôt disponible
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Historique messages de contact ── -->
+        <div class="crm-section" *ngIf="clientProfile.contact_history.length > 0">
+          <h5 class="crm-section-title">📩 Derniers messages de contact</h5>
+          <div
+            *ngFor="let msg of clientProfile.contact_history"
+            class="crm-contact-card"
+          >
+            <div class="crm-contact-top">
+              <span class="category-mini" [ngClass]="getCategoryClass(msg.category)">
+                {{ getCategoryLabel(msg.category) }}
+              </span>
+              <span class="crm-contact-date">{{ msg.created_at }}</span>
+            </div>
+            <p class="crm-contact-subject">{{ msg.subject }}</p>
+            <p class="crm-contact-summary" *ngIf="msg.ai_summary">
+              🤖 {{ msg.ai_summary }}
+            </p>
+          </div>
+        </div>
+
+        <!-- ── Réservations récentes ── -->
+        <div class="crm-section" *ngIf="clientProfile.reservations.length > 0">
+          <h5 class="crm-section-title">✈️ Réservations récentes</h5>
+          <div *ngFor="let r of clientProfile.reservations" class="crm-reservation-card">
+            <div class="crm-res-top">
+              <span class="crm-res-dest">📍 {{ r.destination }} ({{ r.country }})</span>
+              <span class="crm-res-amount">{{ r.amount }}$</span>
+            </div>
+            <div class="crm-res-dates">
+              {{ r.check_in }} → {{ r.check_out }}
+              <span class="crm-res-status" [class.confirmed]="r.status === 'confirmed'">
+                {{ r.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- fin crm-panel-body -->
+    </div><!-- fin crm-panel -->
+
+  </div><!-- fin users-layout -->
 </div>
+
+
+
+
+<!-- emchi lel notes ken 7abit traja3 lel code le9dim -->

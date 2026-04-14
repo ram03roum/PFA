@@ -41,7 +41,7 @@ export class DashboardService {
   getActivityLogs(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/activity-logs`, this.getHeaders());
   }
-   
-  
-
+getSentimentStats(): Observable<any> {
+  return this.http.get(`http://127.0.0.1:5000/api/dashboard/sentiment`, this.getHeaders());
+}
 }

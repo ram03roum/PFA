@@ -14,6 +14,7 @@ class User(db.Model):
     status = db.Column(db.String(50), default='actif')
     # valeurs : 'actif', 'inactif', 'suspendu'
     phone = db.Column(db.String(20))
+    segment = db.Column(db.String(50), default='Inactif')  # VIP, Régulier, Nouveau, Inactif
     last_login = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
@@ -31,6 +32,7 @@ class User(db.Model):
             'role': self.role,
             'status': self.status,
             'phone': self.phone,
+            'segment': self.segment,
             'last_login': self.last_login.strftime('%Y-%m-%d %H:%M') if self.last_login else None,
             'created_at': self.created_at.strftime('%Y-%m-%d') if self.created_at else None,
         }
@@ -295,3 +297,81 @@ class RecommendationCache(db.Model):
 
     def __repr__(self):
         return f'<RecommendationCache user={self.user_id} expires={self.expires_at}>'
+
+
+class ContactMessage(db.Model):
+    __tablename__ = 'contact_messages'
+    
+    id              = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name            = db.Column(db.String(100), nullable=False)
+    email           = db.Column(db.String(150), nullable=False)
+    phone           = db.Column(db.String(20))
+    subject         = db.Column(db.String(200))
+    message         = db.Column(db.Text, nullable=False)
+    
+    # Statut lecture
+    is_read         = db.Column(db.Boolean, default=False)
+    
+    # Champs IA
+    category        = db.Column(db.String(50))   # urgent, info, reclamation, demande_devis
+    priority        = db.Column(db.String(20))   # haute, moyenne, basse
+    sentiment       = db.Column(db.String(20))   # positif, neutre, negatif
+    ai_summary      = db.Column(db.Text)
+    suggested_reply = db.Column(db.Text)
+    
+    # Email auto
+    auto_email_sent = db.Column(db.Boolean, default=False)
+    
+    created_at      = db.Column(db.DateTime, default=datetime.utcnow)
+
+    contact_type     = db.Column(db.String(50), default='general')
+    # valeurs : 'reservation', 'destination', 'general'
+    destination_id   = db.Column(db.Integer, db.ForeignKey('destinations.id'), nullable=True)
+    destination_name = db.Column(db.String(255), nullable=True)
+    reservation_id   = db.Column(db.Integer, db.ForeignKey('reservations.id'), nullable=True)
+
+    def to_dict(self):
+        return {
+            'id':               self.id,
+            'name':             self.name,
+            'email':            self.email,
+            'phone':            self.phone,
+            'subject':          self.subject,
+            'message':          self.message,
+            'is_read':          self.is_read,
+            'category':         self.category,
+            'priority':         self.priority,
+            'sentiment':        self.sentiment,
+            'ai_summary':       self.ai_summary,
+            'suggested_reply':  self.suggested_reply,
+            'auto_email_sent':  self.auto_email_sent,
+            'created_at':       self.created_at.strftime('%Y-%m-%d %H:%M') if self.created_at else None,
+            'contact_type':     self.contact_type,
+            'destination_name': self.destination_name,
+            'reservation_id':   self.reservation_id,
+        }
+
+    def __repr__(self):
+        return f'<ContactMessage from={self.name} category={self.category} read={self.is_read}>'
+    
+class RelanceLog(db.Model):
+    __tablename__ = 'relance_logs'
+    
+    id         = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id    = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    email      = db.Column(db.String(150), nullable=False)
+    status     = db.Column(db.String(20), default='sent')  # 'sent' / 'failed'
+    email_body = db.Column(db.Text)
+    sent_at    = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='relance_logs')
+
+    def to_dict(self):
+        return {
+            'id':         self.id,
+            'user_id':    self.user_id,
+            'user_name':  self.user.name if self.user else None,
+            'email':      self.email,
+            'status':     self.status,
+            'sent_at':    self.sent_at.strftime('%Y-%m-%d %H:%M') if self.sent_at else None,
+        }

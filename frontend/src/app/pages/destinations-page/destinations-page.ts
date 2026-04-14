@@ -4,6 +4,7 @@ import { FavoritesService } from '../../services/favorites.service';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { RecommendationService } from '../../services/recommenadation.service.ts';
 
 @Component({
@@ -16,6 +17,7 @@ import { RecommendationService } from '../../services/recommenadation.service.ts
 export class DestinationsPageComponent implements OnInit {
 
   destinations: any[] = [];
+  allDestinations: any[] = []; // pour le filtrage
   chargement: boolean = true;
   currentPage: number = 1;
   itemsPerPage: number = 20;
@@ -29,6 +31,7 @@ export class DestinationsPageComponent implements OnInit {
     private dataService: DataService,
     public favoriteService: FavoritesService,
     private recommendationService: RecommendationService,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
@@ -59,7 +62,29 @@ export class DestinationsPageComponent implements OnInit {
         this.chargerDestinations();
       }
     }
+    this.route.queryParams.subscribe(params => {
+    const destination = params['location'];
+    const date = params['date'];
+    // Logique pour filtrer vos voyages ici
+  });
   }
+  chargerEtFiltrer(query: string): void {
+  this.chargement = true;
+  // On récupère toutes les destinations puis on filtre
+  this.dataService.getDestinations().subscribe({
+    next: (data) => {
+      this.allDestinations = data;
+      this.destinations = this.allDestinations.filter(dest => 
+        dest.name.toLowerCase().includes(query.toLowerCase()) || 
+        dest.location?.toLowerCase().includes(query.toLowerCase())
+      );
+      this.currentPage = 1;
+      this.chargement = false;
+      this.cdr.detectChanges();
+    },
+    error: () => this.chargement = false
+  });
+}
 
   // ── Destinations personnalisées (user connecté) ─────────────
   chargerRecommandations(): void {

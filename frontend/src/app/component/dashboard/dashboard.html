@@ -41,7 +41,10 @@
         </div>
       </div>
     </div> -->
-  <div class="charts-row">
+  
+<div class="charts-row">
+
+  <!-- Graphique existant 1 -->
   <div class="chart-card">
     <h3>Stats Mensuelles (TND)</h3>
     <div class="chart-container" style="height: 300px;">
@@ -57,6 +60,7 @@
     </div>
   </div>
 
+  <!-- Graphique existant 2 -->
   <div class="chart-card">
     <h3>Répartition Destinations</h3>
     <div class="chart-container" style="height: 300px;">
@@ -68,6 +72,39 @@
       </ngx-charts-pie-chart>
     </div>
   </div>
+
+  <!-- ✅ NOUVEAU — Sentiment clients -->
+  <div class="chart-card">
+    <h3>😊 Sentiment des Messages Clients</h3>
+    <div class="chart-container" style="height: 300px;">
+      <ngx-charts-pie-chart
+        [results]="sentimentChartData"
+        [scheme]="sentimentColorScheme"
+        [doughnut]="true"
+        [legend]="true"
+        [labels]="true">
+      </ngx-charts-pie-chart>
+    </div>
+
+    <!-- Légende détaillée -->
+    <div class="sentiment-legend">
+      <div class="sentiment-item" *ngFor="let item of sentimentChartData">
+        <span class="sentiment-dot"
+          [style.background]="item.name === 'Positif' ? '#22c55e' :
+                              item.name === 'Negatif'  ? '#ef4444' : '#94a3b8'">
+        </span>
+        <span class="sentiment-label">{{ item.name }}</span>
+        <span class="sentiment-value">{{ item.value }} message(s)</span>
+      </div>
+
+      <!-- Pas de données -->
+      <div *ngIf="sentimentChartData.length === 0" class="no-data">
+        <span>📭 Pas encore de données</span>
+        <small>Les sentiments apparaîtront après analyse IA des messages</small>
+      </div>
+    </div>
+  </div>
+
 </div>
 
     <!-- Réservations -->
