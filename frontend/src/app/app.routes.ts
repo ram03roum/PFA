@@ -1,8 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home';
 import { ContactComponent } from './pages/contact/contact';
-import { About } from './pages/about/about';
-import { BlogPage } from './pages/blog-page/blog-page';
 import { DestinationsPageComponent } from './pages/destinations-page/destinations-page';
 import { DestinationDetail } from './pages/destination-detail/destination-detail';
 import { LoginComponent } from './pages/login/login';
@@ -23,7 +21,6 @@ export const routes: Routes = [
   { path: 'signup', component: SignupComponent },
   { path: 'destinations', component: DestinationsPageComponent },
   { path: 'destinations/:id', component: DestinationDetail },
-  { path: 'about', component: About },
   { path: 'contact', component: ContactComponent },
   { path: 'admin', component: AdminLayoutComponent },
   { path: 'reservations', component: ReservationDashboardComponent },

@@ -115,7 +115,7 @@ app.register_blueprint(chat_bp)  # Chat avec IA Gemini
 app.register_blueprint(recommendations_bp)
 
 app.register_blueprint(contact_bp)
-app.register_blueprint(recommendations_bp)
+# app.register_blueprint(recommendations_bp)
 # -----
     
 # --- ROUTES ---

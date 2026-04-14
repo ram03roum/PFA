@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './component/header/header.component';
 import { HomeComponent } from "./pages/home/home";
-import { About } from "./pages/about/about";
 import { DestinationDetail } from './pages/destination-detail/destination-detail';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ReservationFormComponent } from './pages/reservation-form/reservation-form';
@@ -20,7 +19,6 @@ import { UsersComponent } from './component/users-dashboard/users-dashboard';
     UsersComponent,
     DestinationDetail,
     HomeComponent,
-    About,
     ReactiveFormsModule
   ],
   templateUrl: './app.html',
