@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef } from '@angular/core';
+import { timeout, finalize } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { ReservationFormComponent } from '../reservation-form/reservation-form';
 import { RecommendationService } from '../../services/recommenadation.service.ts';
@@ -39,24 +40,25 @@ export class DestinationDetail implements OnInit {
   loadDetail(id: number): void {
     this.loading = true;
     this.destination = null;// Réinitialise la destination avant de charger une nouvelle
-    this.dataService.getDestinationById(id).subscribe({
-      next: (data) => {
-        // Comme ton Flask renvoie Array(1), on prend le premier élément
-        this.destination = Array.isArray(data) ? data[0] : data;
-        console.log("Données traitées pour affichage :", this.destination);
-        this.loading = false;
-        this.cdr.detectChanges();
-        const token = localStorage.getItem('access_token');
-        if (token) {
-          this.recommendationService.logInteraction(token, id, 'view');
+    this.dataService.getDestinationById(id)
+      .pipe(
+        timeout(15000),
+        finalize(() => { this.loading = false; this.cdr.detectChanges(); })
+      )
+      .subscribe({
+        next: (data) => {
+          // Comme ton Flask renvoie Array(1), on prend le premier élément
+          this.destination = Array.isArray(data) ? data[0] : data;
+          console.log("Données traitées pour affichage :", this.destination);
+          const token = localStorage.getItem('access_token');
+          if (token) {
+            this.recommendationService.logInteraction(token, id, 'view');
+          }
+          console.log("Données reçues via DataService :", this.destination);
+        },
+        error: (err) => {
+          console.error("Erreur via DataService :", err);
         }
-        console.log("Données reçues via DataService :", this.destination);
-      },
-      error: (err) => {
-        console.error("Erreur via DataService :", err);
-        this.loading = false;
-        this.cdr.detectChanges();
-      }
-    });
+      });
   }
 }

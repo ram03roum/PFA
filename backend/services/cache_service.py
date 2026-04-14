@@ -31,6 +31,7 @@ class CacheService:
             return cache.recommendations
 
         except Exception as e:
+            db.session.rollback()
             print(f"DEBUG Cache get erreur: {e}")
             return None
 
@@ -74,4 +75,5 @@ class CacheService:
                 db.session.commit()
                 print(f"DEBUG Cache: invalidé pour user {user_id}")
         except Exception as e:
+            db.session.rollback()  # ← empêche la session de rester sale
             print(f"DEBUG Cache invalidate erreur: {e}")

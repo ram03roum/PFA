@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import ActivityLog, Reservation, Destination, User
+from models import ActivityLog, Reservation, Destination, User, InteractionLog
 from datetime import datetime
 from extensions import db
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -31,9 +31,9 @@ def create_reservation():
         destination = Destination.query.get(data['destination_id'])
         user = User.query.get(current_user_id)
 
-        log = ActivityLog(user_id=int(current_user_id), action='Création d\'une réservation', entity_type='reservation', entity_id=None)
-        db.session.add(log)
-        db.session.commit()
+        # log = ActivityLog(user_id=int(current_user_id), action='Création d\'une réservation', entity_type='reservation', entity_id=None)
+        # db.session.add(log)
+        # db.session.commit()
 
         if not destination:
             return jsonify({'error': 'Destination non trouvée'}), 404
@@ -62,18 +62,55 @@ def create_reservation():
         )
         
         db.session.add(reservation)
-        db.session.commit()
+        # db.session.commit()
+        db.session.flush()  # ← génère reservation.id sans commiter
+        print(f"DEBUG >>> reservation.id={reservation.id}, destination_id={data['destination_id']}")
+
+        # Log dans InteractionLog (signal fort pour recommandations - poids 2.0)
+        db.session.add(InteractionLog(
+            user_id=current_user_id,
+            destination_id=data['destination_id'],
+            action='reservation'
+        ))
+        print(f"DEBUG >>> interaction réussi ✅")
+
+        # db.session.commit()
         
+        # return jsonify({
+        #     'message': 'Réservation créée avec succès',
+        #     'reservation': reservation.to_dict()
+        # }), 201
+        
+    # except ValueError:
+    #     return jsonify({'error': 'Format de date invalide'}), 400
+    # except Exception as e:
+    #     db.session.rollback()
+    #     return jsonify({'error': str(e)}), 500
+ # 5. ActivityLog ← dashboard admin ✅
+        db.session.add(ActivityLog(
+            user_id=int(current_user_id),
+            action='Création d\'une réservation',
+            entity_type='reservation',
+            entity_id=reservation.id
+        ))
+        
+        
+        # 6. UN SEUL commit — tout ou rien ✅
+        db.session.commit()
+        print(f"DEBUG >>> commit réussi ✅")
+
         return jsonify({
             'message': 'Réservation créée avec succès',
             'reservation': reservation.to_dict()
         }), 201
         
     except ValueError:
+        db.session.rollback()
         return jsonify({'error': 'Format de date invalide'}), 400
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        print(f"[ERREUR create_reservation] {e}")
+        return jsonify({'error': str(e)}), 500   
 
 
 @client_reservation_bp.route('/reservations', methods=['GET'])

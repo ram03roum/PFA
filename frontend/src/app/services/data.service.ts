@@ -34,4 +34,9 @@ export class DataService {
       })
     );
   }
+  searchByCountry(country: string, limit: number = 3, log: boolean = false): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.apiUrl}/search?country=${country}&limit=${limit}&log=${log}`
+    );
+  }
 }

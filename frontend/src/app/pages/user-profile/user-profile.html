@@ -1,0 +1,125 @@
+<div class="profile-page">
+
+    <!-- LOADING -->
+    <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement de votre profil...</p>
+    </div>
+
+    <!-- ERREUR -->
+    <div *ngIf="error && !loading" class="error-state">
+        <p>Impossible de charger le profil. Veuillez réessayer.</p>
+    </div>
+
+    <!-- CONTENU -->
+    <div *ngIf="!loading && !error" class="profile-content">
+
+        <!-- HEADER -->
+        <div class="profile-header">
+            <div class="avatar">{{ getInitials(user.name) }}</div>
+            <div class="user-info">
+                <h1>{{ user.name }}</h1>
+                <p class="email">{{ user.email }}</p>
+                <p class="member-since">Membre depuis {{ user.member_since }}</p>
+                <span class="segment-badge" *ngIf="user" [style.color]="getSegment().color"
+                    [style.background]="getSegment().bg">
+                    {{ getSegment().icon }} {{ getSegment().label }}
+                </span>
+            </div>
+        </div>
+
+        <!-- ONGLETS -->
+        <div class="tabs">
+            <button class="tab" [class.active]="activeTab === 'profil'" (click)="activeTab = 'profil'">
+                Profil
+            </button>
+            <button class="tab" [class.active]="activeTab === 'reservations'" (click)="activeTab = 'reservations'">
+                Réservations ({{ reservations.length }})
+            </button>
+            <button class="tab" [class.active]="activeTab === 'carte'" (click)="activeTab = 'carte'; initMapOnTab()">
+                Carte du monde ({{ visitedCountries.length }})
+            </button>
+        </div>
+
+        <!-- PANEL : PROFIL -->
+        <div *ngIf="activeTab === 'profil'">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-val">{{ stats.total }}</div>
+                    <div class="stat-lbl">Total réservations</div>
+                </div>
+                <div class="stat-card confirmed">
+                    <div class="stat-val">{{ stats.confirmed }}</div>
+                    <div class="stat-lbl">Confirmées</div>
+                </div>
+                <div class="stat-card pending">
+                    <div class="stat-val">{{ stats.pending }}</div>
+                    <div class="stat-lbl">En attente</div>
+                </div>
+                <div class="stat-card cancelled">
+                    <div class="stat-val">{{ stats.cancelled }}</div>
+                    <div class="stat-lbl">Annulées</div>
+                </div>
+                <div class="stat-card spent">
+                    <div class="stat-val">${{ stats.total_spent }}</div>
+                    <div class="stat-lbl">Total dépensé</div>
+                </div>
+            </div>
+
+            <div class="segment-section">
+                <div class="segment-card" [class.active]="user.segment === 'nouveau'">
+                    <div class="seg-icon">★</div>
+                    <div class="seg-name">Nouveau</div>
+                    <div class="seg-desc">0 à 2 réservations</div>
+                </div>
+                <div class="segment-arrow">→</div>
+                <div class="segment-card" [class.active]="user.segment === 'régulier'">
+                    <div class="seg-icon">★★</div>
+                    <div class="seg-name">Régulier</div>
+                    <div class="seg-desc">3 à 9 réservations</div>
+                </div>
+                <div class="segment-arrow">→</div>
+                <div class="segment-card" [class.active]="user.segment === 'VIP'">
+                    <div class="seg-icon">★★★</div>
+                    <div class="seg-name">VIP</div>
+                    <div class="seg-desc">10+ réservations</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL : RÉSERVATIONS -->
+        <div *ngIf="activeTab === 'reservations'">
+            <div *ngIf="reservations.length === 0" class="empty-state">
+                Vous n'avez pas encore de réservations.
+            </div>
+            <div *ngFor="let r of reservations" class="res-card">
+                <div class="res-left">
+                    <div class="res-dest">{{ r.destination }}</div>
+                    <div class="res-country">{{ r.country }}</div>
+                    <div class="res-dates">{{ r.check_in }} → {{ r.check_out }}</div>
+                </div>
+                <div class="res-right">
+                    <div class="res-amount">${{ r.total_amount }}</div>
+                    <span class="res-status" [ngClass]="getStatusConfig(r.status).class">
+                        {{ getStatusConfig(r.status).label }}
+                    </span>
+                    <!-- ← Bouton facture -->
+                    <button *ngIf=" r.status === 'confirmée'" class="btn-invoice" (click)="downloadInvoice(r)">
+                        <i class="fas fa-file-invoice"></i> Facture
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL : CARTE -->
+        <div *ngIf="activeTab === 'carte'">
+            <div *ngIf="visitedCountries.length === 0" class="empty-state">
+                Aucun pays visité pour l'instant.
+            </div>
+            <div *ngIf="visitedCountries.length > 0">
+                <div id="travel-map" style="height: 450px; border-radius: 16px;"></div>
+            </div>
+        </div>
+
+    </div>
+</div>

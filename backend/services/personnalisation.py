@@ -7,7 +7,7 @@ from services.cache_service import CacheService
 
 
 class PersonalizationEngine:
-
+    
     def __init__(self):
         self.collector      = DataCollector()
         self.algorithm      = AlgorithmFilter()
@@ -27,6 +27,7 @@ class PersonalizationEngine:
         5. Stocker en cache
         6. Retourner le résultat
         """
+        # force_refresh = True  #testt 
 
         # ── 1. Vérifier le cache ──────────────────────────────────
         if not force_refresh:

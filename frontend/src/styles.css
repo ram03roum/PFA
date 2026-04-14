@@ -6,6 +6,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 /* Variables globales */
 :root {
   --primary-color: #ff4a52;
@@ -13,6 +14,10 @@
   --dark-color: #040e27;
   --light-color: #f8f9fa;
   --gray-color: #666;
+}
+
+a {
+  text-decoration: none !important;
 }
 
 /* Reset et styles de base */

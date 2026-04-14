@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/AuthService';
 import { CommonModule } from '@angular/common';
+import { timeout, finalize } from 'rxjs';
 
 
 @Component({
@@ -44,31 +45,31 @@ export class LoginComponent {
         const credentials = this.loginForm.value;
 
         // On appelle le service
-        this.authService.login(credentials).subscribe({
-            // ✅ Succès
-            next: (response) => {
-                // console.log('Composant Login OK:', response);
+        this.authService.login(credentials)
+            .pipe(
+                timeout(15000),
+                finalize(() => { this.isLoading = false; })
+            )
+            .subscribe({
+                // ✅ Succès
+                next: (response) => {
+                    // console.log('Composant Login OK:', response);
 
-                // 🎯 ICI on décide de la redirection selon le rôle
-                if (this.authService.isAdmin()) {
-                    // console.log("admin");
-                    this.router.navigate(['/admin']);
-                } else {
-                    // console.log("user");
-                    this.router.navigate(['/home']);
+                    // 🎯 ICI on décide de la redirection selon le rôle
+                    if (this.authService.isAdmin()) {
+                        // console.log("admin");
+                        this.router.navigate(['/admin']);
+                    } else {
+                        // console.log("user");
+                        this.router.navigate(['/home']);
+                    }
+                },
+                // ❌ Erreur
+                error: (error) => {
+                    console.error('Login failed:', error);
+                    this.errorMessage = error.error?.error || 'Email ou mot de passe incorrect';
                 }
-            },
-            // ❌ Erreur
-            error: (error) => {
-                console.error('Login failed:', error);
-                this.errorMessage = error.error?.error || 'Email ou mot de passe incorrect';
-                this.isLoading = false;
-            },
-            // 🏁 Terminé (succès ou erreur)
-            complete: () => {
-                this.isLoading = false;
-            }
-        });
+            });
     }
     get email() {
         return this.loginForm.get('email');

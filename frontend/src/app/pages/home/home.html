@@ -1,33 +1,28 @@
 <app-header></app-header>
 
-<!-- Hero Section -->
 <section class="hero-section">
   <div class="hero-overlay">
     <div class="hero-container">
       <h1 class="hero-title">Explorez le monde <br> <span class="text-gradient">sans limites</span></h1>
       <p class="hero-subtitle">Réservez des vols, des hôtels et des expériences uniques au meilleur prix.</p>
+      <!-- barre de recherche -->
 
       <div class="search-bar">
-        <div class="search-item">
+        <div class="search-item" style="position: relative; flex: 1;">
           <i class="fas fa-map-marker-alt"></i>
           <div class="input-group">
-            <label>Destination</label>
-            <input type="text" placeholder="Où allez-vous ?">
+            <label>Pays</label>
+            <input type="text" placeholder="Ex: France, Maroc, Japon..." [(ngModel)]="searchQuery"
+              (keyup.enter)="onSearchSubmit()" autocomplete="off" />
           </div>
+
+          <!-- Spinner removed - no real-time search -->
         </div>
 
         <div class="search-divider"></div>
-
-        <div class="search-item">
-          <i class="fas fa-calendar-alt"></i>
-          <div class="input-group">
-            <label>Date</label>
-            <input type="date">
-          </div>
-        </div>
-
-        <button class="search-button">Rechercher</button>
+        <button class="search-button" (click)="onSearchSubmit()">Rechercher</button>
       </div>
+
     </div>
   </div>
 </section>

@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from '../../services/dashboard.service';
-import { finalize } from 'rxjs/internal/operators/finalize';
+import { timeout, finalize } from 'rxjs';
 import { title } from 'node:process';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 
@@ -29,11 +29,12 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.isLoading = true;
     this.dashboardService.getDashboardData().pipe(
+      timeout(15000),
       finalize(() => {
         this.isLoading = false;
         // S'exécutera TOUJOURS (Succès ou Erreur)
         // console.log(this.isLoading)
-        })
+      })
     ).subscribe({
       next: (data) => {
         console.log('2. DATA REÇUE:', data);
@@ -44,7 +45,7 @@ export class DashboardComponent implements OnInit {
         this.activityLogs = data.logs;
         // 1. KPI Cards
         this.formatKpis(data.kpis);
-        
+
         // 2. Transformer les données pour les graphiques
         this.prepareCharts(data.revenue, data.destinations);
 
@@ -61,7 +62,7 @@ export class DashboardComponent implements OnInit {
       { title: 'Revenus', value: kpis.totalRevenue + ' TND', icon: '💰', bg: '#ecfdf5' },
       { title: 'Clients Fidèles', value: kpis.loyalClients, icon: '⭐', bg: '#f5f3ff' },
       // { title: 'Annulations', value: kpis.cancellation_rate + '%', icon: '📉', bg: '#fef2f2' }
-      { title: 'Annulations', value: kpis.cancelRes, icon: '⭐' ,bg: '#fef2f2'}
+      { title: 'Annulations', value: kpis.cancelRes, icon: '⭐', bg: '#fef2f2' }
     ];
   }
   loadDashboardData(): void {

@@ -2,6 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { timeout, finalize } from 'rxjs';
 
 // ✅ IMPORTER LES COMPOSANTS
 import { StatusBadgeComponent } from '../shared/status-badge/status-badge';
@@ -28,19 +29,19 @@ import { UsersDashboard } from '../../services/users-dashboard';
 })
 export class UsersComponent implements OnInit {
   users: any[] = [];
-  
+
   filters = ['tous', 'admin', 'agent', 'client'];
   activeFilter = 'tous';
   searchQuery = '';
-  
+
   currentPage = 1;
   pageSize = 10;
   totalPages = 1;
   totalItems = 0;
-  
+
   isLoading = true;
 
-  constructor(private usersService: UsersDashboard) {}
+  constructor(private usersService: UsersDashboard) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -49,18 +50,20 @@ export class UsersComponent implements OnInit {
   loadUsers(): void {
     this.isLoading = true;
     const role = this.activeFilter === 'tous' ? '' : this.activeFilter;
-    
+
     this.usersService.getAll(this.currentPage, this.pageSize, this.searchQuery, role)
+      .pipe(
+        timeout(15000),
+        finalize(() => { this.isLoading = false; })
+      )
       .subscribe({
         next: (response) => {
           this.users = response.data;
           this.totalPages = response.pages;
           this.totalItems = response.total;
-          this.isLoading = false;
         },
         error: (err) => {
           console.error('Erreur:', err);
-          this.isLoading = false;
         }
       });
   }

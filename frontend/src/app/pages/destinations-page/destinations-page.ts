@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { FavoritesService } from '../../services/favorites.service';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { RecommendationService } from '../../services/recommenadation.service.ts';
 
@@ -32,6 +32,7 @@ export class DestinationsPageComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
+    private route: ActivatedRoute,
   ) {
     if (isPlatformBrowser(this.platformId)) {
       this.token = localStorage.getItem('access_token');
@@ -44,21 +45,39 @@ export class DestinationsPageComponent implements OnInit {
 
       this.favoriteService.favorites$.subscribe(ids => { });
 
-      if (this.token) {
-        // ── User connecté ─────────────────────────────────────
-        this.favoriteService.getFavorites(this.token).subscribe({
-          next: (favIds: any[]) => this.favoriteService.setFavorites(favIds),
-          error: (err) => console.error('Erreur favoris', err)
+      // Check if there is a search query
+      const params = this.route.snapshot.queryParams;
+      if (params['country']) {
+        // Load search results
+        this.chargement = true;
+        this.dataService.searchByCountry(params['country'], 200, false).subscribe({
+          next: (data) => {
+            this.destinations = data;
+            this.isPersonalized = false;
+            this.recommendationSource = '';
+            this.chargement = false;
+            this.cdr.detectChanges();
+          }
         });
-
-        // Charger destinations personnalisées
-        this.chargerRecommandations();
-
       } else {
-        // ── User non connecté ─────────────────────────────────
-        this.chargerDestinations();
+        // No search, load normal destinations
+        if (this.token) {
+          // ── User connecté ─────────────────────────────────────
+          this.favoriteService.getFavorites(this.token).subscribe({
+            next: (favIds: any[]) => this.favoriteService.setFavorites(favIds),
+            error: (err) => console.error('Erreur favoris', err)
+          });
+
+          // Charger destinations personnalisées
+          this.chargerRecommandations();
+
+        } else {
+          // ── User non connecté ─────────────────────────────────
+          this.chargerDestinations();
+        }
       }
     }
+    // Remove the queryParams subscribe since we handle it at init
   }
 
   // ── Destinations personnalisées (user connecté) ─────────────

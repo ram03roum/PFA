@@ -16,7 +16,7 @@ class User(db.Model):
     phone = db.Column(db.String(20))
     last_login = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+    segment = db.Column(db.String(50), default='nouveau')
     reservations = db.relationship('Reservation', backref='user', lazy=True)
         
     def check_password(self, password):
@@ -208,7 +208,7 @@ class InteractionLog(db.Model):
     user_id        = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     destination_id = db.Column(db.Integer, db.ForeignKey('destinations.id'), nullable=False)
     action         = db.Column(
-                        db.Enum('view', 'favorite', 'reservation', 'cancel'),
+                        db.Enum('view', 'favorite', 'reservation', 'cancel', 'search'),
                         nullable=False
                      )
     created_at     = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -220,9 +220,10 @@ class InteractionLog(db.Model):
     # Poids de chaque action pour le moteur
     ACTION_WEIGHTS = {
         'view':        0.5,
-        'favorite':    1.0,
+        'favorite':    1.5,
         'reservation': 2.0,
         'cancel':     -1.0,
+        'search':      1.0,
     }
 
     def get_weight(self):

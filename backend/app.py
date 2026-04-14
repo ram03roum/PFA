@@ -8,15 +8,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from routes.auth import auth_bp  # On importe le blueprint du fichier auth.py
 from flask_jwt_extended import JWTManager
-from extensions import db, migrate, jwt
+from extensions import db, migrate, jwt , mail, scheduler
 from models import User, Destination, Reservation, ActivityLog 
-from datetime import timedelta
-
-from extensions import mail, scheduler
 from tasks.scheduled_jobs import check_and_send_reminders
-
-# from models import User, Destination ,Reservation, ActivityLog
-
 from routes.favorites import favorites_bp
 from routes.recommendations import recommendations_bp
 from routes.auth import auth_bp
@@ -25,8 +19,7 @@ from routes.reservations import reservations_bp
 from routes.users import users_bp
 from routes.destinations import destinations_bp
 from routes.reservation_routes import client_reservation_bp
-
-
+from routes.chat import chat_bp
 
 # --- CHARGEMENT DU .ENV ---
 # On remonte d'un dossier (..) car app.py est dans /backend
@@ -41,9 +34,7 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = os.getenv('SECRET_KEY') # Utilisez votre clé secrète
 app.config["JWT_OPTIONS_ARE_TOKEN_REQUIRED"] = False
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24) # Le token durera 24h
-
 # On initialise le manager JWT avec l'app
-
 
 # Configurez CORS pour accepter l'origine Angular et les headers d'authentification
 CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}}, 
@@ -87,15 +78,6 @@ scheduler.start()
 # --- IMPORT DES MODÈLES (IMPORTANT : après db.init_app) ---
 with app.app_context():
     db.create_all()  # Crée les tables si elles n'existent pas
-# --- IMPORT DES ROUTES ---
-from routes.auth import auth_bp
-from routes.dashboard import dashboard_bp
-from routes.reservations import reservations_bp
-from routes.users import users_bp
-from routes.destinations import destinations_bp
-from routes.reservation_routes import client_reservation_bp
-from routes.favorites import favorites_bp
-from routes.chat import chat_bp
 
 # --- ENREGISTREMENT DES BLUEPRINTS ---
 
@@ -111,7 +93,6 @@ app.register_blueprint(client_reservation_bp)
 app.register_blueprint(chat_bp)  # Chat avec IA Gemini
 app.register_blueprint(recommendations_bp)
 
-# -----
     
 # --- ROUTES ---
 # Définition de la règle de temps

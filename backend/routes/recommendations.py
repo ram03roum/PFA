@@ -3,8 +3,6 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import Favorite, Reservation
 from services.data_collector import DataCollector
-
-
 from services.personnalisation import PersonalizationEngine
 from extensions import db
 
@@ -45,9 +43,7 @@ def get_recommendations():
 @recommendations_bp.route('/api/recommendations/test', methods=['GET'])
 @jwt_required()
 def test_algorithm():
-
     user_id = get_jwt_identity()
-
     # Collecte des données
     user_data        = collector.get_user_data(user_id)
     all_destinations = collector.get_all_destinations(
@@ -137,31 +133,31 @@ def log_interaction():
     if action in ['favorite', 'reservation', 'cancel']:
         from services.cache_service import CacheService
         CacheService().invalidate(user_id)
+        print(f">>> Cache invalidé pour user_id {user_id} suite à l'action '{action}'")
 
     return jsonify({"message": "interaction enregistrée"}), 201
-
 
 # ─────────────────────────────────────────────────────────────
 # GET /api/recommendations/stats
 # Statistiques des appels LLM — utile pour le rapport PFA
 # ─────────────────────────────────────────────────────────────
-@recommendations_bp.route('/api/recommendations/stats', methods=['GET'])
-@jwt_required()
-def get_stats():
+# @recommendations_bp.route('/api/recommendations/stats', methods=['GET'])
+# @jwt_required()
+# def get_stats():
 
-    from models import LlmLog
-    from sqlalchemy import func
+#     from models import LlmLog
+#     from sqlalchemy import func
 
-    stats = {
-        "total_calls":     LlmLog.query.count(),
-        "successful_calls": LlmLog.query.filter_by(success=True).count(),
-        "failed_calls":    LlmLog.query.filter_by(success=False).count(),
-        "avg_response_time": db.session.query(
-                                func.avg(LlmLog.response_time)
-                             ).filter_by(success=True).scalar(),
-        "avg_tokens_used": db.session.query(
-                                func.avg(LlmLog.tokens_used)
-                             ).scalar(),
-    }
+#     stats = {
+#         "total_calls":     LlmLog.query.count(),
+#         "successful_calls": LlmLog.query.filter_by(success=True).count(),
+#         "failed_calls":    LlmLog.query.filter_by(success=False).count(),
+#         "avg_response_time": db.session.query(
+#                                 func.avg(LlmLog.response_time)
+#                              ).filter_by(success=True).scalar(),
+#         "avg_tokens_used": db.session.query(
+#                                 func.avg(LlmLog.tokens_used)
+#                              ).scalar(),
+#     }
 
-    return jsonify(stats), 200
+#     return jsonify(stats), 200

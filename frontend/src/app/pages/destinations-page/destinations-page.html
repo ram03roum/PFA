@@ -1,13 +1,7 @@
 <!-- ── Titre dynamique selon connexion ── -->
 @if (isPersonalized) {
-<h1 class="page-title">
-  ✨ Destinations recommandées pour vous
-  <button class="btn-refresh" (click)="rafraichirRecommandations()">
-    🔄 Rafraîchir
-  </button>
-</h1>
 <p class="source-info" *ngIf="recommendationSource === 'cache'">
-  Mis à jour récemment
+  ✨ Destinations recommandées pour vous
 </p>
 } @else {
 <h1 class="page-title">

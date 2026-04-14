@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ReservationService } from '../../services/reservation.service';
 import { DataService } from '../../services/data.service';
 import { CommonModule } from '@angular/common';
+import { timeout, finalize } from 'rxjs';
 
 @Component({
   selector: 'app-reservation-form',
@@ -14,7 +15,7 @@ import { CommonModule } from '@angular/common';
 })
 export class ReservationFormComponent implements OnInit {
   // Initialisation avec un objet vide pour éviter les erreurs "read properties of null"
-  public destination: any= {}; 
+  public destination: any = {};
   public loading: boolean = true;
   public error: string = '';
   public success: string = '';
@@ -50,7 +51,7 @@ export class ReservationFormComponent implements OnInit {
   ngOnInit(): void {
     // 1. Récupérer l'ID et charger les données
     this.route.paramMap.subscribe(params => {
-      const id = params.get('id');  
+      const id = params.get('id');
       if (id) {
         this.destinationId = parseInt(id); // TRÈS IMPORTANT : Stocker l'ID ici
         this.loadDestinationDetails(this.destinationId);
@@ -77,27 +78,27 @@ export class ReservationFormComponent implements OnInit {
 
   loadDestinationDetails(id: number): void {
     this.loading = true;
-    this.dataService.getDestinationById(id).subscribe({
-      next: (data) => {
-        // Gestion si l'API renvoie un tableau ou un objet
-        this.destination = Array.isArray(data) ? data[0] : data;
-        
-        if (this.destination) {
-          // this.pricePerNight = this.destination.price_per_night || 0;
-        } else {
-          this.error = "Destination introuvable dans la base de données.";
+    this.dataService.getDestinationById(id)
+      .pipe(
+        timeout(15000),
+        finalize(() => { this.loading = false; this.cdr.detectChanges(); })
+      )
+      .subscribe({
+        next: (data) => {
+          // Gestion si l'API renvoie un tableau ou un objet
+          this.destination = Array.isArray(data) ? data[0] : data;
+
+          if (this.destination) {
+            // this.pricePerNight = this.destination.price_per_night || 0;
+          } else {
+            this.error = "Destination introuvable dans la base de données.";
+          }
+        },
+        error: (err) => {
+          console.error("Erreur API:", err);
+          this.error = 'Impossible de charger les détails de la destination.';
         }
-        
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error("Erreur API:", err);
-        this.error = 'Impossible de charger les détails de la destination.';
-        this.loading = false;
-        this.cdr.detectChanges();
-      }
-    });
+      });
   }
 
   calculatePrice(): void {
@@ -116,17 +117,20 @@ export class ReservationFormComponent implements OnInit {
       }
 
       this.calculatingPrice = true;
-      this.reservationService.calculatePrice(this.destinationId, checkIn, checkOut).subscribe({
-        next: (data) => {
-          this.numberOfNights = data.nights;
-          this.totalAmount = data.total_amount;
-          this.calculatingPrice = false;
-        },
-        error: (err) => {
-          console.error('Erreur calcul prix:', err);
-          this.calculatingPrice = false;
-        }
-      });
+      this.reservationService.calculatePrice(this.destinationId, checkIn, checkOut)
+        .pipe(
+          timeout(15000),
+          finalize(() => { this.calculatingPrice = false; })
+        )
+        .subscribe({
+          next: (data) => {
+            this.numberOfNights = data.nights;
+            this.totalAmount = data.total_amount;
+          },
+          error: (err) => {
+            console.error('Erreur calcul prix:', err);
+          }
+        });
     }
   }
 
@@ -140,21 +144,25 @@ export class ReservationFormComponent implements OnInit {
       check_in: this.reservationForm.value.check_in,
       check_out: this.reservationForm.value.check_out,
       total_amount: this.totalAmount,
-      notes: this.reservationForm.value.notes 
+      notes: this.reservationForm.value.notes
     };
 
-    this.reservationService.createReservation(reservationData).subscribe({
-      next: (response) => {
-        this.reservationService.addActivityLog('Création d\'une réservation', 'reservation', response.reservation.id, 'Réservation créée par l\'utilisateur').subscribe();
-        this.success = 'Réservation confirmée ! Redirection en cours...';
-        setTimeout(() => this.router.navigate(['/mes-reservations']), 2000);
-      },
-      error: (err) => {
-        this.loading = false;
-        this.error = err.error?.error || 'Une erreur est survenue lors de la réservation.';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    });
+    this.reservationService.createReservation(reservationData)
+      .pipe(
+        timeout(15000),
+        finalize(() => { this.loading = false; })
+      )
+      .subscribe({
+        next: (response) => {
+          this.reservationService.addActivityLog('Création d\'une réservation', 'reservation', response.reservation.id, 'Réservation créée par l\'utilisateur').subscribe();
+          this.success = 'Réservation confirmée ! Redirection en cours...';
+          setTimeout(() => this.router.navigate(['/mes-reservations']), 2000);
+        },
+        error: (err) => {
+          this.error = err.error?.error || 'Une erreur est survenue lors de la réservation.';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
   }
 
   goBack(): void {

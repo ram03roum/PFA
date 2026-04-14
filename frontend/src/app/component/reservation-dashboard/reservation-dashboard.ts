@@ -2,6 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { timeout, finalize } from 'rxjs';
 import { StatusBadgeComponent } from '../shared/status-badge/status-badge';
 import { ClientCellComponent } from '../shared/client-cell/client-cell';
 import { FilterBarComponent } from '../shared/filter-bar/filter-bar';
@@ -11,10 +12,10 @@ import { ReservationsDashboard } from '../../services/reservation-dashboard';
   selector: 'app-reservations',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    StatusBadgeComponent, 
-    ClientCellComponent, 
+    CommonModule,
+    FormsModule,
+    StatusBadgeComponent,
+    ClientCellComponent,
     FilterBarComponent
   ],
   templateUrl: './reservation-dashboard.html',
@@ -23,21 +24,21 @@ import { ReservationsDashboard } from '../../services/reservation-dashboard';
 export class ReservationDashboardComponent implements OnInit {
   reservations: any[] = [];
   filteredReservations: any[] = [];
-  
+
   // Filters
   filters = ['tous', 'confirmée', 'en attente', 'annulée'];
   activeFilter = 'tous';
   searchQuery = '';
-  
+
   // Pagination
   currentPage = 1;
   pageSize = 10;
   totalPages = 1;
   totalItems = 0;
-  
+
   isLoading = true;
 
-  constructor(private reservationsService: ReservationsDashboard) {}
+  constructor(private reservationsService: ReservationsDashboard) { }
 
   ngOnInit(): void {
     this.loadReservations();
@@ -49,28 +50,31 @@ export class ReservationDashboardComponent implements OnInit {
 
   loadReservations(): void {
     this.isLoading = true;
-    
+
     const status = this.activeFilter === 'tous' ? '' : this.activeFilter;
-        // ✅ APPEL AU SERVICE ADMIN POUR RÉCUPÉRER LES RÉSERVATIONS AVEC FILTRES ET PAGINATION
+    // ✅ APPEL AU SERVICE ADMIN POUR RÉCUPÉRER LES RÉSERVATIONS AVEC FILTRES ET PAGINATION
     this.reservationsService.getAll(
-      this.currentPage, 
-      this.pageSize, 
-      this.searchQuery, 
+      this.currentPage,
+      this.pageSize,
+      this.searchQuery,
       status
-    ).subscribe({
-      next: (response) => {
-        console.log('✅ Réservations reçues:', response);
-        this.reservations = response.data;
-        this.filteredReservations = response.data;
-        this.totalPages = response.pages;
-        this.totalItems = response.total;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Erreur chargement réservations:', err);
-        this.isLoading = false;
-      }
-    });
+    )
+      .pipe(
+        timeout(15000),
+        finalize(() => { this.isLoading = false; })
+      )
+      .subscribe({
+        next: (response: any) => {
+          console.log('✅ Réservations reçues:', response);
+          this.reservations = response.data;
+          this.filteredReservations = response.data;
+          this.totalPages = response.pages;
+          this.totalItems = response.total;
+        },
+        error: (err) => {
+          console.error('Erreur chargement réservations:', err);
+        }
+      });
   }
 
   onFilterChange(filter: string): void {

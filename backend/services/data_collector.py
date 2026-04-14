@@ -1,8 +1,6 @@
 # services/data_collector.py
-from flask import views
-
-from routes import favorites
-from models import db, User, Destination, Reservation, Favorite, InteractionLog
+from datetime import datetime, timedelta, timezone
+from models import db, Destination, InteractionLog
 
 class DataCollector:
 
@@ -33,6 +31,14 @@ class DataCollector:
             InteractionLog.created_at.desc()
         ).limit(20).all()
         
+        # ── Annulations (signal négatif -1.5) ─────────────────────
+        cancels = InteractionLog.query.filter_by(
+        user_id=user_id,
+        action='cancel'
+        ).all()
+        # ── IDs annulés (destinations à pénaliser) ────────────────
+        cancelled_ids = [c.destination_id for c in cancels]
+        
         
         # ── DEBUG ─────────────────────────────────────────────────
         print(f"DEBUG user_id: {user_id}")
@@ -42,10 +48,11 @@ class DataCollector:
         print(f"DEBUG views count: {len(views)}")
     # ─────────────────────────────────────────────────────────
         # ── IDs déjà réservés (à exclure des recommandations) ──────
-        reserved_ids = [r.destination_id for r in reservations]
-
+        reserved_ids = [r.destination_id for r in reservations
+                        if r.destination_id not in cancelled_ids
+]
         # ── Détection cold start ───────────────────────────────────
-        total_interactions = len(reservations) + len(favorites)
+        total_interactions = len(reservations) + len(favorites) + len(views)
         is_new_user = total_interactions == 0
 
         # ── Calcul des poids dynamiques ────────────────────────────
@@ -64,7 +71,9 @@ class DataCollector:
             "reservations": reservations,
             "favorites":    favorites,
             "views":        views,
+            "cancels":          cancels,          # ← nouveau
             "reserved_ids": reserved_ids,
+            "cancelled_ids":    cancelled_ids,    # ← nouveau
             "is_new_user":  is_new_user,
             "alpha":        alpha,   # poids Content-Based
             "beta":         beta,    # poids User-Based
@@ -102,19 +111,17 @@ class DataCollector:
         dans interaction_logs.
         Appelé depuis les routes Flask.
         """
-        # Évite les doublons de views rapprochés (même user, même dest, même heure)
-        if action == 'view':
-            from datetime import datetime, timedelta
-            recent = InteractionLog.query.filter_by(
-                user_id=user_id,
-                destination_id=destination_id,
-                action='view'
-            ).filter(
-                InteractionLog.created_at >= datetime.utcnow() - timedelta(hours=1)
-            ).first()
+        # Évite les doublons rapprochés (même user, même dest, même action)
+        recent = InteractionLog.query.filter_by(
+            user_id=user_id,
+            destination_id=destination_id,
+            action=action
+        ).filter(
+            InteractionLog.created_at >= datetime.now(timezone.utc) - timedelta(hours=2)
+        ).first()
 
-            if recent:
-                return  # déjà loggé dans la dernière heure, on ignore
+        if recent:
+            return  # déjà loggé récemment, on ignore
 
         log = InteractionLog(
             user_id=user_id,

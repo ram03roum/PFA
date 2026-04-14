@@ -1,0 +1,275 @@
+.profile-page {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: sans-serif;
+}
+
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 3rem;
+  color: #6B7280;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #E5E7EB;
+  border-top-color: #1D9E75;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #1D9E75;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.user-info h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.email {
+  font-size: 14px;
+  color: #6B7280;
+  margin: 0 0 2px;
+}
+
+.member-since {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin: 0 0 8px;
+}
+
+.segment-badge {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* Segment progression */
+.segment-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.segment-card {
+  flex: 1;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 2px solid #E5E7EB;
+  background: #fff;
+  opacity: .5;
+  transition: all .3s;
+}
+
+.segment-card.active {
+  opacity: 1;
+  border-color: #1D9E75;
+  background: #E1F5EE;
+}
+
+.seg-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+  color: #B45309;
+}
+
+.seg-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.seg-desc {
+  font-size: 11px;
+  color: #6B7280;
+  margin-top: 2px;
+}
+
+.segment-arrow {
+  font-size: 20px;
+  color: #D1D5DB;
+}
+
+/* Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.stat-val {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.stat-lbl {
+  font-size: 12px;
+  color: #6B7280;
+  margin-top: 4px;
+}
+
+.stat-card.confirmed .stat-val {
+  color: #1D9E75;
+}
+
+.stat-card.pending .stat-val {
+  color: #B45309;
+}
+
+.stat-card.cancelled .stat-val {
+  color: #DC2626;
+}
+
+.stat-card.spent .stat-val {
+  color: #2563EB;
+}
+
+.tabs .tab {
+  margin: 0 10px;
+  padding: 10px 20px;
+}
+
+/* Réservations */
+.reservations-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #9CA3AF;
+  background: #F9FAFB;
+  border-radius: 12px;
+}
+
+.res-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 10px;
+}
+
+.res-dest {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.res-country {
+  font-size: 13px;
+  color: #6B7280;
+}
+
+.res-dates {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-top: 4px;
+}
+
+.res-amount {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.res-status {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-top: 6px;
+}
+
+.status-confirmed {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.status-cancelled {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.status-pending {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.status-paid {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.btn-invoice {
+  margin-top: 8px;
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  border: 0.5px solid #4F6EF7;
+  border-radius: 8px;
+  background: transparent;
+  color: #4F6EF7;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-invoice:hover {
+  background: #EEF1FF;
+}

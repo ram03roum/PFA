@@ -18,6 +18,7 @@ import { ChatComponent } from './component/chat/chat.component';
 import { AuthGuard } from './guards/auth-guard';
 
 import { UsersComponent } from './component/users-dashboard/users-dashboard';
+import { UserProfileComponent } from './pages/user-profile/user-profile';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
@@ -32,5 +33,6 @@ export const routes: Routes = [
   { path: 'formreservation/:id', component: ReservationFormComponent },
   { path: 'favoris',component: FavorisComponent, canActivate: [AuthGuard] },
   { path: 'chat', component: ChatComponent, canActivate: [AuthGuard] },
+  { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '' },
 ];

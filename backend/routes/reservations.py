@@ -2,7 +2,7 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from extensions import db
-from models import Reservation, User, Destination , ActivityLog
+from models import Reservation, User, Destination, ActivityLog, InteractionLog
 from datetime import datetime
 
 reservations_bp = Blueprint('reservations', __name__)
@@ -62,24 +62,46 @@ def create_reservation():
     data = request.get_json()
     current_user_id = int(get_jwt_identity())
 
-    reservation = Reservation(
-        user_id=current_user_id,
-        destination_id=data['destination_id'],
-        check_in=datetime.strptime(data['check_in'], '%Y-%m-%d').date(),
-        check_out=datetime.strptime(data['check_out'], '%Y-%m-%d').date(),
-        total_amount=data['total_amount'],
-        notes=data.get('notes', '')
-    )
-    db.session.add(reservation)
-    db.session.commit()
+    try:
+        # 1. Créer la réservation
+        reservation = Reservation(
+            user_id=current_user_id,
+            destination_id=data['destination_id'],
+            check_in=datetime.strptime(data['check_in'], '%Y-%m-%d').date(),
+            check_out=datetime.strptime(data['check_out'], '%Y-%m-%d').date(),
+            total_amount=data['total_amount'],
+            notes=data.get('notes', '')
+        )
+        db.session.add(reservation)
+        db.session.flush()  # ← génère reservation.id sans commiter
 
-    # Log
-    log = ActivityLog(user_id=current_user_id, action='Nouvelle réservation créée', entity_type='reservation', entity_id=reservation.id)
-    db.session.add(log)
-    db.session.commit()
 
-    return jsonify(reservation.to_dict()), 201
+        # 2. Logger dans InteractionLog
+        interaction_log = InteractionLog(
+            user_id=current_user_id,
+            destination_id=data['destination_id'],
+            action='reservation'
+        )
+        db.session.add(interaction_log)
 
+        # 3. Logger dans ActivityLog
+        activity_log = ActivityLog(
+            user_id=current_user_id,
+            action='Nouvelle réservation créée',
+            entity_type='reservation',
+            entity_id=reservation.id
+        )
+        db.session.add(activity_log)
+
+        # 4. UN SEUL commit pour tout ← c'est le fix principal
+        db.session.commit()
+
+        return jsonify(reservation.to_dict()), 201
+
+    except Exception as e:
+        db.session.rollback()  # ← annule tout si quelque chose plante
+        print(f"[ERREUR create_reservation] {e}")
+        return jsonify({"error": str(e)}), 500
 
 # PUT /reservations/<id>/status — confirmer / refuser
 @reservations_bp.route('/reservations/<int:res_id>/status', methods=['PUT'])
