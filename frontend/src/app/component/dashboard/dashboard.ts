@@ -50,11 +50,22 @@ export class DashboardComponent implements OnInit {
         this.prepareCharts(data.revenue, data.destinations);
 
       },
+
       error: (err) => {
         console.error("Erreur Backend Flask:", err);
         // Le finalize s'occupe déjà du isLoading = false
       }
     });
+    // Après le subscribe existant dans ngOnInit()
+    this.dashboardService.getSentimentStats().subscribe({
+      next: (res) => {
+      this.sentimentChartData = res.data.map((item: any) => ({
+      name: item.sentiment.charAt(0).toUpperCase() + item.sentiment.slice(1),
+      value: item.count
+    }));
+    },
+    error: (err) => console.error('Sentiment error:', err)
+});
   }
   formatKpis(kpis: any) {
     this.kpisArray = [
@@ -81,14 +92,6 @@ export class DashboardComponent implements OnInit {
       error: (err) => console.error('Erreur stats:', err)
     });
 
-    // this.dashboardService.getDestinationsStats().subscribe({
-    //   next: (data) => {
-    //     this.destinationsStats = data;
-    //     this.isLoading = false;
-    //   },
-    //   error: (err) => console.error('Erreur destinations:', err)
-    // });
-
     this.dashboardService.getActivityLogs().subscribe({
       next: (data) => {
         this.activityLogs = data;
@@ -96,12 +99,6 @@ export class DashboardComponent implements OnInit {
       error: (err) => console.error('Erreur logs:', err)
     });
 
-    // this.dashboardService.getRecentReservations().subscribe({
-    //   next: (data) => {
-    //     this.recentReservations = data;
-    //   },
-    //   error: (err) => console.error('Erreur réservations:', err)
-    // });
   }
 
   prepareKPIsArray(): void {
@@ -138,4 +135,9 @@ export class DashboardComponent implements OnInit {
       value: item.value // le pourcentage
     }));
   }
+
+  sentimentChartData: any[] = [];
+    sentimentColorScheme :any = {
+  domain: ['#22c55e', '#94a3b8', '#ef4444']  // positif, neutre, négatif
+};
 }

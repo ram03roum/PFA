@@ -7,7 +7,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
 from sqlalchemy import func, extract
 from extensions import db
-from models import User, Reservation, Destination, ActivityLog
+from models import User, Reservation, Destination, ActivityLog, ContactMessage
+from models import RelanceLog
 
 dashboard_bp = Blueprint('dashboard', __name__)
 
@@ -26,7 +27,7 @@ def get_kpis():
         # Revenus totaux (On se base sur toutes les réservations car payment_status n'existe pas encore)
         # Note : Si tu ajoutes payment_status plus tard, ajoute .filter_by(payment_status='payé')
         total_revenue = db.session.query(func.sum(Reservation.total_amount)).scalar() or 0
-
+        total_revenue = round(total_revenue, 2)
         # Clients / Users actifs
         active_users = User.query.filter(User.status == 'actif').count()
         total_cancellations_all_time = Reservation.query.filter_by(status='annulée').count()
@@ -149,3 +150,51 @@ def get_recent_reservations():
     reservations = Reservation.query.order_by(Reservation.created_at.desc()).limit(10).all()
 
     return jsonify([r.to_dict() for r in reservations]), 200
+
+# ─────────────────────────────────────────
+# sentiment analysis
+# ─────────────────────────────────────────
+@dashboard_bp.route('/api/dashboard/sentiment', methods=['GET'])
+# @jwt_required()
+def get_sentiment_stats():    
+    results = db.session.query(
+        ContactMessage.sentiment,
+        func.count(ContactMessage.id).label('count')
+    ).filter(
+        ContactMessage.sentiment != None
+    ).group_by(ContactMessage.sentiment).all()
+    
+    data = [{'sentiment': r.sentiment, 'count': r.count} for r in results]
+    return jsonify({'data': data}), 200
+
+
+from models import RelanceLog
+
+@dashboard_bp.route('/dashboard/relances', methods=['GET'])
+@jwt_required()
+def get_relances():
+    relances = RelanceLog.query.order_by(
+        RelanceLog.sent_at.desc()
+    ).limit(20).all()
+    
+    total_sent   = RelanceLog.query.filter_by(status='sent').count()
+    total_failed = RelanceLog.query.filter_by(status='failed').count()
+
+    return jsonify({
+        'total_sent':   total_sent,
+        'total_failed': total_failed,
+        'relances':     [r.to_dict() for r in relances]
+    }), 200
+
+
+@dashboard_bp.route('/dashboard/relances/manual', methods=['POST'])
+@jwt_required()
+def trigger_relance_manual():
+    """Bouton manuel depuis le dashboard admin"""
+    from flask import current_app
+    from services.relance_service import run_relance_campaign
+    
+    app = current_app._get_current_object()
+    run_relance_campaign(app)
+    
+    return jsonify({'success': True, 'message': 'Campagne de relance lancée'}), 200

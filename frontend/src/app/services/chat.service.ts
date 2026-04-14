@@ -73,4 +73,6 @@ export class ChatService {
       this.getHeaders()
     );
   }
+
+  
 }

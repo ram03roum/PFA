@@ -1,0 +1,225 @@
+<div class="messages-container">
+
+  <!-- Header -->
+  <div class="messages-header">
+    <div class="header-left">
+      <h2 class="messages-title">✉️ Messages Clients</h2>
+      <span class="unread-badge" *ngIf="unreadCount > 0">
+        {{ unreadCount }} non lu(s)
+      </span>
+    </div>
+    <div class="header-actions">
+      <select [(ngModel)]="filterCategory" class="filter-select"
+              [disabled]="showPriority">
+        <option value="all">Tous les messages</option>
+        <option value="urgent">🔴 Urgent</option>
+        <option value="reclamation">🟠 Réclamation</option>
+        <option value="demande_devis">🟢 Devis</option>
+        <option value="info">🔵 Info</option>
+      </select>
+      <button class="btn-mark-all" (click)="markAllRead()">✓ Tout marquer lu</button>
+      <button class="btn-refresh"  (click)="loadMessages()">🔄 Actualiser</button>
+      <button class="btn-priority" [class.active]="showPriority"
+              (click)="togglePriorityView()">
+        {{ showPriority ? '📋 Vue normale' : '🚨 Vue priorité' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Layout deux colonnes -->
+  <div class="messages-layout">
+
+    <!-- Liste des messages -->
+    <div class="messages-list">
+
+      <!-- Loading normal -->
+      <div class="loading-state" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Chargement des messages...</p>
+      </div>
+
+      <!-- Loading priorité -->
+      <div class="loading-state" *ngIf="isLoadingPriority">
+        <div class="spinner"></div>
+        <p>Calcul des priorités...</p>
+      </div>
+
+      <!-- ══════════════════════════════════ -->
+      <!-- VUE NORMALE                        -->
+      <!-- ══════════════════════════════════ -->
+      <ng-container *ngIf="!showPriority && !isLoading">
+
+        <div class="empty-state" *ngIf="filteredMessages.length === 0">
+          <span class="empty-icon">📭</span>
+          <p>Aucun message</p>
+        </div>
+
+        <div class="message-item"
+             *ngFor="let msg of filteredMessages"
+             [class.active]="selectedMessage?.id === msg.id"
+             [class.unread]="!msg.is_read"
+             (click)="openMessage(msg)">
+          <div class="item-avatar">{{ msg.name[0] }}</div>
+          <div class="item-content">
+            <div class="item-top">
+              <span class="item-name">{{ msg.name }}</span>
+              <span class="item-time">{{ msg.created_at }}</span>
+            </div>
+            <div class="item-subject">{{ msg.subject || 'Sans sujet' }}</div>
+            <div class="item-bottom">
+              <span class="category-badge" [ngClass]="getCategoryClass(msg.category)"
+                    *ngIf="msg.category">
+                {{ getCategoryLabel(msg.category) }}
+              </span>
+              <span class="category-badge badge-info" *ngIf="!msg.category">
+                ⏳ Analyse...
+              </span>
+              <span class="priority-tag" [ngClass]="getPriorityClass(msg.priority)"
+                    *ngIf="msg.priority">
+                {{ msg.priority }}
+              </span>
+            </div>
+          </div>
+          <span class="unread-dot" *ngIf="!msg.is_read"></span>
+        </div>
+
+      </ng-container>
+
+      <!-- ══════════════════════════════════ -->
+      <!-- VUE PRIORITÉ                       -->
+      <!-- ══════════════════════════════════ -->
+      <ng-container *ngIf="showPriority && !isLoadingPriority">
+
+        <div class="priority-header">
+          🚨 {{ prioritizedMessages.length }} message(s) non lus — triés par priorité
+        </div>
+
+        <div class="empty-state" *ngIf="prioritizedMessages.length === 0">
+          <span class="empty-icon">✅</span>
+          <p>Tous les messages sont traités !</p>
+        </div>
+
+        <div class="message-item priority-item"
+             *ngFor="let msg of prioritizedMessages; let i = index"
+             [class.active]="selectedMessage?.id === msg.id"
+             (click)="openMessage(msg)">
+
+          <div class="priority-rank">#{{ i + 1 }}</div>
+          <div class="item-avatar">{{ msg.name[0] }}</div>
+
+          <div class="item-content">
+            <div class="item-top">
+              <span class="item-name">{{ msg.name }}</span>
+              <span class="priority-score-badge"
+                    [ngClass]="getPriorityScoreClass(msg.priority_score)">
+                {{ getPriorityLabel(msg.priority_score) }} — {{ msg.priority_score }}pts
+              </span>
+            </div>
+            <div class="item-subject">{{ msg.subject || 'Sans sujet' }}</div>
+            <div class="item-bottom">
+              <span class="category-badge" [ngClass]="getCategoryClass(msg.category)">
+                {{ getCategoryLabel(msg.category) }}
+              </span>
+              <span class="segment-mini" *ngIf="msg.client_segment">
+                {{ msg.client_segment }}
+              </span>
+              <span class="churn-mini" [ngClass]="getChurnClass(msg.churn_risk)"
+                    *ngIf="msg.churn_risk">
+                ⚠️ {{ msg.churn_risk }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
+
+    </div>
+
+    <!-- Panneau de détail -->
+    <div class="message-detail" *ngIf="selectedMessage">
+
+      <div class="detail-header">
+        <div class="detail-avatar">{{ selectedMessage.name[0] }}</div>
+        <div class="detail-info">
+          <h3>{{ selectedMessage.name }}</h3>
+          <p>{{ selectedMessage.email }}</p>
+          <p *ngIf="selectedMessage.phone">📞 {{ selectedMessage.phone }}</p>
+        </div>
+        <div class="detail-badges">
+          <span class="category-badge"
+                [ngClass]="getCategoryClass(selectedMessage.category)"
+                *ngIf="selectedMessage.category">
+            {{ getCategoryLabel(selectedMessage.category) }}
+          </span>
+          <span class="priority-tag"
+                [ngClass]="getPriorityClass(selectedMessage.priority)"
+                *ngIf="selectedMessage.priority">
+            {{ selectedMessage.priority }}
+          </span>
+          <!-- Badges priorité globale si vue priorité -->
+          <span class="priority-score-badge"
+                [ngClass]="getPriorityScoreClass(selectedMessage.priority_score)"
+                *ngIf="selectedMessage.priority_score">
+            {{ getPriorityLabel(selectedMessage.priority_score) }}
+            — {{ selectedMessage.priority_score }}pts
+          </span>
+          <span class="churn-mini"
+                [ngClass]="getChurnClass(selectedMessage.churn_risk)"
+                *ngIf="selectedMessage.churn_risk">
+            ⚠️ {{ selectedMessage.churn_risk }}
+          </span>
+          <span class="segment-mini" *ngIf="selectedMessage.client_segment">
+            {{ selectedMessage.client_segment }}
+          </span>
+        </div>
+        <button class="btn-close" (click)="closeMessage()">✕</button>
+      </div>
+
+      <div class="detail-meta">
+        <strong>Sujet :</strong> {{ selectedMessage.subject || 'Sans sujet' }}
+        <span class="detail-date">{{ selectedMessage.created_at }}</span>
+      </div>
+
+      <div class="detail-section">
+        <h4>💬 Message du client</h4>
+        <div class="message-body">{{ selectedMessage.message }}</div>
+      </div>
+
+      <div class="detail-section ai-section" *ngIf="selectedMessage.ai_summary">
+        <h4>🤖 Résumé IA</h4>
+        <div class="ai-summary">{{ selectedMessage.ai_summary }}</div>
+      </div>
+
+      <div class="detail-section">
+        <h4>✍️ Réponse
+          <span class="ai-label" *ngIf="selectedMessage.suggested_reply">
+            suggérée par IA
+          </span>
+          <span class="ai-label pending" *ngIf="!selectedMessage.suggested_reply">
+            en cours de génération...
+          </span>
+        </h4>
+        <textarea [(ngModel)]="replyText" class="reply-editor" rows="8"
+                  placeholder="La réponse IA apparaîtra ici...">
+        </textarea>
+      </div>
+
+      <div class="send-success" *ngIf="sendSuccess">{{ sendSuccess }}</div>
+      <div class="send-error"   *ngIf="sendError">{{ sendError }}</div>
+
+      <button class="btn-send" (click)="sendReply()"
+              [disabled]="isSending || !replyText.trim()">
+        <span *ngIf="!isSending">📧 Envoyer la réponse au client</span>
+        <span *ngIf="isSending">⏳ Envoi en cours...</span>
+      </button>
+
+    </div>
+
+    <div class="detail-placeholder" *ngIf="!selectedMessage">
+      <span class="placeholder-icon">✉️</span>
+      <p>Sélectionnez un message pour le consulter et répondre</p>
+    </div>
+
+  </div>
+</div>
+

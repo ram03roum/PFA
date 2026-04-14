@@ -42,8 +42,8 @@ export class SidebarComponent {
     { id: 'dashboard', label: 'Dashboard', icon: '📊', route: '/admin', internal: true },
     { id: 'reservations', label: 'Réservations', icon: '✈️', badge: 12, route: '/admin', internal: true },
     //  Parce que ces sections doivent rester dans /admin et ne pas créer de nouvelles routes.
-    { id: 'users', label: 'Utilisateurs', icon: '👥', route: '/admin/users' },
-    // { id: 'offers', label: 'Offres & Destinations', icon: '🌍', badge: 3, route: '/admin/offers' },
+    { id: 'users', label: 'Utilisateurs', icon: '👥', route: '/admin/users', internal: true },
+    { id: 'messages', label: 'Messages', icon: '✉️', route: '/admin', internal: true },
     { id: 'settings', label: 'Paramètres', icon: '⚙️', route: '/admin/settings' },
   ];
 

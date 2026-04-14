@@ -1,5 +1,6 @@
 <div class="min-h-screen bg-gray-50">
-  <!-- Hero Section -->
+
+  <!-- Hero -->
   <section class="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-20">
     <div class="container mx-auto px-6 text-center">
       <h1 class="text-5xl font-bold mb-4">Contactez-Nous</h1>
@@ -7,37 +8,205 @@
     </div>
   </section>
 
-  <!-- Contact Form -->
   <section class="py-20">
     <div class="container mx-auto px-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+
         <!-- Formulaire -->
         <div class="bg-white rounded-2xl shadow-lg p-8">
           <h2 class="text-3xl font-bold mb-6">Envoyez-nous un message</h2>
+
+          <!-- Succès / Erreur -->
+          <div *ngIf="successMessage"
+               class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 font-medium">
+            {{ successMessage }}
+          </div>
+          <div *ngIf="errorMessage"
+               class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 font-medium">
+            {{ errorMessage }}
+          </div>
+
+          <!-- ════════════════════════════════════ -->
+          <!-- ÉTAPE 1 — Type de contact           -->
+          <!-- ════════════════════════════════════ -->
+          <div class="mb-6">
+            <label class="block text-gray-700 font-semibold mb-3">
+              Votre demande concerne :
+            </label>
+            <div class="contact-type-grid">
+
+              <div class="contact-type-card"
+                   [class.selected]="contactType === 'reservation'"
+                   (click)="selectType('reservation')">
+                <span class="type-icon">📋</span>
+                <span class="type-label">Une réservation</span>
+                <span class="type-desc">Confirmation, modification, annulation</span>
+              </div>
+
+              <!-- <div class="contact-type-card"
+                   [class.selected]="contactType === 'destination'"
+                   (click)="selectType('destination')">
+                <span class="type-icon">🌍</span>
+                <span class="type-label">Une destination</span>
+                <span class="type-desc">Infos, tarifs, disponibilités</span>
+              </div> -->
+
+              <div class="contact-type-card"
+                   [class.selected]="contactType === 'general'"
+                   (click)="selectType('general')">
+                <span class="type-icon">💬</span>
+                <span class="type-label">Question générale</span>
+                <span class="type-desc">Autre demande ou renseignement</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ════════════════════════════════════ -->
+          <!-- ÉTAPE 2 — Sélection réservation     -->
+          <!-- ════════════════════════════════════ -->
+          <div *ngIf="contactType === 'reservation'" class="mb-6">
+            <label class="block text-gray-700 font-semibold mb-3">
+              Sélectionnez votre réservation <span class="text-red-500">*</span>
+            </label>
+
+            <!-- Non connecté -->
+            <div *ngIf="!isLoggedIn"
+                 class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
+              ⚠️ Connectez-vous pour voir vos réservations ou indiquez votre numéro de réservation dans le message.
+            </div>
+
+            <!-- Loading -->
+            <div *ngIf="isLoggedIn && isLoadingResas" class="text-gray-400 text-sm py-2">
+              ⏳ Chargement de vos réservations...
+            </div>
+
+            <!-- Aucune réservation -->
+            <div *ngIf="isLoggedIn && !isLoadingResas && reservations.length === 0"
+                 class="p-4 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 text-sm">
+              📭 Aucune réservation trouvée.
+            </div>
+
+            <!-- Liste des réservations -->
+            <div *ngIf="isLoggedIn && !isLoadingResas && reservations.length > 0"
+                 class="reservations-list">
+              <div *ngFor="let resa of reservations"
+                   class="resa-card"
+                   [class.selected]="selectedReservation?.id === resa.id"
+                   (click)="selectReservation(resa)">
+                <div class="resa-icon">✈️</div>
+                <div class="resa-info">
+                  <div class="resa-dest">{{ resa.destination }}</div>
+                  <div class="resa-dates">{{ resa.check_in }} → {{ resa.check_out }}</div>
+                  <div class="resa-meta">
+                    <span class="resa-id">#{{ resa.id }}</span>
+                    <span class="resa-amount">{{ resa.amount }} TND</span>
+                  </div>
+                </div>
+                <span class="resa-status" [ngClass]="getStatusClass(resa.status)">
+                  {{ getStatusIcon(resa.status) }} {{ resa.status }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Réservation sélectionnée -->
+            <div *ngIf="selectedReservation"
+                 class="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg text-purple-700 text-sm font-medium">
+              ✅ Réservation sélectionnée : <strong>#{{ selectedReservation.id }}
+              — {{ selectedReservation.destination }}</strong>
+            </div>
+          </div>
+
+          <!-- ════════════════════════════════════ -->
+          <!-- ÉTAPE 2 — Sélection destination     -->
+          <!-- ════════════════════════════════════ -->
+          <div *ngIf="contactType === 'destination'" class="mb-6">
+            <label class="block text-gray-700 font-semibold mb-2">
+              Destination concernée <span class="text-red-500">*</span>
+            </label>
+
+            <div *ngIf="isLoadingDests" class="text-gray-400 text-sm py-2">
+              ⏳ Chargement des destinations...
+            </div>
+
+            <select *ngIf="!isLoadingDests"
+                    [(ngModel)]="contactForm.destination_id"
+                    name="destination_id"
+                    (ngModelChange)="onDestinationChange()"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-600 focus:outline-none bg-white">
+              <option [ngValue]="null">-- Choisissez une destination --</option>
+              <option *ngFor="let dest of destinations" [ngValue]="dest.id">
+                🌍 {{ dest.name }} — {{ dest.country }}
+              </option>
+            </select>
+
+            <div *ngIf="contactForm.destination_name"
+                 class="mt-2 text-sm text-purple-700 font-medium">
+              ✅ <strong>{{ contactForm.destination_name }}</strong> sélectionnée
+            </div>
+          </div>
+
+          <!-- ════════════════════════════════════ -->
+          <!-- ÉTAPE 3 — Formulaire               -->
+          <!-- ════════════════════════════════════ -->
           <form (ngSubmit)="onSubmit()">
+
             <div class="mb-4">
-              <label class="block text-gray-700 font-semibold mb-2">Nom complet</label>
-              <input type="text" [(ngModel)]="contactForm.name" name="name" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-600 focus:outline-none" required>
+              <label class="block text-gray-700 font-semibold mb-2">
+                Nom complet <span class="text-red-500">*</span>
+              </label>
+              <input type="text" [(ngModel)]="contactForm.name" name="name"
+                     placeholder="Ahmed Ben Ali" required
+                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-600 focus:outline-none">
             </div>
+
             <div class="mb-4">
-              <label class="block text-gray-700 font-semibold mb-2">Email</label>
-              <input type="email" [(ngModel)]="contactForm.email" name="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-600 focus:outline-none" required>
+              <label class="block text-gray-700 font-semibold mb-2">
+                Email <span class="text-red-500">*</span>
+              </label>
+              <input type="email" [(ngModel)]="contactForm.email" name="email"
+                     placeholder="ahmed@email.com" required
+                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-600 focus:outline-none">
             </div>
+
+            <div class="mb-4">
+              <label class="block text-gray-700 font-semibold mb-2">Téléphone</label>
+              <input type="tel" [(ngModel)]="contactForm.phone" name="phone"
+                     placeholder="+216 XX XXX XXX"
+                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-600 focus:outline-none">
+            </div>
+
             <div class="mb-4">
               <label class="block text-gray-700 font-semibold mb-2">Sujet</label>
-              <input type="text" [(ngModel)]="contactForm.subject" name="subject" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-600 focus:outline-none" required>
+              <input type="text" [(ngModel)]="contactForm.subject" name="subject"
+                     placeholder="Sujet de votre message..."
+                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-600 focus:outline-none">
             </div>
+
             <div class="mb-6">
-              <label class="block text-gray-700 font-semibold mb-2">Message</label>
-              <textarea [(ngModel)]="contactForm.message" name="message" rows="5" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-600 focus:outline-none" required></textarea>
+              <label class="block text-gray-700 font-semibold mb-2">
+                Message <span class="text-red-500">*</span>
+              </label>
+              <textarea [(ngModel)]="contactForm.message" name="message"
+                        rows="5" required
+                        [placeholder]="contactType === 'reservation'
+                          ? 'Décrivez votre demande concernant cette réservation...'
+                          : contactType === 'destination'
+                            ? 'Posez vos questions sur cette destination...'
+                            : 'Décrivez votre demande...'"
+                        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-purple-600 focus:outline-none">
+              </textarea>
             </div>
-            <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition">
-              Envoyer le message
+
+            <button type="submit" [disabled]="isLoading"
+                    class="w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed">
+              <span *ngIf="!isLoading">✉️ Envoyer le message</span>
+              <span *ngIf="isLoading">⏳ Envoi en cours...</span>
             </button>
           </form>
         </div>
 
-        <!-- Informations de contact -->
+        <!-- Informations de contact — inchangé -->
         <div>
           <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
             <h3 class="text-2xl font-bold mb-6">Informations de Contact</h3>
@@ -83,7 +252,16 @@
               </div>
             </div>
           </div>
+
+          <div class="bg-purple-50 rounded-2xl p-6 mt-8 border border-purple-100">
+            <h4 class="font-bold text-purple-800 mb-2">📧 Confirmation automatique</h4>
+            <p class="text-purple-700 text-sm">
+              Après l'envoi de votre message, vous recevrez automatiquement
+              un email de confirmation. Notre équipe vous répondra dans les 24h.
+            </p>
+          </div>
         </div>
+
       </div>
     </div>
   </section>

@@ -4,7 +4,6 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { HeaderComponent } from '../../component/header/header.component';
-import { Footer } from '../../component/footer/footer';
 import { DestinationsPageComponent } from '../destinations-page/destinations-page';
 import { DataService } from '../../services/data.service';
 
@@ -13,7 +12,7 @@ import { DataService } from '../../services/data.service';
   templateUrl: './home.html',
   styleUrls: ['./home.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderComponent, Footer, DestinationsPageComponent]
+  imports: [CommonModule, FormsModule, HeaderComponent, DestinationsPageComponent]
 })
 export class HomeComponent implements OnInit, OnDestroy {
 

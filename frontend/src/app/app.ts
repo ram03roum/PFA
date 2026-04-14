@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './component/header/header.component';
-import { Footer } from './component/footer/footer';
 import { HomeComponent } from "./pages/home/home";
 import { About } from "./pages/about/about";
 import { DestinationDetail } from './pages/destination-detail/destination-detail';
@@ -19,7 +18,6 @@ import { UsersComponent } from './component/users-dashboard/users-dashboard';
     ReservationFormComponent,
     ReservationDashboardComponent,
     UsersComponent,
-    Footer,
     DestinationDetail,
     HomeComponent,
     About,

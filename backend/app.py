@@ -10,7 +10,15 @@ from routes.auth import auth_bp  # On importe le blueprint du fichier auth.py
 from flask_jwt_extended import JWTManager
 from extensions import db, migrate, jwt , mail, scheduler
 from models import User, Destination, Reservation, ActivityLog 
-from tasks.scheduled_jobs import check_and_send_reminders
+from datetime import timedelta
+from tasks.scheduled_jobs import check_and_send_reminders, run_relance_inactive
+
+
+from extensions import mail, scheduler
+# from tasks.scheduled_jobs import check_and_send_reminders
+
+# from models import User, Destination ,Reservation, ActivityLog
+
 from routes.favorites import favorites_bp
 from routes.recommendations import recommendations_bp
 from routes.auth import auth_bp
@@ -34,6 +42,7 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = os.getenv('SECRET_KEY') # Utilisez votre clé secrète
 app.config["JWT_OPTIONS_ARE_TOKEN_REQUIRED"] = False
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24) # Le token durera 24h
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
 # On initialise le manager JWT avec l'app
 
 # Configurez CORS pour accepter l'origine Angular et les headers d'authentification
@@ -78,6 +87,17 @@ scheduler.start()
 # --- IMPORT DES MODÈLES (IMPORTANT : après db.init_app) ---
 with app.app_context():
     db.create_all()  # Crée les tables si elles n'existent pas
+# --- IMPORT DES ROUTES ---
+from routes.auth import auth_bp
+from routes.dashboard import dashboard_bp
+from routes.reservations import reservations_bp
+from routes.users import users_bp
+from routes.users_dashboard import dashboard_users_bp
+from routes.destinations import destinations_bp
+from routes.reservation_routes import client_reservation_bp
+from routes.favorites import favorites_bp
+from routes.chat import chat_bp
+from routes.contact import contact_bp
 
 # --- ENREGISTREMENT DES BLUEPRINTS ---
 
@@ -88,17 +108,27 @@ app.register_blueprint(favorites_bp)  # On "branche" le blueprint sur l'applicat
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(reservations_bp)
 app.register_blueprint(users_bp)
+app.register_blueprint(dashboard_users_bp)  # Dashboard admin pour les utilisateurs
 app.register_blueprint(destinations_bp)
 app.register_blueprint(client_reservation_bp)
 app.register_blueprint(chat_bp)  # Chat avec IA Gemini
 app.register_blueprint(recommendations_bp)
 
+app.register_blueprint(contact_bp)
+app.register_blueprint(recommendations_bp)
+# -----
     
 # --- ROUTES ---
 # Définition de la règle de temps
-@scheduler.task('cron', id='relance_paiement_quotidienne', hour=13, minute=23)
+# Tâche existante
+@scheduler.task('cron', id='relance_paiement_quotidienne', hour=12, minute=30)
 def job_matinal():
-    check_and_send_reminders(app) 
+    check_and_send_reminders(app)
+
+# ← NOUVELLE TÂCHE
+@scheduler.task('cron', id='relance_inactifs', hour=1, minute=5)
+def job_relance_inactifs():
+    run_relance_inactive(app)
 
 
 @app.route("/")

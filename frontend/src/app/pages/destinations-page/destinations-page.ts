@@ -16,6 +16,7 @@ import { RecommendationService } from '../../services/recommenadation.service.ts
 export class DestinationsPageComponent implements OnInit {
 
   destinations: any[] = [];
+  allDestinations: any[] = []; // pour le filtrage
   chargement: boolean = true;
   currentPage: number = 1;
   itemsPerPage: number = 20;
@@ -29,10 +30,10 @@ export class DestinationsPageComponent implements OnInit {
     private dataService: DataService,
     public favoriteService: FavoritesService,
     private recommendationService: RecommendationService,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
-    private route: ActivatedRoute,
   ) {
     if (isPlatformBrowser(this.platformId)) {
       this.token = localStorage.getItem('access_token');
@@ -78,7 +79,29 @@ export class DestinationsPageComponent implements OnInit {
       }
     }
     // Remove the queryParams subscribe since we handle it at init
+    this.route.queryParams.subscribe(params => {
+    const destination = params['location'];
+    const date = params['date'];
+    // Logique pour filtrer vos voyages ici
+  });
   }
+  chargerEtFiltrer(query: string): void {
+  this.chargement = true;
+  // On récupère toutes les destinations puis on filtre
+  this.dataService.getDestinations().subscribe({
+    next: (data) => {
+      this.allDestinations = data;
+      this.destinations = this.allDestinations.filter(dest => 
+        dest.name.toLowerCase().includes(query.toLowerCase()) || 
+        dest.location?.toLowerCase().includes(query.toLowerCase())
+      );
+      this.currentPage = 1;
+      this.chargement = false;
+      this.cdr.detectChanges();
+    },
+    error: () => this.chargement = false
+  });
+}
 
   // ── Destinations personnalisées (user connecté) ─────────────
   chargerRecommandations(): void {
